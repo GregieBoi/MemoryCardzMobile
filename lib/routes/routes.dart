@@ -39,7 +39,7 @@ class Routes {
         SHELFSCREEN: (context) => ShelfScreen(),
         FOLLOWERSCREEN: (context) => FollowerScreen(),
         FOLLOWINGSCREEN: (context) => FollowingScreen(),
-        GAMESCREEN: (context) => GameScreen(),
+        GAMESCREEN: (context) => GameScreen(id: 0),
         REVIEWSSCREEN: (context) => ReviewsScreen(),
         REVIEWSCREEN: (context) => ReviewScreen(),
         USERSCREEN: (context) => UserScreen(),

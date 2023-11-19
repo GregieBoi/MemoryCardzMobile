@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:mobile_project/screens/GameScreen.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:badges/badges.dart' as badges;
 //import 'package:mobile_project/utils/GameAPI.dart';
 import 'package:mobile_project/utils/CoverAPI.dart';
+import 'package:mobile_project/utils/NameAPI.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
@@ -211,7 +213,17 @@ class _GamesWidgetState extends State<GamesWidget> {
   }
 }
 
-class SearchWidget extends StatelessWidget {
+class SearchWidget extends StatefulWidget {
+  @override
+  _SearchWidgetState createState() => _SearchWidgetState();
+}
+
+class _SearchWidgetState extends State<SearchWidget> {
+
+  List<String> results = [];
+  String? _searchingWithQuery;
+  late Iterable<Widget> _lastOptions = <Widget>[];
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -236,16 +248,32 @@ class SearchWidget extends StatelessWidget {
                 leading: const Icon(Icons.search),
               );
             },
-            suggestionsBuilder: (BuildContext context, SearchController controller) {
-              return List<ListTile>.generate(18, (int index) {
-                final String item = 'item $index';
-                return ListTile(
-                  title: Text(item),
-                  onTap: () async {
-                    Navigator.pushNamed(context, '/game');
-                  },
-                );
-              });
+            suggestionsBuilder: (BuildContext context, SearchController controller) async {
+              _searchingWithQuery = controller.text;
+              final List<NameItem> results =
+                (await NameAPI.fetchData(_searchingWithQuery!)).toList();
+
+              if (_searchingWithQuery != controller.text) {
+                return _lastOptions;
+              }
+
+              _lastOptions = List<ListTile>.generate(results.length, (int index) {
+                  final NameItem item = results[index];
+                  return ListTile(
+                    title: Text(item.title),
+                    onTap: () {
+                      Navigator.pushNamed(context, 
+                        '/game', 
+                        arguments:
+                          GameScreen(id: item.id) 
+                      );
+                    }
+                  );
+                }
+              );
+
+              return _lastOptions;
+              
             }));
   }
 }
