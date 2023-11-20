@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:mobile_project/utils/GamePageAPI.dart';
+import 'package:intl/intl.dart';
+import 'package:mobile_project/utils/CoverAPI.dart';
+import 'package:mobile_project/utils/CompanyAPI.dart';
+import 'package:mobile_project/utils/PlatformsAPI.dart';
+import 'package:mobile_project/utils/AgeRatingsAPI.dart';
+import 'package:mobile_project/utils/GenreAPI.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
@@ -8,21 +15,169 @@ const contColor = Color(0xFF8C8C8C);
 const fieldColor = Color(0xFFD9D9D9);
 const NESred = Color(0xFFFF0000);
 
-class GameScreen extends StatefulWidget {
+String gameTitle = '';
+String gameDescription = '';
+String gameCoverImage = '';
+String gameDate = '';
+List<String> gameCompanyNames = [];
+List<String> gamePlatforms = [];
+List<int> gameAgeRatings = [];
+List<String> gameGenres = [];
 
+class GameScreen extends StatefulWidget {
   @override
   _GameScreenState createState() => _GameScreenState();
 }
 
-
 class _GameScreenState extends State<GameScreen> {
+  List<Map<String, dynamic>> gamesList = [];
+  List<GameItem> images = [];
+  List<CompanyItem> companyNames = [];
+  List<PlatformItem> platformNames = [];
+  List<AgeRatingItem> ageRatingNames = [];
+  List<GenreItem> genreNames = [];
 
+  int? gameId; // variable to store gameID
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // access the id argument passed from HubScreen
+    gameId ??= ModalRoute.of(context)?.settings.arguments as int?;
+
+    // check if gameId is not null before making the API call
+    if (gameId != null) {
+      fetchGameData();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchGameData();
+  }
+
+  Future<void> fetchGameData() async {
+    final api = GamePageAPI();
+    final api2 = CoverAPI();
+    final api3 = CompanyAPI();
+    final api4 = PlatformsAPI();
+    final api5 = AgeRatingsAPI();
+    final api6 = GenreAPI();
+
+    // Use the stored gameId
+    await api.getGames(gameId);
+    await api2.fetchData(gameId);
+    await api3.fetchCompanies(gameId);
+    await api4.fetchPlatforms(gameId);
+    await api5.fetchAgeRatings(gameId);
+    await api6.fetchGenres(gameId);
+
+    setState(() {
+      gamesList = api.gamesList;
+      images = api2.body;
+      companyNames = api3.body;
+      platformNames = api4.body;
+      ageRatingNames = api5.body;
+      genreNames = api6.body;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    for (var game in gamesList) {
+      // resets all data to prevent confliting information
+      gameTitle = '';
+      gameDescription = '';
+      gameCoverImage = '';
+      gameDate = '';
+      gameCompanyNames = [];
+      gamePlatforms = [];
+      gameAgeRatings = [];
+      gameGenres = [];
+
+      print('---------------------------------------------------------------');
+      //////////////////////////////////////////////////////////////////////////
+      print('this game id is currently:$gameId');
+      //////////////////////////////////////////////////////////////////////////
+      print('Name: ${game['name']}');
+      gameTitle = game['name'];
+      //////////////////////////////////////////////////////////////////////////
+      print('Summary: ${game['summary']}');
+      gameDescription = game['summary'];
+      //////////////////////////////////////////////////////////////////////////
+      int date = game['first_release_date'];
+      String year;
+      if (date == null) {
+        year = '';
+      } else {
+        var milleseconds = DateTime.fromMillisecondsSinceEpoch(date * 1000);
+        var dateFormatted = DateFormat('MMMM d, y').format(milleseconds);
+        year = dateFormatted;
+      }
+      gameDate = year;
+      print('First release date: $gameDate');
+      //////////////////////////////////////////////////////////////////////////
+      gameCoverImage = images[0].coverImageUrl;
+      print('Cover Image ID: $gameCoverImage');
+      //////////////////////////////////////////////////////////////////////////
+      for (int i = 0; i < companyNames.length; i++) {
+        String companyName = companyNames[i].companyName;
+
+        // Check if the companyName is not already in gameCompanyNames
+        if (!gameCompanyNames.contains(companyName)) {
+          gameCompanyNames.add(companyName);
+        }
+      }
+
+      for (int i = 0; i < companyNames.length; i++) {
+        print('Involved Company ${i + 1}: ${gameCompanyNames[i]}');
+      }
+      //////////////////////////////////////////////////////////////////////////
+      for (int i = 0; i < platformNames.length; i++) {
+        String platformName = platformNames[i].platformName;
+
+        // Check if the platformName is not already in gamePlatformNames
+        if (!gamePlatforms.contains(platformName)) {
+          gamePlatforms.add(platformName);
+        }
+      }
+
+      for (int i = 0; i < gamePlatforms.length; i++) {
+        print('Platform ${i + 1}: ${gamePlatforms[i]}');
+      }
+      //////////////////////////////////////////////////////////////////////////
+      for (int i = 0; i < ageRatingNames.length; i++) {
+        int rating = ageRatingNames[i].rating;
+
+        // Check if the rating is not already in gameAgeRatings
+        if (!gameAgeRatings.contains(rating)) {
+          gameAgeRatings.add(rating);
+        }
+      }
+
+      for (int i = 0; i < gameAgeRatings.length; i++) {
+        print('Age Rating ${i + 1}: ${gameAgeRatings[i]}');
+      }
+      //////////////////////////////////////////////////////////////////////////
+      for (int i = 0; i < genreNames.length; i++) {
+        String genreName = genreNames[i].genreName;
+
+        // Check if the genreName is not already in gameGenreNames
+        if (!gameGenres.contains(genreName)) {
+          gameGenres.add(genreName);
+        }
+      }
+
+      for (int i = 0; i < gameGenres.length; i++) {
+        print('Genre ${i + 1}: ${gameGenres[i]}');
+      }
+      //////////////////////////////////////////////////////////////////////////
+      print('---------------------------------------------------------------');
+    }
 
     return Scaffold(
-        
         backgroundColor: backColor,
         appBar: GFAppBar(
           backgroundColor: Colors.black87,
@@ -32,14 +187,11 @@ class _GameScreenState extends State<GameScreen> {
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
-
-        body: gameWidget()
-
-
-    );
+        body: gameWidget());
   }
 }
 
+//////////////////////////////////////////////////
 
 class MainPage extends StatefulWidget {
   @override
@@ -58,239 +210,184 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-class gameWidget extends StatelessWidget {
+//////////////////////////////////////////////////
 
+class gameWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
     return SingleChildScrollView(
-    
       child: Column(
-
         mainAxisAlignment: MainAxisAlignment.start,
-
         children: [
-
           Container(
-
             margin: EdgeInsets.all(20),
-            height: MediaQuery.of(context).size.width /2,
-
+            height: MediaQuery.of(context).size.width / 2,
             child: Row(
-
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
               children: [
-
                 Container(
-
-                  width: (MediaQuery.of(context).size.width - 60) * (2/3),
-                  height: MediaQuery.of(context).size.width /2,
-
+                  width: (MediaQuery.of(context).size.width - 60) * (2 / 3),
+                  height: MediaQuery.of(context).size.width / 2,
                   child: Column(
-
                     crossAxisAlignment: CrossAxisAlignment.start,
-
                     children: [
-
-                      Text('The Legend of Zelda: The Ocarina of Time', style: TextStyle(fontSize: 20, color: fieldColor),),
-                      Text('20xx', style: TextStyle(fontSize: 14, color: textColor),),
-                      Text('Developed By:', style: TextStyle(fontSize: 14, color: textColor),),
-                      Text('Developer', style: TextStyle(fontSize: 14, color: fieldColor, fontWeight: FontWeight.bold),),
-                      Text('Published By:', style: TextStyle(fontSize: 14, color: textColor),),
-                      Text('Publisher', style: TextStyle(fontSize: 14, color: fieldColor, fontWeight: FontWeight.bold),),
-
+                      Text(
+                        gameTitle,
+                        style: TextStyle(fontSize: 20, color: fieldColor),
+                      ),
+                      Text(
+                        gameDate,
+                        style: TextStyle(fontSize: 14, color: textColor),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Developers:',
+                        style: TextStyle(fontSize: 14, color: textColor),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: gameCompanyNames.map((companyName) {
+                          return Text(
+                            companyName,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: fieldColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     ],
-
                   ),
-
-                  
-
                 ),
-
                 Card(
                   child: SizedBox(
-                  width: (MediaQuery.of(context).size.width - 40 ) / 3,
-                  child: Center(child: Text('Card1'),),
+                    width: (MediaQuery.of(context).size.width - 40) / 3,
+                    child: Center(
+                      child: gameCoverImage.isNotEmpty
+                          ? Image.network(
+                              gameCoverImage,
+                              width: double.infinity,
+                              height: double.infinity,
+                            )
+                          : Text('No cover Image'),
+                    ),
                   ),
                 ),
-
               ],
-
             ),
-
           ),
-
           Container(
-
-            margin: EdgeInsets.only(left: 20, right: 20),
-            height: 105,
-
-            child: SingleChildScrollView(
-
-              child: Column(
-
+              margin: EdgeInsets.only(left: 20, right: 20),
+              height: 105,
+              child: SingleChildScrollView(
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-
                 children: [
-
                   Text(
-                    'blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah ',
+                    gameDescription,
                     style: TextStyle(
-                      fontSize: 16, 
-                      foreground: Paint()..shader = LinearGradient(
-                        colors: <Color>[textColor, backColor],
-                        begin: Alignment.center,
-                        end: Alignment.bottomCenter
-                      ).createShader(Rect.fromLTWH(0.0, 0.0, 1000, 130.0)) 
-                    ),
+                        fontSize: 16,
+                        foreground: Paint()
+                          ..shader = LinearGradient(
+                                  colors: <Color>[textColor, backColor],
+                                  begin: Alignment.center,
+                                  end: Alignment.bottomCenter)
+                              .createShader(
+                                  Rect.fromLTWH(0.0, 0.0, 1000, 130.0))),
                   )
-
                 ],
-
-              )
-
-            )
-
-          ),
-
+              ))),
           Container(
-
             margin: EdgeInsets.only(top: 20),
             padding: EdgeInsets.all(20),
             width: MediaQuery.of(context).size.width + 40,
             decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: contColor)
-              )
-
-            ),
-
+                border: Border(top: BorderSide(color: contColor))),
             child: Column(
-
               crossAxisAlignment: CrossAxisAlignment.start,
-
               children: [
-
                 Text(
                   'RATINGS',
-                  style: TextStyle(
-                    color: textColor
-                  ),  
+                  style: TextStyle(color: textColor),
                 ),
-
                 Row(
-
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
                   children: [
-
                     Icon(
                       Icons.star,
                       color: NESred,
                       size: 10,
                     ),
-
                     Container(
-
                       height: 50,
-                      width: (MediaQuery.of(context).size.width - 40) * 2/3,
-                    
+                      width: (MediaQuery.of(context).size.width - 40) * 2 / 3,
                       child: SfSparkBarChart(
-
-                        data: [0.025,0.025,0.1,0.05,0.05,1,2,3,1,1],
+                        data: [0.025, 0.025, 0.1, 0.05, 0.05, 1, 2, 3, 1, 1],
                         color: textColor,
-
                       ),
-                    
                     ),
-
-                    Column(
-                      children: [ 
-                        Text(
-                          '3.9',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: textColor
+                    Column(children: [
+                      Text(
+                        '3.9',
+                        style: TextStyle(fontSize: 20, color: textColor),
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.star,
+                            color: NESred,
+                            size: 10,
                           ),
-                        ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.star,
-                              color: NESred,
-                              size: 10,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: NESred,
-                              size: 10,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: NESred,
-                              size: 10,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: NESred,
-                              size: 10,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: NESred,
-                              size: 10,
-                            ),
-                            
-                          ],
-                        )
-                      ]
-                    )
-
+                          Icon(
+                            Icons.star,
+                            color: NESred,
+                            size: 10,
+                          ),
+                          Icon(
+                            Icons.star,
+                            color: NESred,
+                            size: 10,
+                          ),
+                          Icon(
+                            Icons.star,
+                            color: NESred,
+                            size: 10,
+                          ),
+                          Icon(
+                            Icons.star,
+                            color: NESred,
+                            size: 10,
+                          ),
+                        ],
+                      )
+                    ])
                   ],
-
                 )
-
               ],
-
             ),
-
           ),
-
           Container(
-
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: textColor)
-              )
-            ),
-
+                border: Border(top: BorderSide(color: textColor))),
             child: Row(
-
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
-
               children: [
-
                 Card(
                   child: Container(
-                    width: (MediaQuery.of(context).size.width - 40 ) / 3.5,
-                    height: (MediaQuery.of(context).size.width - 80 ) / 3.5,
+                    width: (MediaQuery.of(context).size.width - 40) / 3.5,
+                    height: (MediaQuery.of(context).size.width - 80) / 3.5,
                     decoration: BoxDecoration(
-                      color: NESred,
-                      borderRadius: BorderRadius.circular(3)
-                    ),
+                        color: NESred, borderRadius: BorderRadius.circular(3)),
                     padding: EdgeInsets.all(10),
                     child: Column(
-
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
                       children: [
-
                         Icon(
                           Icons.videogame_asset_outlined,
                           color: fieldColor,
@@ -298,9 +395,7 @@ class gameWidget extends StatelessWidget {
                         Text(
                           'Players',
                           style: TextStyle(
-                            color: fieldColor,
-                            fontWeight: FontWeight.bold
-                          ),
+                              color: fieldColor, fontWeight: FontWeight.bold),
                         ),
                         Text(
                           '100k',
@@ -308,9 +403,7 @@ class gameWidget extends StatelessWidget {
                             color: fieldColor,
                           ),
                         )
-
                       ],
-
                     ),
                   ),
                 ),
@@ -320,20 +413,16 @@ class gameWidget extends StatelessWidget {
                   },
                   child: Card(
                     child: Container(
-                    width: (MediaQuery.of(context).size.width - 40 ) / 3.5,
-                    height: (MediaQuery.of(context).size.width - 80 ) / 3.5,
-                    decoration: BoxDecoration(
-                      color: textColor,
-                      borderRadius: BorderRadius.circular(3)
-                    ),
-                    padding: EdgeInsets.all(10),
-                    child: Column(
-
+                      width: (MediaQuery.of(context).size.width - 40) / 3.5,
+                      height: (MediaQuery.of(context).size.width - 80) / 3.5,
+                      decoration: BoxDecoration(
+                          color: textColor,
+                          borderRadius: BorderRadius.circular(3)),
+                      padding: EdgeInsets.all(10),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
                         children: [
-
                           Icon(
                             Icons.text_snippet,
                             color: fieldColor,
@@ -341,9 +430,7 @@ class gameWidget extends StatelessWidget {
                           Text(
                             'Reviews',
                             style: TextStyle(
-                              color: fieldColor,
-                              fontWeight: FontWeight.bold
-                            ),
+                                color: fieldColor, fontWeight: FontWeight.bold),
                           ),
                           Text(
                             '100k',
@@ -351,29 +438,23 @@ class gameWidget extends StatelessWidget {
                               color: fieldColor,
                             ),
                           )
-
                         ],
-
                       ),
                     ),
                   ),
                 ),
                 Card(
                   child: Container(
-                  width: (MediaQuery.of(context).size.width - 40 ) / 3.5,
-                  height: (MediaQuery.of(context).size.width - 80 ) / 3.5,
-                  decoration: BoxDecoration(
-                    color: Colors.black87,
-                    borderRadius: BorderRadius.circular(4)
-                  ),
-                  padding: EdgeInsets.all(10),
-                  child: Column(
-
+                    width: (MediaQuery.of(context).size.width - 40) / 3.5,
+                    height: (MediaQuery.of(context).size.width - 80) / 3.5,
+                    decoration: BoxDecoration(
+                        color: Colors.black87,
+                        borderRadius: BorderRadius.circular(4)),
+                    padding: EdgeInsets.all(10),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
                       children: [
-
                         Icon(
                           Icons.list,
                           color: fieldColor,
@@ -381,9 +462,7 @@ class gameWidget extends StatelessWidget {
                         Text(
                           'Lists',
                           style: TextStyle(
-                            color: fieldColor,
-                            fontWeight: FontWeight.bold
-                          ),
+                              color: fieldColor, fontWeight: FontWeight.bold),
                         ),
                         Text(
                           '100k',
@@ -391,196 +470,115 @@ class gameWidget extends StatelessWidget {
                             color: fieldColor,
                           ),
                         )
-
                       ],
-
                     ),
                   ),
                 ),
-
               ],
-
             ),
-
           ),
-          
           Container(
-
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: textColor)
-              )
+              border: Border(top: BorderSide(color: textColor)),
             ),
-
-            child: Row(
-
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
               children: [
-
                 Text(
                   'Where to Play:',
                   style: TextStyle(
                     color: textColor,
                     fontSize: 16,
-                    fontWeight: FontWeight.bold
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-
+                SizedBox(height: 8),
                 Column(
-
-                  crossAxisAlignment: CrossAxisAlignment.end,
-
-                  children: [
-
-                    Text(
-                      'Playstation 4',
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: gamePlatforms.map((platform) {
+                    return Text(
+                      platform,
                       style: TextStyle(
                         color: textColor,
-                        fontSize: 16
-                      ),                
-                    ),
-                    Text(
-                      'Xbox Series X',
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 16
-                      ),                
-                    ),
-                    Text(
-                      'Nintendo Switch',
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 16
-                      ),                
-                    ),
-                    
-
-                  ],
-
-                )
-
+                        fontSize: 16,
+                      ),
+                    );
+                  }).toList(),
+                ),
               ],
-
             ),
-
           ),
-          
           Container(
-
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: textColor)
-              )
+              border: Border(top: BorderSide(color: textColor)),
             ),
-
-            child: Row(
-
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
               children: [
-
                 Text(
                   'Rating:',
                   style: TextStyle(
                     color: textColor,
                     fontSize: 16,
-                    fontWeight: FontWeight.bold
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-
-                Text(
-                  'E10+',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 16,
-                  ),
+                SizedBox(height: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: gameAgeRatings.map((rating) {
+                    return Text(
+                      '$rating +',
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 16,
+                      ),
+                    );
+                  }).toList(),
                 ),
-
               ],
-
             ),
-
           ),
-
           Container(
-
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: textColor)
-              )
+              border: Border(top: BorderSide(color: textColor)),
             ),
-
-            child: Row(
-
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
               children: [
-
                 Text(
-                  'Genre(s):',
+                  'Genres:',
                   style: TextStyle(
                     color: textColor,
                     fontSize: 16,
-                    fontWeight: FontWeight.bold
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-
+                SizedBox(height: 8),
                 Column(
-
-                  crossAxisAlignment: CrossAxisAlignment.end,
-
-                  children: [
-
-                    Text(
-                      'Fantasy',
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: gameGenres.map((genres) {
+                    //gameGenres
+                    return Text(
+                      genres,
                       style: TextStyle(
                         color: textColor,
-                        fontSize: 16
-                      ),                
-                    ),
-                    Text(
-                      'RPG',
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 16
-                      ),                
-                    ),
-                    Text(
-                      'Strategy',
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 16
-                      ),                
-                    ),
-                    
-
-                  ],
-
-                )
-
+                        fontSize: 16,
+                      ),
+                    );
+                  }).toList(),
+                ),
               ],
-
             ),
-
           ),
-
         ],
-
       ),
-      
-
     );
-
   }
-
 }

@@ -7,18 +7,17 @@ class CoverAPI {
   final String authKey = 'Bearer olri728cp8oz5wajq55y1t07ses589';
   final String baseUrl = 'https://api.igdb.com/v4/games';
   final String coversUrl = 'https://api.igdb.com/v4/covers';
-  final String ageRatingsUrl = 'https://api.igdb.com/v4/age_ratings';
 
   List<GameItem> body = [];
 
-  Future<void> fetchData() async {
+  Future<void> fetchData(int? gameId) async {
     final response = await http.post(
       Uri.parse(baseUrl),
       headers: {
         'Client-ID': apiKey,
         'Authorization': authKey,
       },
-      body: 'fields cover; search "Call of Duty"; limit 10;',
+      body: 'fields cover; where id = $gameId; limit 1;',
     );
 
     if (response.statusCode == 200) {
