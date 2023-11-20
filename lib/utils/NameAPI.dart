@@ -20,7 +20,7 @@ class NameAPI {
       body: 'fields category, name, first_release_date; search "$gameName"; limit 10;',
     );
 
-    if(gameName == '' || response.statusCode == 429) {return [NameItem(title: '', id: 0)];}
+    if(gameName == '' || response.statusCode == 429) {return [NameItem(title: '', id: 0, dev: '', release: '', genre: '', year: '')];}
 
     if (response.statusCode == 200) {
       print(gameName);
@@ -37,17 +37,20 @@ class NameAPI {
         final category = game['category'];
         final date = game['first_release_date'];
         String year; 
+        String release;
 
-        if (date == null) {year = '';}
+        if (date == null) {year = ''; release = '';}
 
-       else {
+        else {
           var milleseconds = DateTime.fromMillisecondsSinceEpoch(date * 1000);  
-          var dateFormatted = DateFormat('y').format(milleseconds);
-          year = ' (' + dateFormatted + ')';
+          var yearFormatted = DateFormat('y').format(milleseconds);
+          var dateFormatted = DateFormat('yMMMMd').format(milleseconds);
+          year = ' (' + yearFormatted + ')';
+          release = dateFormatted;
         }
 
         if (title is String && id is int && (category == 0 || category == 8)) {
-          NameItem gameItem = NameItem(title: title + year, id: id);
+          NameItem gameItem = NameItem(title: title, id: id, dev: 'placeholder', release: release, genre: 'placeholder', year: year);
           gameItems.add(gameItem);
         }
       }
@@ -66,9 +69,17 @@ class NameAPI {
 class NameItem {
   final String title;
   final int id;
+  final String dev;
+  final String release;
+  final String genre;
+  final String year;
 
   NameItem({
     required this.title,
-    required this.id
+    required this.id,
+    required this.dev,
+    required this.release,
+    required this.genre,
+    required this.year
   });
 }

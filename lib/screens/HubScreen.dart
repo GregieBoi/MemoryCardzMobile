@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:mobile_project/screens/GameScreen.dart';
+import 'package:mobile_project/utils/getAPI.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:badges/badges.dart' as badges;
 //import 'package:mobile_project/utils/GameAPI.dart';
 import 'package:mobile_project/utils/CoverAPI.dart';
 import 'package:mobile_project/utils/NameAPI.dart';
+import 'package:mobile_project/utils/AddReviewAPI.dart';
+import 'package:mobile_project/utils/AddGame.dart';
+import 'package:intl/intl.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
@@ -265,8 +269,9 @@ class _SearchWidgetState extends State<SearchWidget> {
                       Navigator.pushNamed(context, 
                         '/game', 
                         arguments:
-                          GameScreen(id: item.id) 
+                          item.id 
                       );
+                      print(GlobalData.userId);
                     }
                   );
                 }
@@ -278,7 +283,17 @@ class _SearchWidgetState extends State<SearchWidget> {
   }
 }
 
-class AddWidget extends StatelessWidget {
+class AddWidget extends StatefulWidget {
+  @override
+  _AddWidgetState createState() => _AddWidgetState();
+}
+
+class _AddWidgetState extends State<AddWidget> {
+
+  List<String> results = [];
+  String? _searchingWithQuery;
+  late Iterable<Widget> _lastOptions = <Widget>[];
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -308,11 +323,294 @@ class AddWidget extends StatelessWidget {
               ],
             ),
           ),
-          SearchWidget()
+          Container(
+            alignment: Alignment.topCenter,
+            padding: EdgeInsets.all(16),
+            child: SearchAnchor(
+                viewBackgroundColor: contColor,
+                dividerColor: Colors.black87,
+                viewConstraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 16),
+                isFullScreen: false,
+                builder: (BuildContext context, SearchController controller) {
+                  return SearchBar(
+                    backgroundColor: MaterialStateProperty.all(contColor),
+                    controller: controller,
+                    padding: const MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16.0)),
+                    onTap: () {
+                      controller.openView();
+                    },
+                    onChanged: (_) {
+                      controller.openView();
+                    },
+                    leading: const Icon(Icons.search),
+                  );
+                },
+                suggestionsBuilder: (BuildContext context, SearchController controller) async {
+                  _searchingWithQuery = controller.text;
+                  final List<NameItem> results =
+                    (await NameAPI.fetchData(_searchingWithQuery!)).toList();
+
+                  if (_searchingWithQuery != controller.text) {
+                    return _lastOptions;
+                  }
+
+                  _lastOptions = List<ListTile>.generate(results.length, (int index) {
+                      final NameItem item = results[index];
+                      return ListTile(
+                        title: Text(item.title + ' ' + item.year),
+                        onTap: () {
+                          showModalBottomSheet<dynamic>(
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                            backgroundColor: backColor,
+                            isScrollControlled: true,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return ReviewWidget(id: item.id, title: item.title, dev: item.dev, release: item.release, genre: item.genre, year: item.year);
+                            }
+                          );
+                        }
+                      );
+                    }
+                  );
+
+                  return _lastOptions;
+                  
+                }
+              )
+            )
         ],
       ),
     );
   }
+}
+
+class ReviewWidget extends StatefulWidget {
+  ReviewWidget({required this.id, required this.title, required this.dev, required this.release, required this.genre, required this.year});
+  final int id;
+  final String title;
+  final String dev;
+  final String release;
+  final String genre;
+  final String year;
+
+  @override
+  _ReviewWidgetState createState () => _ReviewWidgetState(id: id, title: title, dev: dev, release: release, genre: genre, year: year);
+}
+
+class _ReviewWidgetState extends State<ReviewWidget> {
+
+  _ReviewWidgetState({required this.id, required this.title, required this.dev, required this.release, required this.genre, required this.year});
+  final int id;
+  final String title;
+  final String dev;
+  final String release;
+  final String genre;
+  final String year;
+
+  String date = DateFormat('yMMMMd').format(DateTime.now());
+  bool isLog = true;
+  double _rating = 0;
+  String userId = GlobalData.userId!;
+
+  TextEditingController reviewController = TextEditingController();
+  String reviewText = '';
+
+  double roundRating (double rating) {
+    if (rating == 0) {return rating;}
+    else if (rating <= .5) {return 0.5;}
+    else if (rating <= 1) {return 1;}
+    else if (rating <= 1.5) {return 1.5;}
+    else if (rating <= 2) {return 2;}
+    else if (rating <= 2.5) {return 2.5;}
+    else if (rating <= 3) {return 3;}
+    else if (rating <= 3.5) {return 3.5;}
+    else if (rating <= 4) {return 4;}
+    else if (rating <= 4.5) {return 4.5;}
+    else {return 5;}
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    print(release);
+
+    return SizedBox(
+      height: MediaQuery.of(context).size.height - 32,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 5, right: 20, top: 10, bottom: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: contColor, fontSize: 16),
+                    )),
+                const Text('I Played...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold)),
+                TextButton(
+                  onPressed:() async {
+                    _rating = roundRating(_rating);
+                    print(release);
+                    String gameId = await AddGameAPI.searchId('$id');
+                    if (gameId == '') {
+                      gameId = await AddGameAPI.addGame(title, dev, genre, release, '$id');
+                    }
+                    print('saved ' + '$_rating' + ' rating of ' + title);
+                    if(reviewController.text != '') {isLog = false;}
+                    print(id);
+                    String reviewId = await AddReviewAPI.createReview(GlobalData.userId!, gameId);
+                    print('\n\n\n\nthis is my reviewID!!!!!!!!!' + reviewId);
+                    await AddReviewAPI.updateReview(GlobalData.userId!, reviewId, date, _rating, reviewController.text, isLog);
+                    Navigator.of(context).popUntil(ModalRoute.withName('/hub'));
+                  },
+                  child: const Text(
+                    'Save',
+                    style: TextStyle(color: NESred, fontSize: 16, fontWeight: FontWeight.bold),
+                  )
+                )
+              ],
+            ),
+          ),
+          Container(
+            decoration: const BoxDecoration(color: Colors.black87),
+            padding: const EdgeInsets.all(20),
+            width: MediaQuery.of(context).size.width,
+            child: Wrap(
+              children: [
+                Text(
+                  title + ' ' + year,
+                  style: const TextStyle(
+                    color: textColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold
+                  ),
+                )
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Date',
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  date,
+                  style: const TextStyle(
+                    color: textColor,
+                    fontSize: 14
+                  )
+                )
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
+            decoration: const BoxDecoration(
+              border: Border(
+                top: BorderSide(color: Colors.black87, width: .25)
+              )
+            ),
+            child: Column(
+              children: [
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Rated',
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 16,
+                      )
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GFRating(
+                      color: GFColors.SUCCESS,
+                      borderColor: GFColors.SUCCESS,
+                      allowHalfRating: true,
+                      defaultIcon: const Icon(
+                        Icons.star_outline_rounded,
+                        color: NESred,
+                        size: GFSize.LARGE
+                      ),
+                      halfFilledIcon: const Icon(
+                        Icons.star_half_rounded,
+                        color: NESred,
+                        size: GFSize.LARGE
+                      ),
+                      filledIcon: const Icon(
+                        Icons.star_rounded,
+                        color: NESred,
+                        size: GFSize.LARGE,
+                      ),
+                      size: GFSize.LARGE,
+                      value: _rating,
+                      onChanged: (value) {
+                        setState(() {
+                          _rating = value;
+                          print(_rating);
+                        });
+                      },
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
+            decoration: const BoxDecoration(
+              border: Border(
+                top: BorderSide(color: Colors.black87, width: .25)
+              )
+            ),
+            child: TextField(
+              controller: reviewController,
+              maxLines: null,
+              style: const TextStyle(
+                color: textColor,
+                fontSize: 14,
+              ),
+              decoration: const InputDecoration(
+                contentPadding: EdgeInsets.all(0),
+                floatingLabelStyle: TextStyle(
+                  color: Colors.transparent
+                ),
+                labelText: 'Add Review...',
+                labelStyle: TextStyle(
+                  color: textColor,
+                  fontSize: 14
+                ),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide.none
+                )
+              ),
+            )
+          )
+        ]
+      )
+    );
+
+  }
+
 }
 
 class ActivityWidget extends StatelessWidget {

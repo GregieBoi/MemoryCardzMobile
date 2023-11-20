@@ -9,21 +9,18 @@ const fieldColor = Color(0xFFD9D9D9);
 const NESred = Color(0xFFFF0000);
 
 class GameScreen extends StatefulWidget {
-  GameScreen({required this.id});
-  final int id;
 
   @override
-  _GameScreenState createState() => _GameScreenState(id: id);
+  _GameScreenState createState() => _GameScreenState();
 }
 
 
 class _GameScreenState extends State<GameScreen> {
 
-  _GameScreenState({required this.id});
-  final int id;
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         
         backgroundColor: backColor,

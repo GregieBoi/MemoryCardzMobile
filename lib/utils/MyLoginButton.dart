@@ -122,12 +122,12 @@ class _MyLoginButtonState extends State<MyLoginButton> {
                   newMessageText = "Incorrect Login/Password";
                   changeText();
                 } else {
-                  //print("in here 3");
-                  //GlobalData.userId = userId;
-                  //GlobalData.firstName = jsonObject["firstName"];
-                  //GlobalData.lastName = jsonObject["lastName"];
-                  //GlobalData.username = username;
-                  //GlobalData.password = password;
+                  print("in here 3");
+                  GlobalData.userId = userId;
+                  GlobalData.firstName = jsonObject["firstName"];
+                  GlobalData.lastName = jsonObject["lastName"];
+                  GlobalData.username = username;
+                  GlobalData.password = password;
                   Navigator.pushNamed(context, '/hub');
                 }
               },

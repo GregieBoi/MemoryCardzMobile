@@ -40,7 +40,7 @@ class CardsData {
 }
 
 class GlobalData {
-  static int? userId;
+  static String? userId;
   static String? firstName;
   static String? lastName;
   static String? username;
