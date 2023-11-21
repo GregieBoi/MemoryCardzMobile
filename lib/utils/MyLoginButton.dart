@@ -34,9 +34,7 @@ class _MyLoginButtonState extends State<MyLoginButton> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            
             Container(
-
               child: Text(
                 'Sign In',
                 style: TextStyle(
@@ -46,20 +44,17 @@ class _MyLoginButtonState extends State<MyLoginButton> {
                 ),
               ),
               margin: EdgeInsets.all(20.0),
-
             ),
-
             TextField(
               controller: usernameController,
               decoration: InputDecoration(
-                filled: true,
-                fillColor: fieldColor,
-                border: OutlineInputBorder(),
-                labelText: 'Username',
-                hintText: 'Enter Your Username',
-                labelStyle: TextStyle(color: Colors.black87),
-                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black87))
-              ),
+                  filled: true,
+                  fillColor: fieldColor,
+                  border: OutlineInputBorder(),
+                  labelText: 'Username',
+                  hintText: 'Enter Your Username',
+                  labelStyle: TextStyle(color: Colors.black87),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black87))),
               onChanged: (text) {
                 setState(() {
                   username = text;
@@ -71,23 +66,19 @@ class _MyLoginButtonState extends State<MyLoginButton> {
               controller: passwordController,
               obscureText: true,
               decoration: InputDecoration(
-                filled: true,
-                fillColor: fieldColor,
-                border: OutlineInputBorder(),
-                labelText: 'Password',
-                hintText: 'Enter Your Password',
-                labelStyle: TextStyle(color: Colors.black87),
-                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black87))
-              ),
+                  filled: true,
+                  fillColor: fieldColor,
+                  border: OutlineInputBorder(),
+                  labelText: 'Password',
+                  hintText: 'Enter Your Password',
+                  labelStyle: TextStyle(color: Colors.black87),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.black87))),
               onChanged: (text) {
                 setState(() {
                   password = text;
                 });
               },
             ),
-
-            
-
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: () async {
@@ -101,15 +92,10 @@ class _MyLoginButtonState extends State<MyLoginButton> {
                 try {
                   String url = 'https://cop4331-25-c433f0fd0594.herokuapp.com/api/login';
                   String ret = await CardsData.getJson(url, payload);
-                  print("The ret is: " + ret); // ret is {"accessToken":"blahblahblahblah"}
-
+                  //print("The ret is: " + ret); // ret is {"accessToken":"blahblahblahblah"}
                   jsonObject = json.decode(ret);
-                  //print("the jsonObject is:" + jsonObject);
                   userId = jsonObject["id"];
-
-                  //print("in here 1");
                 } catch (e) {
-                  //print("in here 2");
                   newMessageText = e.toString();
                   print(newMessageText); // prints the error message in console
 
@@ -122,7 +108,7 @@ class _MyLoginButtonState extends State<MyLoginButton> {
                   newMessageText = "Incorrect Login/Password";
                   changeText();
                 } else {
-                  print("in here 3");
+                  //print("in here 3");
                   GlobalData.userId = userId;
                   GlobalData.firstName = jsonObject["firstName"];
                   GlobalData.lastName = jsonObject["lastName"];
@@ -156,19 +142,16 @@ class _MyLoginButtonState extends State<MyLoginButton> {
             Container(
               margin: EdgeInsets.only(bottom: 20),
               child: RichText(
-                text: TextSpan(
-                  children: <TextSpan>[
-                    TextSpan(text: "Don't have an account? "),
-                    TextSpan(
-                      text: "Sign Up",
-                      style: TextStyle(decoration: TextDecoration.underline),
-                      recognizer: TapGestureRecognizer() .. onTap = () async {
+                  text: TextSpan(children: <TextSpan>[
+                TextSpan(text: "Don't have an account? "),
+                TextSpan(
+                    text: "Sign Up",
+                    style: TextStyle(decoration: TextDecoration.underline),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
                         Navigator.pushNamed(context, '/register');
-                      }
-                    )
-                  ]
-                )
-              ),
+                      })
+              ])),
             )
           ],
         ),

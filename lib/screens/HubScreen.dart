@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
-import 'package:mobile_project/screens/GameScreen.dart';
+//import 'package:mobile_project/screens/GameScreen.dart';
 import 'package:mobile_project/utils/getAPI.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:badges/badges.dart' as badges;
@@ -366,8 +366,7 @@ class _AddWidgetState extends State<AddWidget> {
                                       release: item.release,
                                       genre: item.genre,
                                       year: item.year,
-                                      route: '/hub'
-                                    );
+                                      route: '/hub');
                                 });
                           });
                     });
@@ -388,9 +387,7 @@ class ReviewWidget extends StatefulWidget {
       required this.release,
       required this.genre,
       required this.year,
-      required this.route
-    }
-  );
+      required this.route});
   final int id;
   final String title;
   final String dev;
@@ -412,9 +409,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
       required this.release,
       required this.genre,
       required this.year,
-      required this.route
-    }
-  );
+      required this.route});
   final int id;
   final String title;
   final String dev;

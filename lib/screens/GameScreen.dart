@@ -68,7 +68,9 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Future<void> fetchGameData() async {
-    if (mounted) {setState(() => isLoading = true);}
+    if (mounted) {
+      setState(() => isLoading = true);
+    }
     final api = GamePageAPI();
     final api2 = CoverAPI();
     final api3 = CompanyAPIDeveloper();
@@ -96,7 +98,9 @@ class _GameScreenState extends State<GameScreen> {
       });
     }
     await Future.delayed(const Duration(seconds: 2));
-    if (mounted) {setState(() => isLoading = false);}
+    if (mounted) {
+      setState(() => isLoading = false);
+    }
   }
 
   @override
@@ -203,9 +207,7 @@ class _GameScreenState extends State<GameScreen> {
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
-        body: isLoading ? LoadingPage()
-          : gameWidget()
-      );
+        body: isLoading ? LoadingPage() : gameWidget());
   }
 }
 
@@ -279,24 +281,21 @@ class gameWidget extends StatelessWidget {
                   ),
                 ),
                 Container(
-                    height: 160,
-                    width: 120,
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      // this allows for the rounded edges. I can't get it the way 
-                      borderRadius: BorderRadius.all(Radius.circular(4))
-                    ),
-                      child: gameCoverImage.isNotEmpty
-                          ? Image.network(
-                              gameCoverImage,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                              
-                            )
-                          : Text('No cover Image'),
-                  ),
-                
+                  height: 160,
+                  width: 120,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                      // this allows for the rounded edges. I can't get it the way
+                      borderRadius: BorderRadius.all(Radius.circular(4))),
+                  child: gameCoverImage.isNotEmpty
+                      ? Image.network(
+                          gameCoverImage,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                        )
+                      : Text('No cover Image'),
+                ),
               ],
             ),
           ),
@@ -400,22 +399,20 @@ class gameWidget extends StatelessWidget {
                 InkWell(
                   onTap: () async {
                     showModalBottomSheet<dynamic>(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                      backgroundColor: backColor,
-                      isScrollControlled: true,
-                      context: context,
-                      builder: (BuildContext context) {
-                        return ReviewWidget(
-                          id: gameIdGlob!,
-                          title: gameTitle,
-                          dev: gameDeveloperNames[0],
-                          release: gameDate,
-                          genre: gameGenres[0],
-                          year: '',
-                          route: '/game'
-                        );
-                      }
-                    );
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                        backgroundColor: backColor,
+                        isScrollControlled: true,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ReviewWidget(
+                              id: gameIdGlob!,
+                              title: gameTitle,
+                              dev: gameDeveloperNames[0],
+                              release: gameDate,
+                              genre: gameGenres[0],
+                              year: '',
+                              route: '/game');
+                        });
                   },
                   child: Card(
                     child: Container(
@@ -448,7 +445,7 @@ class gameWidget extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () async {
-                    Navigator.pushNamed(context, '/reviews');
+                    Navigator.pushNamed(context, '/reviews', arguments: gameIdGlob);
                   },
                   child: Card(
                     child: Container(
