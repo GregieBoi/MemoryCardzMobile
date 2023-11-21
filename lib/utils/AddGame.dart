@@ -30,9 +30,11 @@ class AddGameAPI {
 
   static Future<String> searchId(String id) async {
 
-    String payload = '{"search":"' + id.trim() + '"}';
+    String payload = '{"igdbId":"' + id.trim() + '"}';
+    String game = '';
     String gameId = '';
     var jsonObject;
+    var gameObject;
 
     try {
       String url = 'https://cop4331-25-c433f0fd0594.herokuapp.com/api/searchGameIgdbId';
@@ -41,7 +43,8 @@ class AddGameAPI {
 
       jsonObject = json.decode(ret);
       //print("the jsonObject is:" + jsonObject);
-      gameId = jsonObject["gameId"];
+      gameObject = jsonObject["game"];
+      gameId = gameObject["_id"];
       return gameId;
     }
     catch (e) {
