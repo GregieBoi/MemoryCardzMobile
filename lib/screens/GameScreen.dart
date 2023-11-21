@@ -193,8 +193,7 @@ class _GameScreenState extends State<GameScreen> {
       print('---------------------------------------------------------------');
     }
 
-    return isLoading ? LoadingPage()
-    : Scaffold(
+    return Scaffold(
         backgroundColor: backColor,
         appBar: GFAppBar(
           backgroundColor: Colors.black87,
@@ -204,7 +203,9 @@ class _GameScreenState extends State<GameScreen> {
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
-        body: gameWidget());
+        body: isLoading ? LoadingPage()
+          : gameWidget()
+      );
   }
 }
 
