@@ -53,7 +53,12 @@ class CoverAPI {
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       if (data.isNotEmpty && data[0]['url'] is String) {
-        return 'https:${data[0]['url']}';
+        //print("the url is:::::::::::::::::::::::::::::::::::::::::::::: 'https:${data[0]['url']}'");
+        //print("data is ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: ${data[0]}");
+        String url = 'https:${data[0]['url']}';
+        final splitted = url.split('thumb');
+        final image = splitted[0] + 'cover_big' + splitted[1];
+        return image;
       }
     }
     return ''; // Return an empty string if cover image URL is not found.

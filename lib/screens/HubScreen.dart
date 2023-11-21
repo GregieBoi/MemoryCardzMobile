@@ -37,8 +37,7 @@ class _HubScreenState extends State<HubScreen> {
     setState(() {
       if (index == 2) {
         showModalBottomSheet<dynamic>(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             backgroundColor: backColor,
             isScrollControlled: true,
             context: context,
@@ -90,10 +89,7 @@ class _HubScreenState extends State<HubScreen> {
             icon: Icon(Icons.bolt),
             label: 'Activity',
           ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Account',
-              backgroundColor: NESred),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account', backgroundColor: NESred),
         ],
       ),
     );
@@ -158,13 +154,13 @@ class _GamesWidgetState extends State<GamesWidget> {
             padding: EdgeInsets.only(left: 10),
             child: Text(
               'Popular (EMPTY FOR NOW)',
-              style: TextStyle(
-                  color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(height: 10),
           Container(
             height: 180,
+            padding: EdgeInsets.all(10),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: popularGames.length,
@@ -173,12 +169,9 @@ class _GamesWidgetState extends State<GamesWidget> {
                 return Container(
                   height: 150,
                   width: 120,
-                  /*
                   child: game.coverImageUrl.isNotEmpty
-                      ? Image.network(game.coverImageUrl,
-                          height: 170, width: 120, fit: BoxFit.fitHeight)
+                      ? Image.network(game.coverImageUrl, height: 170, width: 120, fit: BoxFit.fitHeight)
                       : Container(),
-                  */
                   //SizedBox(height: 5),
                   //Text(game.title, style: TextStyle(fontSize: 12), textAlign: TextAlign.center),
                 );
@@ -190,8 +183,7 @@ class _GamesWidgetState extends State<GamesWidget> {
             padding: EdgeInsets.only(left: 10),
             child: Text(
               'From Friends (EMPTY FOR NOW)',
-              style: TextStyle(
-                  color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(height: 10),
@@ -248,15 +240,13 @@ class _SearchWidgetState extends State<SearchWidget> {
         child: SearchAnchor(
             viewBackgroundColor: contColor,
             dividerColor: Colors.black87,
-            viewConstraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width - 16),
+            viewConstraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 16),
             isFullScreen: false,
             builder: (BuildContext context, SearchController controller) {
               return SearchBar(
                 backgroundColor: MaterialStateProperty.all(contColor),
                 controller: controller,
-                padding: const MaterialStatePropertyAll<EdgeInsets>(
-                    EdgeInsets.symmetric(horizontal: 16.0)),
+                padding: const MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16.0)),
                 onTap: () {
                   controller.openView();
                 },
@@ -266,18 +256,15 @@ class _SearchWidgetState extends State<SearchWidget> {
                 leading: const Icon(Icons.search),
               );
             },
-            suggestionsBuilder:
-                (BuildContext context, SearchController controller) async {
+            suggestionsBuilder: (BuildContext context, SearchController controller) async {
               _searchingWithQuery = controller.text;
-              final List<NameItem> results =
-                  (await NameAPI.fetchData(_searchingWithQuery!)).toList();
+              final List<NameItem> results = (await NameAPI.fetchData(_searchingWithQuery!)).toList();
 
               if (_searchingWithQuery != controller.text) {
                 return _lastOptions;
               }
 
-              _lastOptions =
-                  List<ListTile>.generate(results.length, (int index) {
+              _lastOptions = List<ListTile>.generate(results.length, (int index) {
                 final NameItem item = results[index];
                 return ListTile(
                     title: Text(item.title),
@@ -311,8 +298,7 @@ class _AddWidgetState extends State<AddWidget> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Padding(
-            padding:
-                const EdgeInsets.only(left: 5, right: 20, top: 10, bottom: 10),
+            padding: const EdgeInsets.only(left: 5, right: 20, top: 10, bottom: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -324,10 +310,7 @@ class _AddWidgetState extends State<AddWidget> {
                     )),
                 const Text('Add a Game',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: fieldColor,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold)),
+                    style: TextStyle(color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold)),
                 const Text(
                   'Cancel',
                   style: TextStyle(color: backColor, fontSize: 16),
@@ -341,15 +324,13 @@ class _AddWidgetState extends State<AddWidget> {
               child: SearchAnchor(
                   viewBackgroundColor: contColor,
                   dividerColor: Colors.black87,
-                  viewConstraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width - 16),
+                  viewConstraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 16),
                   isFullScreen: false,
                   builder: (BuildContext context, SearchController controller) {
                     return SearchBar(
                       backgroundColor: MaterialStateProperty.all(contColor),
                       controller: controller,
-                      padding: const MaterialStatePropertyAll<EdgeInsets>(
-                          EdgeInsets.symmetric(horizontal: 16.0)),
+                      padding: const MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16.0)),
                       onTap: () {
                         controller.openView();
                       },
@@ -359,26 +340,21 @@ class _AddWidgetState extends State<AddWidget> {
                       leading: const Icon(Icons.search),
                     );
                   },
-                  suggestionsBuilder: (BuildContext context,
-                      SearchController controller) async {
+                  suggestionsBuilder: (BuildContext context, SearchController controller) async {
                     _searchingWithQuery = controller.text;
-                    final List<NameItem> results =
-                        (await NameAPI.fetchData(_searchingWithQuery!))
-                            .toList();
+                    final List<NameItem> results = (await NameAPI.fetchData(_searchingWithQuery!)).toList();
 
                     if (_searchingWithQuery != controller.text) {
                       return _lastOptions;
                     }
 
-                    _lastOptions =
-                        List<ListTile>.generate(results.length, (int index) {
+                    _lastOptions = List<ListTile>.generate(results.length, (int index) {
                       final NameItem item = results[index];
                       return ListTile(
                           title: Text(item.title + ' ' + item.year),
                           onTap: () {
                             showModalBottomSheet<dynamic>(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15)),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                                 backgroundColor: backColor,
                                 isScrollControlled: true,
                                 context: context,
@@ -418,13 +394,8 @@ class ReviewWidget extends StatefulWidget {
   final String year;
 
   @override
-  _ReviewWidgetState createState() => _ReviewWidgetState(
-      id: id,
-      title: title,
-      dev: dev,
-      release: release,
-      genre: genre,
-      year: year);
+  _ReviewWidgetState createState() =>
+      _ReviewWidgetState(id: id, title: title, dev: dev, release: release, genre: genre, year: year);
 }
 
 class _ReviewWidgetState extends State<ReviewWidget> {
@@ -482,170 +453,137 @@ class _ReviewWidgetState extends State<ReviewWidget> {
 
     return SizedBox(
         height: MediaQuery.of(context).size.height - 32,
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(
-                    left: 5, right: 20, top: 10, bottom: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(color: contColor, fontSize: 16),
-                        )),
-                    const Text('I Played...',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: fieldColor,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold)),
-                    TextButton(
-                        onPressed: () async {
-                          _rating = roundRating(_rating);
-                          print(release);
-                          String gameId = await AddGameAPI.searchId('$id');
-                          if (gameId == '') {
-                            gameId = await AddGameAPI.addGame(
-                                title, dev, genre, release, '$id');
-                          }
-                          print('saved ' + '$_rating' + ' rating of ' + title);
-                          if (reviewController.text != '') {
-                            isLog = false;
-                          }
-                          print(id);
-                          String reviewId = await AddReviewAPI.createReview(
-                              GlobalData.userId!, gameId);
-                          print('\n\n\n\nthis is my reviewID!!!!!!!!!' +
-                              reviewId);
-                          await AddReviewAPI.updateReview(
-                              GlobalData.userId!,
-                              reviewId,
-                              date,
-                              _rating,
-                              reviewController.text,
-                              isLog);
-                          Navigator.of(context)
-                              .popUntil(ModalRoute.withName('/hub'));
-                        },
-                        child: const Text(
-                          'Save',
-                          style: TextStyle(
-                              color: NESred,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ))
-                  ],
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 5, right: 20, top: 10, bottom: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: contColor, fontSize: 16),
+                    )),
+                const Text('I Played...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold)),
+                TextButton(
+                    onPressed: () async {
+                      _rating = roundRating(_rating);
+                      print(release);
+                      String gameId = await AddGameAPI.searchId('$id');
+                      if (gameId == '') {
+                        gameId = await AddGameAPI.addGame(title, dev, genre, release, '$id');
+                      }
+                      print('saved ' + '$_rating' + ' rating of ' + title);
+                      if (reviewController.text != '') {
+                        isLog = false;
+                      }
+                      print(id);
+                      String reviewId = await AddReviewAPI.createReview(GlobalData.userId!, gameId);
+                      print('\n\n\n\nthis is my reviewID!!!!!!!!!' + reviewId);
+                      await AddReviewAPI.updateReview(
+                          GlobalData.userId!, reviewId, date, _rating, reviewController.text, isLog);
+                      Navigator.of(context).popUntil(ModalRoute.withName('/hub'));
+                    },
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(color: NESred, fontSize: 16, fontWeight: FontWeight.bold),
+                    ))
+              ],
+            ),
+          ),
+          Container(
+            decoration: const BoxDecoration(color: Colors.black87),
+            padding: const EdgeInsets.all(20),
+            width: MediaQuery.of(context).size.width,
+            child: Wrap(
+              children: [
+                Text(
+                  title + ' ' + year,
+                  style: const TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Date',
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 16,
+                  ),
                 ),
-              ),
-              Container(
-                decoration: const BoxDecoration(color: Colors.black87),
-                padding: const EdgeInsets.all(20),
-                width: MediaQuery.of(context).size.width,
-                child: Wrap(
+                Text(date, style: const TextStyle(color: textColor, fontSize: 14))
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
+            decoration: const BoxDecoration(border: Border(top: BorderSide(color: Colors.black87, width: .25))),
+            child: Column(
+              children: [
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text(
-                      title + ' ' + year,
-                      style: const TextStyle(
+                    Text('Rated',
+                        style: TextStyle(
                           color: textColor,
                           fontSize: 16,
-                          fontWeight: FontWeight.bold),
-                    )
+                        )),
                   ],
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(20),
-                child: Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Date',
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 16,
+                    GFRating(
+                      color: GFColors.SUCCESS,
+                      borderColor: GFColors.SUCCESS,
+                      allowHalfRating: true,
+                      defaultIcon: const Icon(Icons.star_outline_rounded, color: NESred, size: GFSize.LARGE),
+                      halfFilledIcon: const Icon(Icons.star_half_rounded, color: NESred, size: GFSize.LARGE),
+                      filledIcon: const Icon(
+                        Icons.star_rounded,
+                        color: NESred,
+                        size: GFSize.LARGE,
                       ),
+                      size: GFSize.LARGE,
+                      value: _rating,
+                      onChanged: (value) {
+                        setState(() {
+                          _rating = value;
+                          print(_rating);
+                        });
+                      },
                     ),
-                    Text(date,
-                        style: const TextStyle(color: textColor, fontSize: 14))
                   ],
+                )
+              ],
+            ),
+          ),
+          Container(
+              padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
+              decoration: const BoxDecoration(border: Border(top: BorderSide(color: Colors.black87, width: .25))),
+              child: TextField(
+                controller: reviewController,
+                maxLines: null,
+                style: const TextStyle(
+                  color: textColor,
+                  fontSize: 14,
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.only(
-                    top: 10, left: 20, right: 20, bottom: 10),
-                decoration: const BoxDecoration(
-                    border: Border(
-                        top: BorderSide(color: Colors.black87, width: .25))),
-                child: Column(
-                  children: [
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text('Rated',
-                            style: TextStyle(
-                              color: textColor,
-                              fontSize: 16,
-                            )),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GFRating(
-                          color: GFColors.SUCCESS,
-                          borderColor: GFColors.SUCCESS,
-                          allowHalfRating: true,
-                          defaultIcon: const Icon(Icons.star_outline_rounded,
-                              color: NESred, size: GFSize.LARGE),
-                          halfFilledIcon: const Icon(Icons.star_half_rounded,
-                              color: NESred, size: GFSize.LARGE),
-                          filledIcon: const Icon(
-                            Icons.star_rounded,
-                            color: NESred,
-                            size: GFSize.LARGE,
-                          ),
-                          size: GFSize.LARGE,
-                          value: _rating,
-                          onChanged: (value) {
-                            setState(() {
-                              _rating = value;
-                              print(_rating);
-                            });
-                          },
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                  padding: const EdgeInsets.only(
-                      top: 10, left: 20, right: 20, bottom: 10),
-                  decoration: const BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: Colors.black87, width: .25))),
-                  child: TextField(
-                    controller: reviewController,
-                    maxLines: null,
-                    style: const TextStyle(
-                      color: textColor,
-                      fontSize: 14,
-                    ),
-                    decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(0),
-                        floatingLabelStyle:
-                            TextStyle(color: Colors.transparent),
-                        labelText: 'Add Review...',
-                        labelStyle: TextStyle(color: textColor, fontSize: 14),
-                        border:
-                            OutlineInputBorder(borderSide: BorderSide.none)),
-                  ))
-            ]));
+                decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.all(0),
+                    floatingLabelStyle: TextStyle(color: Colors.transparent),
+                    labelText: 'Add Review...',
+                    labelStyle: TextStyle(color: textColor, fontSize: 14),
+                    border: OutlineInputBorder(borderSide: BorderSide.none)),
+              ))
+        ]));
   }
 }
 
@@ -669,8 +607,7 @@ class AccountWidget extends StatelessWidget {
         badges.Badge(
           onTap: () {
             showModalBottomSheet<dynamic>(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 backgroundColor: backColor,
                 isScrollControlled: true,
                 context: context,
@@ -815,8 +752,7 @@ class AccountWidget extends StatelessWidget {
           margin: EdgeInsets.only(top: 20),
           padding: EdgeInsets.all(20),
           width: MediaQuery.of(context).size.width + 40,
-          decoration:
-              BoxDecoration(border: Border(top: BorderSide(color: contColor))),
+          decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -889,8 +825,7 @@ class AccountWidget extends StatelessWidget {
             height: 40,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: contColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
             child: Text(
               'Games',
               style: TextStyle(fontSize: 16, color: textColor),
@@ -905,8 +840,7 @@ class AccountWidget extends StatelessWidget {
             height: 40,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: contColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
             child: Text(
               'Diary',
               style: TextStyle(fontSize: 16, color: textColor),
@@ -921,8 +855,7 @@ class AccountWidget extends StatelessWidget {
             height: 40,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: contColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
             child: Text(
               'Lists',
               style: TextStyle(fontSize: 16, color: textColor),
@@ -937,8 +870,7 @@ class AccountWidget extends StatelessWidget {
             height: 40,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: contColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
             child: Text(
               'Shelf',
               style: TextStyle(fontSize: 16, color: textColor),
@@ -953,8 +885,7 @@ class AccountWidget extends StatelessWidget {
             height: 40,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: contColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
             child: Text(
               'Following',
               style: TextStyle(fontSize: 16, color: textColor),
@@ -969,8 +900,7 @@ class AccountWidget extends StatelessWidget {
             height: 40,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: contColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
             child: Text(
               'Followers',
               style: TextStyle(fontSize: 16, color: textColor),
@@ -1002,28 +932,21 @@ class SettingsWidget extends StatelessWidget {
                         onTap: () {
                           Navigator.pop(context);
                         },
-                        child: Text('Cancel',
-                            style: TextStyle(color: textColor, fontSize: 16)),
+                        child: Text('Cancel', style: TextStyle(color: textColor, fontSize: 16)),
                       ),
-                      Text('Settings',
-                          style: TextStyle(color: fieldColor, fontSize: 20)),
+                      Text('Settings', style: TextStyle(color: fieldColor, fontSize: 20)),
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
                         },
-                        child: Text('Save',
-                            style: TextStyle(
-                                color: NESred,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold)),
+                        child: Text('Save', style: TextStyle(color: NESred, fontSize: 16, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  padding:
-                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
@@ -1041,8 +964,7 @@ class SettingsWidget extends StatelessWidget {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  padding:
-                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
@@ -1060,8 +982,7 @@ class SettingsWidget extends StatelessWidget {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  padding:
-                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
@@ -1080,8 +1001,7 @@ class SettingsWidget extends StatelessWidget {
                 Container(
                   height: 50,
                   width: MediaQuery.of(context).size.width,
-                  padding:
-                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
@@ -1105,8 +1025,7 @@ class SettingsWidget extends StatelessWidget {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  padding:
-                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
@@ -1128,8 +1047,7 @@ class SettingsWidget extends StatelessWidget {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  padding:
-                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
@@ -1151,8 +1069,7 @@ class SettingsWidget extends StatelessWidget {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  padding:
-                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
@@ -1174,8 +1091,7 @@ class SettingsWidget extends StatelessWidget {
                 ),
                 Container(
                     width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.only(
-                        left: 20, right: 20, top: 10, bottom: 20),
+                    padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
                     decoration: BoxDecoration(
                         border: Border(
                             top: BorderSide(
@@ -1186,10 +1102,7 @@ class SettingsWidget extends StatelessWidget {
                       children: [
                         Text(
                           'Icons',
-                          style: TextStyle(
-                              color: textColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
+                          style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                         SizedBox(
                           height: 20,
@@ -1200,26 +1113,22 @@ class SettingsWidget extends StatelessWidget {
                             Container(
                               height: 60,
                               width: 60,
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle, color: fieldColor),
+                              decoration: BoxDecoration(shape: BoxShape.circle, color: fieldColor),
                             ),
                             Container(
                               height: 60,
                               width: 60,
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle, color: fieldColor),
+                              decoration: BoxDecoration(shape: BoxShape.circle, color: fieldColor),
                             ),
                             Container(
                               height: 60,
                               width: 60,
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle, color: fieldColor),
+                              decoration: BoxDecoration(shape: BoxShape.circle, color: fieldColor),
                             ),
                             Container(
                               height: 60,
                               width: 60,
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle, color: fieldColor),
+                              decoration: BoxDecoration(shape: BoxShape.circle, color: fieldColor),
                             ),
                           ],
                         ),
@@ -1227,8 +1136,7 @@ class SettingsWidget extends StatelessWidget {
                     )),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  padding:
-                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
@@ -1239,10 +1147,7 @@ class SettingsWidget extends StatelessWidget {
                     children: [
                       Text(
                         'Delete Account',
-                        style: TextStyle(
-                            color: NESred,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold),
+                        style: TextStyle(color: NESred, fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       Icon(
                         Icons.arrow_right,

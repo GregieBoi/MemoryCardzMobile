@@ -5,6 +5,7 @@ import 'package:mobile_project/utils/GamePageAPI.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_project/utils/CoverAPI.dart';
 import 'package:mobile_project/utils/CompanyAPI.dart';
+import 'package:mobile_project/utils/CompanyAPIDeveloper.dart';
 import 'package:mobile_project/utils/PlatformsAPI.dart';
 import 'package:mobile_project/utils/AgeRatingsAPI.dart';
 import 'package:mobile_project/utils/GenreAPI.dart';
@@ -19,7 +20,8 @@ String gameTitle = '';
 String gameDescription = '';
 String gameCoverImage = '';
 String gameDate = '';
-List<String> gameCompanyNames = [];
+//List<String> gameCompanyNames = [];
+List<String> gameDeveloperNames = [];
 List<String> gamePlatforms = [];
 List<int> gameAgeRatings = [];
 List<String> gameGenres = [];
@@ -32,7 +34,8 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   List<Map<String, dynamic>> gamesList = [];
   List<GameItem> images = [];
-  List<CompanyItem> companyNames = [];
+  //List<CompanyItem> companyNames = [];
+  List<DeveloperItem> developerNames = [];
   List<PlatformItem> platformNames = [];
   List<AgeRatingItem> ageRatingNames = [];
   List<GenreItem> genreNames = [];
@@ -61,7 +64,7 @@ class _GameScreenState extends State<GameScreen> {
   Future<void> fetchGameData() async {
     final api = GamePageAPI();
     final api2 = CoverAPI();
-    final api3 = CompanyAPI();
+    final api3 = CompanyAPIDeveloper();
     final api4 = PlatformsAPI();
     final api5 = AgeRatingsAPI();
     final api6 = GenreAPI();
@@ -69,7 +72,7 @@ class _GameScreenState extends State<GameScreen> {
     // Use the stored gameId
     await api.getGames(gameId);
     await api2.fetchData(gameId);
-    await api3.fetchCompanies(gameId);
+    await api3.fetchDevelopers(gameId);
     await api4.fetchPlatforms(gameId);
     await api5.fetchAgeRatings(gameId);
     await api6.fetchGenres(gameId);
@@ -77,7 +80,8 @@ class _GameScreenState extends State<GameScreen> {
     setState(() {
       gamesList = api.gamesList;
       images = api2.body;
-      companyNames = api3.body;
+      //companyNames = api3.body;
+      developerNames = api3.body;
       platformNames = api4.body;
       ageRatingNames = api5.body;
       genreNames = api6.body;
@@ -92,7 +96,8 @@ class _GameScreenState extends State<GameScreen> {
       gameDescription = '';
       gameCoverImage = '';
       gameDate = '';
-      gameCompanyNames = [];
+      //gameCompanyNames = [];
+      gameDeveloperNames = [];
       gamePlatforms = [];
       gameAgeRatings = [];
       gameGenres = [];
@@ -122,17 +127,17 @@ class _GameScreenState extends State<GameScreen> {
       gameCoverImage = images[0].coverImageUrl;
       print('Cover Image ID: $gameCoverImage');
       //////////////////////////////////////////////////////////////////////////
-      for (int i = 0; i < companyNames.length; i++) {
-        String companyName = companyNames[i].companyName;
+      for (int i = 0; i < developerNames.length; i++) {
+        String companyName = developerNames[i].developerName;
 
         // Check if the companyName is not already in gameCompanyNames
-        if (!gameCompanyNames.contains(companyName)) {
-          gameCompanyNames.add(companyName);
+        if (!gameDeveloperNames.contains(companyName)) {
+          gameDeveloperNames.add(companyName);
         }
       }
 
-      for (int i = 0; i < companyNames.length; i++) {
-        print('Involved Company ${i + 1}: ${gameCompanyNames[i]}');
+      for (int i = 0; i < developerNames.length; i++) {
+        print('Involved Company ${i + 1}: ${gameDeveloperNames[i]}');
       }
       //////////////////////////////////////////////////////////////////////////
       for (int i = 0; i < platformNames.length; i++) {
@@ -246,7 +251,7 @@ class gameWidget extends StatelessWidget {
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: gameCompanyNames.map((companyName) {
+                        children: gameDeveloperNames.map((companyName) {
                           return Text(
                             companyName,
                             style: TextStyle(
@@ -293,8 +298,7 @@ class gameWidget extends StatelessWidget {
                                   colors: <Color>[textColor, backColor],
                                   begin: Alignment.center,
                                   end: Alignment.bottomCenter)
-                              .createShader(
-                                  Rect.fromLTWH(0.0, 0.0, 1000, 130.0))),
+                              .createShader(Rect.fromLTWH(0.0, 0.0, 1000, 130.0))),
                   )
                 ],
               ))),
@@ -302,8 +306,7 @@ class gameWidget extends StatelessWidget {
             margin: EdgeInsets.only(top: 20),
             padding: EdgeInsets.all(20),
             width: MediaQuery.of(context).size.width + 40,
-            decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: contColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -371,8 +374,7 @@ class gameWidget extends StatelessWidget {
           Container(
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: textColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: textColor))),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -381,8 +383,7 @@ class gameWidget extends StatelessWidget {
                   child: Container(
                     width: (MediaQuery.of(context).size.width - 40) / 3.5,
                     height: (MediaQuery.of(context).size.width - 80) / 3.5,
-                    decoration: BoxDecoration(
-                        color: NESred, borderRadius: BorderRadius.circular(3)),
+                    decoration: BoxDecoration(color: NESred, borderRadius: BorderRadius.circular(3)),
                     padding: EdgeInsets.all(10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,8 +395,7 @@ class gameWidget extends StatelessWidget {
                         ),
                         Text(
                           'Players',
-                          style: TextStyle(
-                              color: fieldColor, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: fieldColor, fontWeight: FontWeight.bold),
                         ),
                         Text(
                           '100k',
@@ -415,9 +415,7 @@ class gameWidget extends StatelessWidget {
                     child: Container(
                       width: (MediaQuery.of(context).size.width - 40) / 3.5,
                       height: (MediaQuery.of(context).size.width - 80) / 3.5,
-                      decoration: BoxDecoration(
-                          color: textColor,
-                          borderRadius: BorderRadius.circular(3)),
+                      decoration: BoxDecoration(color: textColor, borderRadius: BorderRadius.circular(3)),
                       padding: EdgeInsets.all(10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -429,8 +427,7 @@ class gameWidget extends StatelessWidget {
                           ),
                           Text(
                             'Reviews',
-                            style: TextStyle(
-                                color: fieldColor, fontWeight: FontWeight.bold),
+                            style: TextStyle(color: fieldColor, fontWeight: FontWeight.bold),
                           ),
                           Text(
                             '100k',
@@ -447,9 +444,7 @@ class gameWidget extends StatelessWidget {
                   child: Container(
                     width: (MediaQuery.of(context).size.width - 40) / 3.5,
                     height: (MediaQuery.of(context).size.width - 80) / 3.5,
-                    decoration: BoxDecoration(
-                        color: Colors.black87,
-                        borderRadius: BorderRadius.circular(4)),
+                    decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(4)),
                     padding: EdgeInsets.all(10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -461,8 +456,7 @@ class gameWidget extends StatelessWidget {
                         ),
                         Text(
                           'Lists',
-                          style: TextStyle(
-                              color: fieldColor, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: fieldColor, fontWeight: FontWeight.bold),
                         ),
                         Text(
                           '100k',
