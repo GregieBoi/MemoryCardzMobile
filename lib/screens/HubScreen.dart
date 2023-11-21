@@ -365,7 +365,9 @@ class _AddWidgetState extends State<AddWidget> {
                                       dev: item.dev,
                                       release: item.release,
                                       genre: item.genre,
-                                      year: item.year);
+                                      year: item.year,
+                                      route: '/hub'
+                                    );
                                 });
                           });
                     });
@@ -385,17 +387,21 @@ class ReviewWidget extends StatefulWidget {
       required this.dev,
       required this.release,
       required this.genre,
-      required this.year});
+      required this.year,
+      required this.route
+    }
+  );
   final int id;
   final String title;
   final String dev;
   final String release;
   final String genre;
   final String year;
+  final String route;
 
   @override
   _ReviewWidgetState createState() =>
-      _ReviewWidgetState(id: id, title: title, dev: dev, release: release, genre: genre, year: year);
+      _ReviewWidgetState(id: id, title: title, dev: dev, release: release, genre: genre, year: year, route: route);
 }
 
 class _ReviewWidgetState extends State<ReviewWidget> {
@@ -405,13 +411,17 @@ class _ReviewWidgetState extends State<ReviewWidget> {
       required this.dev,
       required this.release,
       required this.genre,
-      required this.year});
+      required this.year,
+      required this.route
+    }
+  );
   final int id;
   final String title;
   final String dev;
   final String release;
   final String genre;
   final String year;
+  final String route;
 
   String date = DateFormat('yMMMMd').format(DateTime.now());
   bool isLog = true;
@@ -485,7 +495,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                       print('\n\n\n\nthis is my reviewID!!!!!!!!!' + reviewId);
                       await AddReviewAPI.updateReview(
                           GlobalData.userId!, reviewId, date, _rating, reviewController.text, isLog);
-                      Navigator.of(context).popUntil(ModalRoute.withName('/hub'));
+                      Navigator.of(context).popUntil(ModalRoute.withName(route));
                     },
                     child: const Text(
                       'Save',

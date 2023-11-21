@@ -9,6 +9,9 @@ import 'package:mobile_project/utils/CompanyAPIDeveloper.dart';
 import 'package:mobile_project/utils/PlatformsAPI.dart';
 import 'package:mobile_project/utils/AgeRatingsAPI.dart';
 import 'package:mobile_project/utils/GenreAPI.dart';
+import 'package:mobile_project/screens/HubScreen.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:mobile_project/screens/LoadingScreen.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
@@ -20,11 +23,13 @@ String gameTitle = '';
 String gameDescription = '';
 String gameCoverImage = '';
 String gameDate = '';
+int? gameIdGlob;
 //List<String> gameCompanyNames = [];
 List<String> gameDeveloperNames = [];
 List<String> gamePlatforms = [];
 List<int> gameAgeRatings = [];
 List<String> gameGenres = [];
+bool isLoading = true;
 
 class GameScreen extends StatefulWidget {
   @override
@@ -48,6 +53,7 @@ class _GameScreenState extends State<GameScreen> {
 
     // access the id argument passed from HubScreen
     gameId ??= ModalRoute.of(context)?.settings.arguments as int?;
+    gameIdGlob = gameId;
 
     // check if gameId is not null before making the API call
     if (gameId != null) {
@@ -62,6 +68,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Future<void> fetchGameData() async {
+    if (mounted) {setState(() => isLoading = true);}
     final api = GamePageAPI();
     final api2 = CoverAPI();
     final api3 = CompanyAPIDeveloper();
@@ -77,15 +84,19 @@ class _GameScreenState extends State<GameScreen> {
     await api5.fetchAgeRatings(gameId);
     await api6.fetchGenres(gameId);
 
-    setState(() {
-      gamesList = api.gamesList;
-      images = api2.body;
-      //companyNames = api3.body;
-      developerNames = api3.body;
-      platformNames = api4.body;
-      ageRatingNames = api5.body;
-      genreNames = api6.body;
-    });
+    if (mounted) {
+      setState(() {
+        gamesList = api.gamesList;
+        images = api2.body;
+        //companyNames = api3.body;
+        developerNames = api3.body;
+        platformNames = api4.body;
+        ageRatingNames = api5.body;
+        genreNames = api6.body;
+      });
+    }
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) {setState(() => isLoading = false);}
   }
 
   @override
@@ -182,7 +193,8 @@ class _GameScreenState extends State<GameScreen> {
       print('---------------------------------------------------------------');
     }
 
-    return Scaffold(
+    return isLoading ? LoadingPage()
+    : Scaffold(
         backgroundColor: backColor,
         appBar: GFAppBar(
           backgroundColor: Colors.black87,
@@ -231,7 +243,7 @@ class gameWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  width: (MediaQuery.of(context).size.width - 60) * (2 / 3),
+                  width: (MediaQuery.of(context).size.width - 75) * (2 / 3),
                   height: MediaQuery.of(context).size.width / 2,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,20 +277,25 @@ class gameWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                Card(
-                  child: SizedBox(
-                    width: (MediaQuery.of(context).size.width - 40) / 3,
-                    child: Center(
+                Container(
+                    height: 160,
+                    width: 120,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      // this allows for the rounded edges. I can't get it the way 
+                      borderRadius: BorderRadius.all(Radius.circular(4))
+                    ),
                       child: gameCoverImage.isNotEmpty
                           ? Image.network(
                               gameCoverImage,
+                              fit: BoxFit.cover,
                               width: double.infinity,
                               height: double.infinity,
+                              
                             )
                           : Text('No cover Image'),
-                    ),
                   ),
-                ),
+                
               ],
             ),
           ),
@@ -379,31 +396,52 @@ class gameWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Card(
-                  child: Container(
-                    width: (MediaQuery.of(context).size.width - 40) / 3.5,
-                    height: (MediaQuery.of(context).size.width - 80) / 3.5,
-                    decoration: BoxDecoration(color: NESred, borderRadius: BorderRadius.circular(3)),
-                    padding: EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Icon(
-                          Icons.videogame_asset_outlined,
-                          color: fieldColor,
-                        ),
-                        Text(
-                          'Players',
-                          style: TextStyle(color: fieldColor, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          '100k',
-                          style: TextStyle(
+                InkWell(
+                  onTap: () async {
+                    showModalBottomSheet<dynamic>(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                      backgroundColor: backColor,
+                      isScrollControlled: true,
+                      context: context,
+                      builder: (BuildContext context) {
+                        return ReviewWidget(
+                          id: gameIdGlob!,
+                          title: gameTitle,
+                          dev: gameDeveloperNames[0],
+                          release: gameDate,
+                          genre: gameGenres[0],
+                          year: '',
+                          route: '/game'
+                        );
+                      }
+                    );
+                  },
+                  child: Card(
+                    child: Container(
+                      width: (MediaQuery.of(context).size.width - 40) / 3.5,
+                      height: (MediaQuery.of(context).size.width - 80) / 3.5,
+                      decoration: BoxDecoration(color: NESred, borderRadius: BorderRadius.circular(3)),
+                      padding: EdgeInsets.all(10),
+                      child: const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Icon(
+                            Icons.videogame_asset_outlined,
                             color: fieldColor,
                           ),
-                        )
-                      ],
+                          Text(
+                            'Play',
+                            style: TextStyle(color: fieldColor, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            'review',
+                            style: TextStyle(
+                              color: fieldColor,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -417,7 +455,7 @@ class gameWidget extends StatelessWidget {
                       height: (MediaQuery.of(context).size.width - 80) / 3.5,
                       decoration: BoxDecoration(color: textColor, borderRadius: BorderRadius.circular(3)),
                       padding: EdgeInsets.all(10),
-                      child: Column(
+                      child: const Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -446,7 +484,7 @@ class gameWidget extends StatelessWidget {
                     height: (MediaQuery.of(context).size.width - 80) / 3.5,
                     decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(4)),
                     padding: EdgeInsets.all(10),
-                    child: Column(
+                    child: const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -455,11 +493,11 @@ class gameWidget extends StatelessWidget {
                           color: fieldColor,
                         ),
                         Text(
-                          'Lists',
+                          'List',
                           style: TextStyle(color: fieldColor, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          '100k',
+                          'Add to List',
                           style: TextStyle(
                             color: fieldColor,
                           ),
@@ -477,8 +515,9 @@ class gameWidget extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: textColor)),
             ),
-            child: Column(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Where to Play:',
@@ -490,7 +529,7 @@ class gameWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: gamePlatforms.map((platform) {
                     return Text(
                       platform,
@@ -510,8 +549,9 @@ class gameWidget extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: textColor)),
             ),
-            child: Column(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Rating:',
@@ -523,7 +563,7 @@ class gameWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: gameAgeRatings.map((rating) {
                     return Text(
                       '$rating +',
@@ -543,8 +583,9 @@ class gameWidget extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: textColor)),
             ),
-            child: Column(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Genres:',
@@ -556,7 +597,7 @@ class gameWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: gameGenres.map((genres) {
                     //gameGenres
                     return Text(
