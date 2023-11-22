@@ -10,6 +10,7 @@ import 'package:mobile_project/utils/NameAPI.dart';
 import 'package:mobile_project/utils/AddReviewAPI.dart';
 import 'package:mobile_project/utils/AddGame.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_project/screens/LoadingScreen.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
@@ -17,6 +18,7 @@ const contColor = Color(0xFF8C8C8C);
 const fieldColor = Color(0xFFD9D9D9);
 const NESred = Color(0xFFFF0000);
 int _selectedIndex = 0;
+bool isLoading = true;
 
 class HubScreen extends StatefulWidget {
   @override
@@ -129,6 +131,9 @@ class _GamesWidgetState extends State<GamesWidget> {
   }
 
   Future<void> fetchGameData() async {
+    if (mounted) {
+      setState(() => isLoading = true);
+    }
     final api = CoverAPI();
     await api.fetchData(343);
     if (_selectedIndex == 0) {
@@ -140,6 +145,10 @@ class _GamesWidgetState extends State<GamesWidget> {
       });
     } else {
       return;
+    }
+    await Future.delayed(const Duration(seconds: 1));
+    if (mounted) {
+      setState(() => isLoading = false);
     }
   }
 
@@ -169,7 +178,7 @@ class _GamesWidgetState extends State<GamesWidget> {
                 return Container(
                   height: 150,
                   width: 120,
-                  child: game.coverImageUrl.isNotEmpty
+                  child: isLoading ? LoadingPage() : game.coverImageUrl.isNotEmpty
                       ? Image.network(game.coverImageUrl, height: 170, width: 120, fit: BoxFit.fitHeight)
                       : Container(),
                   //SizedBox(height: 5),
@@ -267,7 +276,7 @@ class _SearchWidgetState extends State<SearchWidget> {
               _lastOptions = List<ListTile>.generate(results.length, (int index) {
                 final NameItem item = results[index];
                 return ListTile(
-                    title: Text(item.title),
+                    title: Text(item.title + ' ' + item.year),
                     onTap: () {
                       Navigator.pushNamed(context, '/game', arguments: item.id);
                       print(GlobalData.userId);
