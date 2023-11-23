@@ -20,6 +20,11 @@ class CoverAPI {
       body: 'fields cover; where id = $gameId; limit 1;',
     );
 
+    if (response.statusCode == 429) {
+      await Future.delayed(const Duration(seconds: 1));
+      fetchData(gameId);
+    }
+
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       final List<GameItem> gameItems = [];
@@ -35,7 +40,7 @@ class CoverAPI {
 
       body = gameItems;
     } else {
-      throw Exception('Failed to load data');
+      body = [GameItem(coverImageUrl: '')];
     }
   }
 

@@ -80,8 +80,12 @@ class reviewWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
+                
+                Container(
 
-                Column(
+                  width: (MediaQuery.of(context).size.width - 60) * (2/3),
+
+                child: Column(
 
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,6 +134,7 @@ class reviewWidget extends StatelessWidget {
 
                   ],
 
+                ),
                 ),
 
                 Card(

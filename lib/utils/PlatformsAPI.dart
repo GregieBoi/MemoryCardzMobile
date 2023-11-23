@@ -18,6 +18,11 @@ class PlatformsAPI {
       body: 'fields platforms.name; where id = $gameId; limit 1;',
     );
 
+    if (response.statusCode == 429) {
+      await Future.delayed(const Duration(seconds: 1));
+      fetchPlatforms(gameId);
+    }
+
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       final List<PlatformItem> platformItems = [];
@@ -38,6 +43,7 @@ class PlatformsAPI {
 
       body = platformItems;
     } else {
+      print(response.statusCode);
       throw Exception('Failed to load data');
     }
   }

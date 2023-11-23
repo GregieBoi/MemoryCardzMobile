@@ -371,9 +371,7 @@ class _AddWidgetState extends State<AddWidget> {
                                   return ReviewWidget(
                                       id: item.id,
                                       title: item.title,
-                                      dev: item.dev,
                                       release: item.release,
-                                      genre: item.genre,
                                       year: item.year,
                                       route: '/hub');
                                 });
@@ -392,38 +390,30 @@ class ReviewWidget extends StatefulWidget {
   ReviewWidget(
       {required this.id,
       required this.title,
-      required this.dev,
       required this.release,
-      required this.genre,
       required this.year,
       required this.route});
   final int id;
   final String title;
-  final String dev;
   final String release;
-  final String genre;
   final String year;
   final String route;
 
   @override
   _ReviewWidgetState createState() =>
-      _ReviewWidgetState(id: id, title: title, dev: dev, release: release, genre: genre, year: year, route: route);
+      _ReviewWidgetState(id: id, title: title, release: release, year: year, route: route);
 }
 
 class _ReviewWidgetState extends State<ReviewWidget> {
   _ReviewWidgetState(
       {required this.id,
       required this.title,
-      required this.dev,
       required this.release,
-      required this.genre,
       required this.year,
       required this.route});
   final int id;
   final String title;
-  final String dev;
   final String release;
-  final String genre;
   final String year;
   final String route;
 
@@ -488,7 +478,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                       print(release);
                       String gameId = await AddGameAPI.searchId('$id');
                       if (gameId == '') {
-                        gameId = await AddGameAPI.addGame(title, dev, genre, release, '$id');
+                        gameId = await AddGameAPI.addGame(title, release, '$id');
                       }
                       print('saved ' + '$_rating' + ' rating of ' + title);
                       if (reviewController.text != '') {

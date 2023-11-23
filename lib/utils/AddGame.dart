@@ -1,13 +1,27 @@
 import 'package:mobile_project/utils/getAPI.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:mobile_project/utils/getRestOfGame.dart';
 
 class AddGameAPI {
 
-  static Future<String> addGame(String title, String developer, String category, String release, String igId) async {
+  static Future<String> addGame(String title, String release, String igId) async {
 
-    print(release);
-    String payload = '{"title":"' + title.trim() + '","developer":"' + developer.trim() + '","category":"' + category.trim() + '","releaseDate":"' + release + '","igdbId":"' + igId.trim() + '"}';
+    RestItem rest = await RestAPI.fetchData(igId);
+    
+    /*print(release);
+    developer = developer.replaceAll('"', "'");
+    category = category.replaceAll('"', "'");
+    List<String> split = developer.split('"');
+    print('the split is....................................');
+    print(split);
+    print(developer);
+    print(category);
+    print(ageRating);
+    print(image);
+    description = '';*/
+
+    String payload = '{"title":"' + title.trim() + '","developer":"' + rest.dev + '","category":"' + rest.genre + '","releaseDate":"' + release + '","igdbId":"' + igId.trim() + '","description":"' + '' + '","ageRating":"' + rest.ageRating + '","image":"' + rest.image + '"}';
     print(payload);
     String gameId = '';
     var jsonObject;
@@ -35,9 +49,10 @@ class AddGameAPI {
     String gameId = '';
     var jsonObject;
     var gameObject;
+    print(payload);
 
     try {
-      String url = 'https://cop4331-25-c433f0fd0594.herokuapp.com/api/searchGameIgdbId';
+      String url = 'https://cop4331-25-c433f0fd0594.herokuapp.com/api/searchGameIdIgdbId';
       String ret = await CardsData.getJson(url, payload);
       print("The ret is: " + ret); // ret is {"accessToken":"blahblahblahblah"}
 

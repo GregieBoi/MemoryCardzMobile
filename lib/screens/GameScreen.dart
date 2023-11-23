@@ -12,6 +12,7 @@ import 'package:mobile_project/utils/GenreAPI.dart';
 import 'package:mobile_project/screens/HubScreen.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mobile_project/screens/LoadingScreen.dart';
+import 'dart:convert';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
@@ -30,6 +31,7 @@ List<String> gamePlatforms = [];
 List<int> gameAgeRatings = [];
 List<String> gameGenres = [];
 bool isLoading = true;
+String ageRating = '';
 
 class GameScreen extends StatefulWidget {
   @override
@@ -44,6 +46,7 @@ class _GameScreenState extends State<GameScreen> {
   List<PlatformItem> platformNames = [];
   List<AgeRatingItem> ageRatingNames = [];
   List<GenreItem> genreNames = [];
+  static final List<String> ageRatingsLookup = ['3+', '7+', '12+', '16+', '18+', 'RP', 'EC', 'E', 'E10+', 'T', 'M', 'AO'];
 
   int? gameId; // variable to store gameID
 
@@ -180,6 +183,22 @@ class _GameScreenState extends State<GameScreen> {
       for (int i = 0; i < gameAgeRatings.length; i++) {
         print('Age Rating ${i + 1}: ${gameAgeRatings[i]}');
       }
+
+      if (gameAgeRatings.isNotEmpty) {
+        List<int> _ageRatings = [];
+        for (var rating in gameAgeRatings) {
+          
+          if (rating > 0 && rating < 13) {
+            _ageRatings.add(rating);
+          }
+
+        }
+        if (_ageRatings.isNotEmpty) {
+          int whatRating = _ageRatings.length;
+          ageRating = ageRatingsLookup[_ageRatings[whatRating-1]-1];
+        }
+      }
+      
       //////////////////////////////////////////////////////////////////////////
       for (int i = 0; i < genreNames.length; i++) {
         String genreName = genreNames[i].genreName;
@@ -407,9 +426,7 @@ class gameWidget extends StatelessWidget {
                           return ReviewWidget(
                               id: gameIdGlob!,
                               title: gameTitle,
-                              dev: gameDeveloperNames[0],
                               release: gameDate,
-                              genre: gameGenres[0],
                               year: '',
                               route: '/game');
                         });
@@ -533,7 +550,7 @@ class gameWidget extends StatelessWidget {
                       platform,
                       style: TextStyle(
                         color: textColor,
-                        fontSize: 16,
+                        fontSize: 12,
                       ),
                     );
                   }).toList(),
@@ -562,15 +579,23 @@ class gameWidget extends StatelessWidget {
                 SizedBox(height: 8),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: gameAgeRatings.map((rating) {
-                    return Text(
-                      '$rating +',
+                  children:
+                    [ (ageRating == '') ? const Text(
+                      'unavailable',
                       style: TextStyle(
                         color: textColor,
                         fontSize: 16,
+                        fontWeight: FontWeight.bold
                       ),
-                    );
-                  }).toList(),
+                    ) :
+                    Text(
+                      ageRating,
+                      style: const TextStyle(
+                        color: textColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold
+                      ),
+                    )]
                 ),
               ],
             ),

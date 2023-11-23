@@ -35,7 +35,8 @@ class CompanyAPIDeveloper {
         }
       }
     } else {
-      throw Exception('Failed to load data');
+      //throw Exception('Failed to load data');
+      body.add(DeveloperItem(developerName: ''));
     }
   }
 }

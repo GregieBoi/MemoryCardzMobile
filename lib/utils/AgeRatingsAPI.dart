@@ -38,7 +38,7 @@ class AgeRatingsAPI {
 
       body = ageRatingItems;
     } else {
-      throw Exception('Failed to load data');
+      body = [AgeRatingItem(rating: 0)];
     }
   }
 }

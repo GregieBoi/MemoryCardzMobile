@@ -17,10 +17,13 @@ class NameAPI {
         'Client-ID': '92hgc1hks3axm39nqurfsd9g57slbv',
         'Authorization': 'Bearer olri728cp8oz5wajq55y1t07ses589',
       },
-      body: 'fields category, name, first_release_date; search "$gameName"; limit 10;',
+      body:
+          'fields category, name, first_release_date; search "$gameName"; limit 10;',
     );
 
-    if(gameName == '' || response.statusCode == 429) {return [NameItem(title: '', id: 0, dev: '', release: '', genre: '', year: '')];}
+    if (gameName == '' || response.statusCode == 429) {
+      return [NameItem(title: '', id: 0, release: '', year: '')];
+    }
 
     if (response.statusCode == 200) {
       print(gameName);
@@ -29,28 +32,25 @@ class NameAPI {
 
       print(data);
 
-
-
       for (var game in data) {
         final title = game['name'];
         final id = game['id'];
         final category = game['category'];
         final date = game['first_release_date'];
-        String year; 
-        String release;
+        String releaseDate = '';
+        String year;
 
-        if (date == null) {year = ''; release = '';}
-
-        else {
-          var milleseconds = DateTime.fromMillisecondsSinceEpoch(date * 1000);  
-          var yearFormatted = DateFormat('y').format(milleseconds);
-          var dateFormatted = DateFormat('yMMMMd').format(milleseconds);
-          year = ' (' + yearFormatted + ')';
-          release = dateFormatted;
+        if (date == null) {
+          year = '';
+        } else {
+          var milleseconds = DateTime.fromMillisecondsSinceEpoch(date * 1000);
+          var dateFormatted = DateFormat('y').format(milleseconds);
+          releaseDate = DateFormat('yMMMMd').format(milleseconds);
+          year = ' (' + dateFormatted + ')';
         }
 
         if (title is String && id is int && (category == 0 || category == 8)) {
-          NameItem gameItem = NameItem(title: title, id: id, dev: 'placeholder', release: release, genre: 'placeholder', year: year);
+          NameItem gameItem = NameItem(title: title, id: id, release: releaseDate, year: year);
           gameItems.add(gameItem);
         }
       }
@@ -69,17 +69,12 @@ class NameAPI {
 class NameItem {
   final String title;
   final int id;
-  final String dev;
   final String release;
-  final String genre;
   final String year;
-
   NameItem({
     required this.title,
     required this.id,
-    required this.dev,
     required this.release,
-    required this.genre,
-    required this.year
+    required this.year,
   });
 }
