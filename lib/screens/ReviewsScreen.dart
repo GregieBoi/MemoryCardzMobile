@@ -111,9 +111,9 @@ class reviewsWidget extends StatelessWidget {
                           width: 80,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: int.parse(review.rating) ~/ 2 + int.parse(review.rating) % 2,
+                            itemCount: review.rating ~/ 2 + review.rating % 2,
                             itemBuilder: (context, jndex) {
-                              if(((jndex + 1) != (int.parse(review.rating) ~/ 2 + int.parse(review.rating) % 2)) || (int.parse(review.rating) % 2 == 0)) {
+                              if(((jndex + 1) != (review.rating ~/ 2 + review.rating % 2)) || (review.rating % 2 == 0)) {
                                 return const Icon(
                                   Icons.star,
                                   color: NESred,

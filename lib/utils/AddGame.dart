@@ -25,6 +25,7 @@ class AddGameAPI {
     print(payload);
     String gameId = '';
     var jsonObject;
+    print(rest.ageRating);
 
     try {
       String url = 'https://cop4331-25-c433f0fd0594.herokuapp.com/api/addGame';

@@ -42,9 +42,14 @@ class RestAPI {
 
           if (rating is int && rating > 0 && rating < 13) {
             _ageRatings.add(rating);
+
+            if(rating > 5 && rating < 13) {
+              ageRating = ratings[rating - 1];
+              break;
+            }
           }
         }
-        if (_ageRatings.isNotEmpty) {
+        if (ageRating == '') {
           int whatRating = _ageRatings.length;
 
           ageRating = ratings[_ageRatings[whatRating-1]-1];

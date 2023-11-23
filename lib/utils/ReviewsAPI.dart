@@ -63,7 +63,7 @@ class getReviewsAPI {
       print('id aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
       String userId = jsonObject['userId'];
       print('userid aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-      String rating = jsonObject['rating'];
+      int rating = jsonObject['rating'];
       print('rating aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
       String text = jsonObject['text'];
       print('text aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
@@ -76,7 +76,7 @@ class getReviewsAPI {
       return ReviewItem(id: id, user: '', userId: userId, text: text, rating: rating, game: gameId, isLog: isLog);
     }
     catch (e) {
-      return ReviewItem(id: '', user: '', userId: '', text: '', rating: '', game: '', isLog: true);
+      return ReviewItem(id: '', user: '', userId: '', text: '', rating: 0, game: '', isLog: true);
     }
 
 
@@ -89,7 +89,7 @@ class ReviewItem {
   final String id;
   String user;
   final String userId;
-  final String rating;
+  final int rating;
   final String text;
   final String game;
   final bool isLog;
