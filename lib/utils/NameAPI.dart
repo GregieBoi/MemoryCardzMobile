@@ -21,8 +21,12 @@ class NameAPI {
           'fields category, name, first_release_date; search "$gameName"; limit 10;',
     );
 
-    if (gameName == '' || response.statusCode == 429) {
+    if (gameName == '') {
       return [NameItem(title: '', id: 0, release: '', year: '')];
+    }
+
+    if (response.statusCode == 429) {
+      //await Future.delayed(const Duration(seconds: 1));
     }
 
     if (response.statusCode == 200) {

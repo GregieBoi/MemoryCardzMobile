@@ -27,7 +27,7 @@ class getReviewsAPI {
         ReviewItem cur = await getReviewsAPI.getReview(review);
 
 
-        if(cur.isLog == 'true') {continue;}
+        if(cur.isLog == true) {continue;}
 
         print(cur.userId + ' this is the user id!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 
@@ -69,14 +69,14 @@ class getReviewsAPI {
       print('text aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
       String gameId = jsonObject['gameId'];
       print('gameid aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-      String isLog = jsonObject['isLog'];
+      bool isLog = jsonObject['isLog'];
 
       print('I suckkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
 
       return ReviewItem(id: id, user: '', userId: userId, text: text, rating: rating, game: gameId, isLog: isLog);
     }
     catch (e) {
-      return ReviewItem(id: '', user: '', userId: '', text: '', rating: '', game: '', isLog: 'true');
+      return ReviewItem(id: '', user: '', userId: '', text: '', rating: '', game: '', isLog: true);
     }
 
 
@@ -92,7 +92,7 @@ class ReviewItem {
   final String rating;
   final String text;
   final String game;
-  final String isLog;
+  final bool isLog;
 
   ReviewItem({
     required this.id,

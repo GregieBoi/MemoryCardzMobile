@@ -11,6 +11,7 @@ import 'package:mobile_project/utils/AddReviewAPI.dart';
 import 'package:mobile_project/utils/AddGame.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_project/screens/LoadingScreen.dart';
+import 'package:mobile_project/utils/getUserAPI.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
@@ -19,6 +20,7 @@ const fieldColor = Color(0xFFD9D9D9);
 const NESred = Color(0xFFFF0000);
 int _selectedIndex = 0;
 bool isLoading = true;
+var user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [''], following: [''], logged: ['']);
 
 class HubScreen extends StatefulWidget {
   @override
@@ -267,6 +269,7 @@ class _SearchWidgetState extends State<SearchWidget> {
             },
             suggestionsBuilder: (BuildContext context, SearchController controller) async {
               _searchingWithQuery = controller.text;
+              await Future.delayed(const Duration(seconds: 1));
               final List<NameItem> results = (await NameAPI.fetchData(_searchingWithQuery!)).toList();
 
               if (_searchingWithQuery != controller.text) {
@@ -599,8 +602,34 @@ class ActivityWidget extends StatelessWidget {
 }
 
 class AccountWidget extends StatelessWidget {
+  
+  Future<void> fetchUserId() async {
+
+    user = await getUserAPI.getUser(GlobalData.userId);
+    print(user.bio);
+    int logs = user.logged.length;
+    fetchRecents();
+
+  }
+
+  Future<void> fetchRecents() async {
+
+    int logs = user.logged.length;
+    List<String> recentIds = [];
+    
+    if (logs >= 4) {
+      for (int i = 0; i < 4; i++) {
+        recentIds.add(user.logged[logs-i-1]);
+      }
+    }
+    
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    fetchUserId();
+
     return SingleChildScrollView(
         child: Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -632,7 +661,7 @@ class AccountWidget extends StatelessWidget {
           height: 20,
         ),
         Text(
-          'This is my bio',
+          user.bio,
           style: TextStyle(color: textColor),
         ),
         SizedBox(
@@ -756,7 +785,7 @@ class AccountWidget extends StatelessWidget {
           margin: EdgeInsets.only(top: 20),
           padding: EdgeInsets.all(20),
           width: MediaQuery.of(context).size.width + 40,
-          decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
+          decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor, width: .25))),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -829,7 +858,7 @@ class AccountWidget extends StatelessWidget {
             height: 40,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor, width: .25))),
             child: Text(
               'Games',
               style: TextStyle(fontSize: 16, color: textColor),
@@ -844,7 +873,7 @@ class AccountWidget extends StatelessWidget {
             height: 40,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor, width: .25))),
             child: Text(
               'Diary',
               style: TextStyle(fontSize: 16, color: textColor),
@@ -859,7 +888,7 @@ class AccountWidget extends StatelessWidget {
             height: 40,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor, width: .25))),
             child: Text(
               'Lists',
               style: TextStyle(fontSize: 16, color: textColor),
@@ -874,7 +903,7 @@ class AccountWidget extends StatelessWidget {
             height: 40,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor, width: .25))),
             child: Text(
               'Shelf',
               style: TextStyle(fontSize: 16, color: textColor),
@@ -889,7 +918,7 @@ class AccountWidget extends StatelessWidget {
             height: 40,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor, width: .25))),
             child: Text(
               'Following',
               style: TextStyle(fontSize: 16, color: textColor),
@@ -904,7 +933,7 @@ class AccountWidget extends StatelessWidget {
             height: 40,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor, width: .25))),
             child: Text(
               'Followers',
               style: TextStyle(fontSize: 16, color: textColor),
@@ -954,7 +983,7 @@ class SettingsWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
-                    color: textColor,
+                    color: textColor, width: .25
                   ))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -972,7 +1001,7 @@ class SettingsWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
-                    color: textColor,
+                    color: textColor, width: .25
                   ))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -990,7 +1019,7 @@ class SettingsWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
-                    color: textColor,
+                    color: textColor, width: .25
                   ))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -1009,7 +1038,7 @@ class SettingsWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
-                    color: textColor,
+                    color: textColor, width: .25
                   ))),
                 ),
                 Container(
@@ -1033,7 +1062,7 @@ class SettingsWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
-                    color: textColor,
+                    color: textColor, width: .25
                   ))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1055,7 +1084,7 @@ class SettingsWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
-                    color: textColor,
+                    color: textColor, width: .25
                   ))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1077,7 +1106,7 @@ class SettingsWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
-                    color: textColor,
+                    color: textColor, width: .25
                   ))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1099,7 +1128,7 @@ class SettingsWidget extends StatelessWidget {
                     decoration: BoxDecoration(
                         border: Border(
                             top: BorderSide(
-                      color: textColor,
+                      color: textColor, width: .25
                     ))),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1144,7 +1173,7 @@ class SettingsWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                       border: Border(
                           top: BorderSide(
-                    color: textColor,
+                    color: textColor, width: .25
                   ))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

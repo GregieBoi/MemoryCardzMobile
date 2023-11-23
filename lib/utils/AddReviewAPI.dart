@@ -30,7 +30,7 @@ class AddReviewAPI {
 
     int rating = (stars*2).toInt();
 
-    String payload = '{"userId":"' + userId.trim() + '","reviewId":"' + reviewId.trim() + '","editDate":"' + editDate.trim() + '","rating":"' + '$rating' + '","textComment":"' + textComment.trim() + '","isLog":"' + '$isLog' + '"}';
+    String payload = '{"userId":"' + userId.trim() + '","reviewId":"' + reviewId.trim() + '","editDate":"' + editDate.trim() + '","rating":"' + '$rating' + '","textComment":"' + textComment.trim() + '","isLog": $isLog}';
     reviewId = '';
     var jsonObject;
 
