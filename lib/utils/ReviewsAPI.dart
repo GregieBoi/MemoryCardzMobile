@@ -71,6 +71,8 @@ class getReviewsAPI {
         likedBy = [];
       }
       print('likedBy aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+      String editDate = jsonObject['editDate'];
+      print('editDate aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
 
       String user = '';
 
@@ -80,8 +82,7 @@ class getReviewsAPI {
         print('user aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
       }
 
-      print(
-          'I suckkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
+      print('I suckkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
       //String date = jsonObject['edit_date'];
 
       print('is logggggggggggggggggggggggggggggggggggggggggggggggggg');
@@ -94,7 +95,8 @@ class getReviewsAPI {
           rating: rating,
           game: gameId,
           isLog: isLog,
-          likedBy: likedBy);
+          likedBy: likedBy,
+          editDate: editDate);
     } catch (e) {
       return ReviewItem(
           id: '',
@@ -104,7 +106,8 @@ class getReviewsAPI {
           rating: 0,
           game: '',
           isLog: true,
-          likedBy: ['']);
+          likedBy: [''],
+          editDate: '');
     }
   }
 }
@@ -118,7 +121,7 @@ class ReviewItem {
   final String game;
   final bool isLog;
   final List<String> likedBy;
-  //final String date;
+  final String editDate;
 
   ReviewItem(
       {required this.id,
@@ -128,7 +131,6 @@ class ReviewItem {
       required this.rating,
       required this.game,
       required this.isLog,
-      required this.likedBy
-      //required this.date
-      });
+      required this.likedBy,
+      required this.editDate});
 }

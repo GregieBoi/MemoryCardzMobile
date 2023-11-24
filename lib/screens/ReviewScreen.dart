@@ -20,8 +20,9 @@ String gameDate = '';
 String gameCoverImage = '';
 String? reviewIdGlob;
 int? gameIdIgdbGlob;
-String likeArraySize = '';
+int likeArraySize = 0;
 String viewingUserId = GlobalData.userId!;
+bool isLiked = false;
 
 ReviewItem oneReview = ReviewItem(
     id: '0',
@@ -31,7 +32,8 @@ ReviewItem oneReview = ReviewItem(
     text: '0',
     game: '0',
     isLog: true,
-    likedBy: []);
+    likedBy: [],
+    editDate: '0');
 
 class ReviewScreen extends StatefulWidget {
   @override
@@ -76,7 +78,16 @@ class _ReviewScreenState extends State<ReviewScreen> {
 
     print('the user is ${oneReview.userId}');
     print('the array is ${oneReview.likedBy}');
-    likeArraySize = (oneReview.likedBy.length)?.toString() ?? '0';
+    likeArraySize = (oneReview.likedBy.length);
+
+    isLiked = false;
+
+    for (int i = 0; i < likeArraySize; i++) {
+      if (oneReview.likedBy[i] == viewingUserId) {
+        print('this user already liked this review!!!!!!!!!!!!!!!!');
+        isLiked = true;
+      }
+    }
 
     if (mounted) {
       setState(() {
@@ -116,16 +127,17 @@ class _ReviewScreenState extends State<ReviewScreen> {
     }
 
     return Scaffold(
-        backgroundColor: backColor,
-        appBar: GFAppBar(
-          backgroundColor: Colors.black87,
-          centerTitle: true,
-          title: Text(
-            'Review',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-          ),
+      backgroundColor: backColor,
+      appBar: GFAppBar(
+        backgroundColor: Colors.black87,
+        centerTitle: true,
+        title: Text(
+          'Review',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
-        body: isLoading ? LoadingPage() : ReviewWidget(review: oneReview));
+      ),
+      body: isLoading ? LoadingPage() : ReviewWidget(review: oneReview),
+    );
   }
 }
 
@@ -299,9 +311,6 @@ class ReviewWidget extends StatefulWidget {
 }
 
 class _ReviewWidgetState extends State<ReviewWidget> {
-  bool isLiked = false;
-  // if viewingUserId exists in the review's liked_by array, then set to false
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -371,7 +380,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                         ],
                       ),
                       Text(
-                        'edit or create date',
+                        oneReview.editDate,
                         style: TextStyle(
                           color: textColor,
                           fontSize: 14,
@@ -386,7 +395,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                     child: GestureDetector(
                       onTap: () async {
                         Navigator.pushNamed(context, '/game',
-                            arguments: int.tryParse(oneReview.game));
+                            arguments: gameIdIgdbGlob);
                       },
                       child: Center(
                         child: gameCoverImage.isNotEmpty
@@ -423,12 +432,15 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                   icon: Icon(
                     isLiked ? Icons.favorite : Icons.favorite_outline,
                     size: 24,
-                    color: textColor,
+                    color: isLiked ? NESred : textColor,
                   ),
                   onPressed: () async {
                     setState(() {
                       isLiked = !isLiked;
                     });
+
+                    if (isLiked == false) likeArraySize -= 1;
+                    if (isLiked == true) likeArraySize += 1;
 
                     LikeAPI.handleLike(viewingUserId, reviewIdGlob!, isLiked);
                   },
@@ -445,7 +457,8 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                 ),
                 Text(
                   'Likes: ' +
-                      likeArraySize, // Replace with the actual number of likes
+                      likeArraySize
+                          .toString(), // Replace with the actual number of likes
                   style: TextStyle(color: textColor, fontSize: 14),
                 ),
               ],
