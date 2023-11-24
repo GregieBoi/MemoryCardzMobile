@@ -7,6 +7,8 @@ const contColor = Color(0xFF8C8C8C);
 const fieldColor = Color(0xFFD9D9D9);
 const NESred = Color(0xFFFF0000);
 
+List<String>? reviews;
+
 class GamesScreen extends StatefulWidget {
   @override
   _GamesScreenState createState() => _GamesScreenState();
@@ -17,6 +19,10 @@ class _GamesScreenState extends State<GamesScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    reviews = ModalRoute.of(context)!.settings.arguments as List<String>;
+    print(reviews);
+
     return Scaffold(
         
         backgroundColor: backColor,

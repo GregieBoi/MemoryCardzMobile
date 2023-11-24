@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:mobile_project/utils/ReviewsAPI.dart';
 //import 'package:mobile_project/screens/GameScreen.dart';
 import 'package:mobile_project/utils/getAPI.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
@@ -20,7 +21,7 @@ const fieldColor = Color(0xFFD9D9D9);
 const NESred = Color(0xFFFF0000);
 int _selectedIndex = 0;
 bool isLoading = true;
-var user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [''], following: [''], logged: ['']);
+var user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [''], following: [''], logged: [''], reviews: ['']);
 
 class HubScreen extends StatefulWidget {
   @override
@@ -607,7 +608,6 @@ class AccountWidget extends StatelessWidget {
 
     user = await getUserAPI.getUser(GlobalData.userId);
     print(user.bio);
-    int logs = user.logged.length;
     fetchRecents();
 
   }
@@ -615,11 +615,53 @@ class AccountWidget extends StatelessWidget {
   Future<void> fetchRecents() async {
 
     int logs = user.logged.length;
-    List<String> recentIds = [];
+    int reviews = user.reviews.length;
+    List<String> recentLogs = [];
+    List<String> recentRevs = [];
+    List<ReviewItem> recents = [];
     
     if (logs >= 4) {
       for (int i = 0; i < 4; i++) {
-        recentIds.add(user.logged[logs-i-1]);
+        recentLogs.add(user.logged[logs-i-1]);
+      }
+    }
+    else {
+      for (int i = 0; i < logs; i++) {
+        recentLogs.add(user.logged[logs-i-1]);
+      }
+    }
+    if (reviews >= 4) {
+      for (int i = 0; i < 4; i++) {
+        recentRevs.add(user.reviews[reviews-i-1]);
+      }
+    }
+    else {
+      for (int i = 0; i < logs; i++) {
+        recentRevs.add(user.reviews[reviews-i-1]);
+      }
+    }
+
+    print(recentLogs);
+    print(recentRevs);
+    
+    List<ReviewItem> revs = []; 
+
+    for (var rev in recentRevs) {
+      revs.add(await getReviewsAPI.getReview(rev));
+    }
+
+    List<ReviewItem> lgs = []; 
+
+    for (var lg in recentLogs) {
+      lgs.add(await getReviewsAPI.getReview(lg));
+    }
+
+    for (int i = 0; i < logs + reviews; i++) {
+      if (i == 0) {
+        //var curRevTime = DateFormat('yMMMMd').parse(revs[i].date).millisecondsSinceEpoch;
+        //var curLogTime = DateFormat('yMMMMd').parse(lgs[i].date).millisecondsSinceEpoch;
+
+        //if (curRevTime < curLogTime)
       }
     }
     
@@ -852,7 +894,7 @@ class AccountWidget extends StatelessWidget {
         ),
         InkWell(
           onTap: () async {
-            Navigator.pushNamed(context, '/games');
+            Navigator.pushNamed(context, '/games', arguments: user.reviews);
           },
           child: Container(
             height: 40,

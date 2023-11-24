@@ -37,11 +37,17 @@ class getUserAPI {
         logged = jsonObject['logged'];
       }
 
-      return UserItem(id: id, userName: userName, firstName: firstName, lastName: lastName, email: email, bio: bio, followers: followers, following: following, logged: logged);
+      List<String> reviews = [];
+      if (jsonObject['reviewed'] != null) {
+        print(jsonObject['reviewed']);
+        reviews = jsonObject['reviewed'];
+      }
+
+      return UserItem(id: id, userName: userName, firstName: firstName, lastName: lastName, email: email, bio: bio, followers: followers, following: following, logged: logged, reviews: reviews);
     }
     catch (e) {
       print('I suckkkkkkkkk');
-      return UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [''], following: [''], logged: ['']);
+      return UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [''], following: [''], logged: [''], reviews: ['']);
     }
 
   }
@@ -59,6 +65,7 @@ class UserItem {
   final List<dynamic> following;
   final List<dynamic> followers;
   final List<dynamic> logged;
+  final List<String> reviews;
 
   UserItem  ({
     required this.id,
@@ -69,7 +76,8 @@ class UserItem {
     required this.bio,
     required this.followers,
     required this.following,
-    required this.logged
+    required this.logged,
+    required this.reviews
   });
 
 }

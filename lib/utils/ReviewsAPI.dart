@@ -70,13 +70,14 @@ class getReviewsAPI {
       String gameId = jsonObject['gameId'];
       print('gameid aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
       bool isLog = jsonObject['isLog'];
+      //String date = jsonObject['edit_date'];
 
-      print('I suckkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
+      print('is logggggggggggggggggggggggggggggggggggggggggggggggggg');
 
-      return ReviewItem(id: id, user: '', userId: userId, text: text, rating: rating, game: gameId, isLog: isLog);
+      return ReviewItem(id: id, user: '', userId: userId, text: text, rating: rating, game: gameId, isLog: isLog/*, date: date*/);
     }
     catch (e) {
-      return ReviewItem(id: '', user: '', userId: '', text: '', rating: 0, game: '', isLog: true);
+      return ReviewItem(id: '', user: '', userId: '', text: '', rating: 0, game: '', isLog: true/*, date: ''*/);
     }
 
 
@@ -93,6 +94,7 @@ class ReviewItem {
   final String text;
   final String game;
   final bool isLog;
+  //final String date;
 
   ReviewItem({
     required this.id,
@@ -101,6 +103,7 @@ class ReviewItem {
     required this.text,
     required this.rating,
     required this.game,
-    required this.isLog
+    required this.isLog,
+    //required this.date
   });
 }
