@@ -40,7 +40,7 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   List<Map<String, dynamic>> gamesList = [];
-  List<GameItem> images = [];
+  List<CoverItem> images = [];
   //List<CompanyItem> companyNames = [];
   List<DeveloperItem> developerNames = [];
   List<PlatformItem> platformNames = [];

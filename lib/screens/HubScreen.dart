@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:mobile_project/utils/ReviewsAPI.dart';
+import 'package:mobile_project/utils/SearchGameLocal.dart';
 //import 'package:mobile_project/screens/GameScreen.dart';
 import 'package:mobile_project/utils/getAPI.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
@@ -22,6 +23,9 @@ const NESred = Color(0xFFFF0000);
 int _selectedIndex = 0;
 bool isLoading = true;
 var user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [''], following: [''], logged: [''], reviews: ['']);
+
+//List<ReviewItem> recentsIds = [];
+//List<GameItem> recents = [];
 
 class HubScreen extends StatefulWidget {
   @override
@@ -124,8 +128,8 @@ class GamesWidget extends StatefulWidget {
 }
 
 class _GamesWidgetState extends State<GamesWidget> {
-  List<GameItem> popularGames = [];
-  List<GameItem> friendGames = [];
+  List<CoverItem> popularGames = [];
+  List<CoverItem> friendGames = [];
 
   @override
   void initState() {
@@ -602,14 +606,36 @@ class ActivityWidget extends StatelessWidget {
   }
 }
 
-class AccountWidget extends StatelessWidget {
+class AccountWidget extends StatefulWidget {
+  @override
+  _AccountWidgetState createState() => _AccountWidgetState();
+}
+
+class _AccountWidgetState extends State<AccountWidget> {
+
+  
+  List<GameItem> recents = [];
+  List<ReviewItem> recentsIds = [];
+  
+  @override
+  void initState() {
+    super.initState();
+    fetchUserId();
+  }
   
   Future<void> fetchUserId() async {
+    if (mounted) {
+      setState(() => isLoading = true);
+    }
 
     user = await getUserAPI.getUser(GlobalData.userId);
     print(user.bio);
     fetchRecents();
 
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) {
+      setState(() => isLoading = false);
+    }
   }
 
   Future<void> fetchRecents() async {
@@ -618,7 +644,9 @@ class AccountWidget extends StatelessWidget {
     int reviews = user.reviews.length;
     List<String> recentLogs = [];
     List<String> recentRevs = [];
-    List<ReviewItem> recents = [];
+
+    List<GameItem> rec = [];
+    List<ReviewItem> recIds = [];
     
     if (logs >= 4) {
       for (int i = 0; i < 4; i++) {
@@ -647,13 +675,24 @@ class AccountWidget extends StatelessWidget {
     List<ReviewItem> revs = []; 
 
     for (var rev in recentRevs) {
-      revs.add(await getReviewsAPI.getReview(rev));
+
+      print(rev);
+
+      ReviewItem cur = await getReviewsAPI.getReview(rev);
+
+      revs.add(cur);
+
+      GameItem curGame = await SearchGameLocal.getGame(cur.game);
+
+      rec.add(curGame);
     }
+
+    print(revs);
 
     List<ReviewItem> lgs = []; 
 
     for (var lg in recentLogs) {
-      lgs.add(await getReviewsAPI.getReview(lg));
+      //lgs.add(await getReviewsAPI.getReview(lg));
     }
 
     for (int i = 0; i < logs + reviews; i++) {
@@ -664,15 +703,23 @@ class AccountWidget extends StatelessWidget {
         //if (curRevTime < curLogTime)
       }
     }
+
+    recentsIds = revs;
+
+    if (mounted) {
+      setState(() {
+        recentsIds = revs;
+        recents = rec;
+      });
+    }
     
   }
 
   @override
   Widget build(BuildContext context) {
 
-    fetchUserId();
-
-    return SingleChildScrollView(
+    return isLoading ? LoadingPage() 
+      : SingleChildScrollView(
         child: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -744,7 +791,7 @@ class AccountWidget extends StatelessWidget {
               ),
               Card(
                 child: SizedBox(
-                  height: 150,
+                  height: (MediaQuery.of(context).size.width / 5),
                   width: MediaQuery.of(context).size.width / 5,
                   child: Center(
                     child: Text('Card1'),
@@ -778,8 +825,44 @@ class AccountWidget extends StatelessWidget {
           width: (MediaQuery.of(context).size.width),
           alignment: Alignment.center,
           margin: EdgeInsets.only(left: 20, right: 20),
-          child: ListView(
+          child: ListView.builder(
+
             scrollDirection: Axis.horizontal,
+            itemCount: recents.length,
+            itemBuilder: ((context, index) {
+              final curRev = recentsIds[index];
+              final curGame = recents[index];
+              final cover = curGame.image;
+              final String gameId = curGame.id;
+              final revId = curRev.id;
+
+              return InkWell (
+                onTap: () async {
+                  Navigator.pushNamed(context, '/review',
+                  arguments: {'reviewId': revId, 'gameId': int.parse(gameId)});
+                },
+                child : Container(
+                  height: (MediaQuery.of(context).size.width / 4) * 1.25,
+                  width: MediaQuery.of(context).size.width / 5,
+                  clipBehavior: Clip.antiAlias,
+                  margin: EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                      // this allows for the rounded edges. I can't get it the way
+                      borderRadius: BorderRadius.all(Radius.circular(4))),
+                  child: cover != ''
+                    ? Image.network(
+                      cover,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                    )
+                  : Text('Failed to load')
+                )
+              );
+            })
+          
+          ),
+            /*scrollDirection: Axis.horizontal,
             children: <Card>[
               Card(
                 child: SizedBox(
@@ -818,7 +901,7 @@ class AccountWidget extends StatelessWidget {
                 ),
               ),
             ],
-          ),
+          ),*/
         ),
         const SizedBox(
           height: 20,
