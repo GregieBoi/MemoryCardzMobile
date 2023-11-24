@@ -39,12 +39,12 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     }
 
     reviews = await getReviewsAPI.getReviews('$gameIdGlob');
+    //print('there are ${reviews.length}');
 
     await Future.delayed(const Duration(seconds: 0));
     if (mounted) {
       setState(() => isLoading = false);
     }
-
   }
 
   @override
@@ -92,12 +92,16 @@ class reviewsWidget extends StatelessWidget {
           final review = reviews[index];
           return InkWell(
             onTap: () async {
-              Navigator.pushNamed(context, '/review');
+              Navigator.pushNamed(context, '/review',
+                  arguments: {'reviewId': review.id, 'gameId': gameIdGlob});
             },
             child: Container(
               width: MediaQuery.of(context).size.width,
               padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(border: Border(top: BorderSide(color: textColor, width: .25), )),
+              decoration: BoxDecoration(
+                  border: Border(
+                top: BorderSide(color: textColor, width: .25),
+              )),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +117,10 @@ class reviewsWidget extends StatelessWidget {
                             scrollDirection: Axis.horizontal,
                             itemCount: review.rating ~/ 2 + review.rating % 2,
                             itemBuilder: (context, jndex) {
-                              if(((jndex + 1) != (review.rating ~/ 2 + review.rating % 2)) || (review.rating % 2 == 0)) {
+                              if (((jndex + 1) !=
+                                      (review.rating ~/ 2 +
+                                          review.rating % 2)) ||
+                                  (review.rating % 2 == 0)) {
                                 return const Icon(
                                   Icons.star,
                                   color: NESred,
@@ -130,7 +137,8 @@ class reviewsWidget extends StatelessWidget {
                         ),
                         Text(
                           review.user,
-                          style: const TextStyle(color: textColor, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: textColor, fontWeight: FontWeight.bold),
                         )
                       ],
                     ),
