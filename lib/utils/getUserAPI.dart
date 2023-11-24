@@ -37,7 +37,7 @@ class getUserAPI {
         logged = jsonObject['logged'];
       }
 
-      List<String> reviews = [];
+      List<dynamic> reviews = [];
       if (jsonObject['reviewed'] != null) {
         print(jsonObject['reviewed']);
         reviews = jsonObject['reviewed'];
@@ -65,7 +65,7 @@ class UserItem {
   final List<dynamic> following;
   final List<dynamic> followers;
   final List<dynamic> logged;
-  final List<String> reviews;
+  final List<dynamic> reviews;
 
   UserItem  ({
     required this.id,

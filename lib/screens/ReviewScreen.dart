@@ -42,7 +42,7 @@ class ReviewScreen extends StatefulWidget {
 
 class _ReviewScreenState extends State<ReviewScreen> {
   List<Map<String, dynamic>> gamesList = [];
-  List<GameItem> images = [];
+  List<CoverItem> images = [];
 
   @override
   void didChangeDependencies() {

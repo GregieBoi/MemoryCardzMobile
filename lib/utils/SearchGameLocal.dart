@@ -31,12 +31,13 @@ class SearchGameLocal {
       List<dynamic> reviews = jsonObject['reviews'];
       print('reviews is :::::::::::::::::::::::::::::::::::::::::::::::::');
       print(reviews);
+      String image = jsonObject['image'];
 
-      return GameItem(id: id, title: title, dev: dev, genre: genre, release: release, reviews: reviews);
+      return GameItem(id: id, title: title, dev: dev, genre: genre, release: release, reviews: reviews, image: image);
     }
     catch (e) {
       print('i got here somehow!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-      return GameItem(id: '', title: '', dev: '', genre: '', release: '', reviews: List.empty());
+      return GameItem(id: '', title: '', dev: '', genre: '', release: '', reviews: List.empty(), image: '');
     }
 
   }
@@ -52,6 +53,7 @@ class GameItem {
   final String genre;
   final String release;
   final List<dynamic> reviews;
+  final String image;
 
   GameItem ({
 
@@ -60,7 +62,8 @@ class GameItem {
     required this.dev,
     required this.genre,
     required this.release,
-    required this.reviews
+    required this.reviews,
+    required this.image
 
   });
 

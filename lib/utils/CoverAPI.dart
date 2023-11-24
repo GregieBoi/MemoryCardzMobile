@@ -8,7 +8,7 @@ class CoverAPI {
   final String baseUrl = 'https://api.igdb.com/v4/games';
   final String coversUrl = 'https://api.igdb.com/v4/covers';
 
-  List<GameItem> body = [];
+  List<CoverItem> body = [];
 
   Future<void> fetchData(int? gameId) async {
     final response = await http.post(
@@ -27,20 +27,20 @@ class CoverAPI {
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
-      final List<GameItem> gameItems = [];
+      final List<CoverItem> gameItems = [];
 
       for (var game in data) {
         final coverId = game['cover'];
 
         if (coverId is int) {
           final coverImageUrl = await fetchCoverImage(coverId);
-          gameItems.add(GameItem(coverImageUrl: coverImageUrl));
+          gameItems.add(CoverItem(coverImageUrl: coverImageUrl));
         }
       }
 
       body = gameItems;
     } else {
-      body = [GameItem(coverImageUrl: '')];
+      body = [CoverItem(coverImageUrl: '')];
     }
   }
 
@@ -70,10 +70,10 @@ class CoverAPI {
   }
 }
 
-class GameItem {
+class CoverItem {
   final String coverImageUrl;
 
-  GameItem({
+  CoverItem({
     required this.coverImageUrl,
   });
 }
