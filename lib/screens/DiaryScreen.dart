@@ -258,16 +258,87 @@ class diaryWidget extends StatelessWidget {
             },
             child: Container(
               width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 border: Border(
                   top: BorderSide(color: textColor, width: .25),
                 ),
               ),
-              child: Column(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Container(
+                    padding: EdgeInsets.all(5),
+                    margin: EdgeInsets.only(right: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: textColor)),
+                    child: Text(
+                      theEditDate,
+                      style: TextStyle(color: textColor, fontSize: 16),
+                    ),
+                  ),
+                  Container(
+                  width: MediaQuery.sizeOf(context).width * .65,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.end,
+                        children: [
+                          Text(
+                            theIgdb.title + ' ',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: fieldColor,
+                              fontWeight: FontWeight.bold
+                            ),
+                          ),
+                          Text(
+                            theRelease,
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: 10,
+                            ),
+                          )
+                        ]
+                      ),
+                      Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              height: 20,
+                              width: 80,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: review.rating ~/ 2 + review.rating % 2,
+                                itemBuilder: (context, jndex) {
+                                  if (((jndex + 1) !=
+                                          (review.rating ~/ 2 +
+                                              review.rating % 2)) ||
+                                      (review.rating % 2 == 0)) {
+                                    return const Icon(
+                                      Icons.star,
+                                      color: NESred,
+                                      size: 16,
+                                    );
+                                  }
+                                  return const Icon(
+                                    Icons.star_half,
+                                    color: NESred,
+                                    size: 16,
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),),/*
                   Container(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -326,7 +397,7 @@ class diaryWidget extends StatelessWidget {
                   ),
                   SizedBox(
                     height: 20,
-                  ),
+                  ),*/
                 ],
               ),
             ),
