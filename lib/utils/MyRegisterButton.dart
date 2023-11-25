@@ -242,12 +242,12 @@ class _MyRegisterButtonState extends State<MyRegisterButton> {
                           changeText();
                         } else {
                           print("IN HERE 3 !!!!!!!!!!!!!!!!!!!!!!!");
-                          //GlobalData.userId = userId;
-                          //GlobalData.firstName = jsonObject["firstName"];
-                          //GlobalData.lastName = jsonObject["lastName"];
-                          //GlobalData.username = username;
-                          //GlobalData.password = password;
-                          Navigator.pushNamed(context, '/games');
+                          GlobalData.userId = jsonObject['id'];
+                          GlobalData.firstName = jsonObject["firstName"];
+                          GlobalData.lastName = jsonObject["lastName"];
+                          GlobalData.username = username;
+                          GlobalData.password = password;
+                          Navigator.pushNamed(context, '/hub');
                         }
                       },
                       style: ElevatedButton.styleFrom(

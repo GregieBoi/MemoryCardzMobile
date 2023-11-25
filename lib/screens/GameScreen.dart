@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_project/utils/AddGame.dart';
+import 'package:mobile_project/utils/getUserAPI.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:mobile_project/utils/GamePageAPI.dart';
@@ -13,6 +15,9 @@ import 'package:mobile_project/screens/HubScreen.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mobile_project/screens/LoadingScreen.dart';
 import 'dart:convert';
+import 'package:mobile_project/utils/getAPI.dart';
+import 'package:mobile_project/utils/getUserAPI.dart';
+import 'package:mobile_project/utils/ListsAPI.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
@@ -493,31 +498,46 @@ class gameWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                Card(
-                  child: Container(
-                    width: (MediaQuery.of(context).size.width - 40) / 3.5,
-                    height: (MediaQuery.of(context).size.width - 80) / 3.5,
-                    decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(4)),
-                    padding: EdgeInsets.all(10),
-                    child: const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Icon(
-                          Icons.list,
-                          color: fieldColor,
-                        ),
-                        Text(
-                          'List',
-                          style: TextStyle(color: fieldColor, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          'Add to List',
-                          style: TextStyle(
+                InkWell(
+                  onTap: () {
+                    showModalBottomSheet<dynamic>(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                        backgroundColor: backColor,
+                        isScrollControlled: true,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return addToListWidget(
+                              game: gameIdGlob!,
+                              user: GlobalData.userId!
+                          );
+                        });
+                  },
+                  child: Card(
+                    child: Container(
+                      width: (MediaQuery.of(context).size.width - 40) / 3.5,
+                      height: (MediaQuery.of(context).size.width - 80) / 3.5,
+                      decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(4)),
+                      padding: EdgeInsets.all(10),
+                      child: const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Icon(
+                            Icons.list,
                             color: fieldColor,
                           ),
-                        )
-                      ],
+                          Text(
+                            'List',
+                            style: TextStyle(color: fieldColor, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            'Add to List',
+                            style: TextStyle(
+                              color: fieldColor,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -639,4 +659,193 @@ class gameWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+class addToListWidget extends StatefulWidget {
+
+  addToListWidget({
+    required this.game,
+    required this.user
+  });
+
+  final int game;
+  final String user;
+
+  @override
+  _addToListState createState() => _addToListState(game: game, user: user);
+
+}
+
+UserItem _user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [], following: [], logged: [], reviews: [], lists: []);
+String? _gameId;
+List<InkWell> column = [];
+
+class _addToListState extends State<addToListWidget> {
+
+  _addToListState({
+    required this.game,
+    required this.user
+  });
+
+  final int game;
+  final String user;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    fetchListData();
+    
+  }
+
+  Future<void> fetchListData() async {
+
+    if (mounted) {
+      setState(() => isLoading = true);
+    }
+
+    column = [];
+
+    _user = await getUserAPI.getUser(user);
+
+    List<dynamic> lists = _user.lists;
+
+    for (var listId in lists) {
+      if (!mounted) {continue;}
+
+      final String id = listId;
+
+      ListItem cur = await getListsAPI.getList(id);
+
+      int numGames = cur.games.length;
+
+      if (!mounted || cur.name == 'Shelf') {continue;}
+
+      InkWell list = InkWell(
+
+        onTap: () async {
+          Navigator.pushNamed(context, '/shelf', arguments: cur.id);
+        },
+
+        child: Container(
+
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(color: Colors.black87, width: .25)
+            )
+          ),
+
+          child: Row(
+
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+            children: [
+
+              Text(
+                cur.name,
+                style: TextStyle(
+                  color: fieldColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+
+              Text(
+                '$numGames' + ' Games',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 16,
+                ),
+              )
+
+            ],
+
+          ),
+
+        ),
+
+      );
+      
+      column.add(list);
+
+    }
+
+    if (mounted) {
+      setState(() => isLoading = false);
+    }
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return SizedBox(
+        height: MediaQuery.of(context).size.height - 32,
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 5, right: 20, top: 10, bottom: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: contColor, fontSize: 16),
+                    )),
+                const Text('Add to List...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold)),
+                TextButton(
+                    onPressed: () async {
+                      /*_rating = roundRating(_rating);
+                      print(release);
+                      String gameId = await AddGameAPI.searchId('$id');
+                      if (gameId == '') {
+                        gameId = await AddGameAPI.addGame(title, release, '$id');
+                      }
+                      print('saved ' + '$_rating' + ' rating of ' + title);
+                      if (reviewController.text != '') {
+                        isLog = false;
+                      }
+                      print(id);
+                      String reviewId = await AddReviewAPI.createReview(GlobalData.userId!, gameId);
+                      print('\n\n\n\nthis is my reviewID!!!!!!!!!' + reviewId);
+                      await AddReviewAPI.updateReview(
+                          GlobalData.userId!, reviewId, date, _rating, reviewController.text, isLog);
+                      Navigator.of(context).popUntil(ModalRoute.withName(route));*/
+                    },
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(color: NESred, fontSize: 16, fontWeight: FontWeight.bold),
+                    ))
+              ],
+            ),
+          ),
+          Container(
+            decoration: const BoxDecoration(color: Colors.black87),
+            padding: const EdgeInsets.all(20),
+            width: MediaQuery.of(context).size.width,
+            child: Wrap(
+              children: [
+                Text(
+                  gameTitle,
+                  style: const TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+          ),
+
+          Column(
+            children: column,
+          )
+          
+        ]
+      )
+    );
+
+  }
+
 }

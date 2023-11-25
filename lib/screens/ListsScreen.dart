@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:mobile_project/screens/LoadingScreen.dart';
+import 'package:mobile_project/utils/ListsAPI.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
 const contColor = Color(0xFF8C8C8C);
 const fieldColor = Color(0xFFD9D9D9);
 const NESred = Color(0xFFFF0000);
+
+List<dynamic>? listsIdsGlob = [];
+bool isLoading = true;
+List<InkWell> column = [];
 
 class ListsScreen extends StatefulWidget {
   @override
@@ -14,6 +20,100 @@ class ListsScreen extends StatefulWidget {
 
 
 class _ListsScreenState extends State<ListsScreen> {
+
+  List<dynamic>? listsIds;
+  
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // access the id argument passed from HubScreen
+    listsIds ??= ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    listsIdsGlob = listsIds;
+
+    print(listsIds);
+    print(listsIdsGlob);
+
+    // check if gameId is not null before making the API call
+    if (listsIds != null) {
+      fetchListData();
+    }
+  }
+
+  Future<void> fetchListData() async {
+
+    if (mounted) {
+      setState(() => isLoading = true);
+    }
+
+    column = [];
+
+    for (var listId in listsIdsGlob!) {
+      if (!mounted) {continue;}
+
+      final String id = listId;
+
+      ListItem cur = await getListsAPI.getList(id);
+
+      int numGames = cur.games.length;
+
+      if (!mounted || cur.name == 'Shelf') {continue;}
+
+      InkWell list = InkWell(
+
+        onTap: () async {
+          Navigator.pushNamed(context, '/shelf', arguments: cur.id);
+        },
+
+        child: Container(
+
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(color: textColor, width: .25)
+            )
+          ),
+
+          child: Row(
+
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+            children: [
+
+              Text(
+                cur.name,
+                style: TextStyle(
+                  color: fieldColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+
+              Text(
+                '$numGames' + ' Games',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 16,
+                ),
+              )
+
+            ],
+
+          ),
+
+        ),
+
+      );
+      
+      column.add(list);
+
+    }
+
+    if (mounted) {
+      setState(() => isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +129,7 @@ class _ListsScreenState extends State<ListsScreen> {
           ),
         ),
 
-        body: listsWidget()
+        body: isLoading ? LoadingPage() : listsWidget()
 
 
     );
@@ -66,7 +166,7 @@ class listsWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
 
-        children: [
+        children: column/*[
 
           InkWell(
 
@@ -116,7 +216,7 @@ class listsWidget extends StatelessWidget {
           )
           
 
-        ],
+        ],*/
 
       ),
 

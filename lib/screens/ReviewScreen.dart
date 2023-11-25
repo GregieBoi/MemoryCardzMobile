@@ -72,6 +72,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
     final api = GamePageAPI();
     final api2 = CoverAPI();
 
+    List<String> likedBy = oneReview.likedBy; 
+
     print('the game id for igdb is $gameIdIgdbGlob');
     await api.getGames(gameIdIgdbGlob);
     await api2.fetchData(gameIdIgdbGlob);

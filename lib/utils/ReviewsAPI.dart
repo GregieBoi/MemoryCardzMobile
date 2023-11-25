@@ -76,7 +76,7 @@ class getReviewsAPI {
 
       String user = '';
 
-      if (isLog == 'false' || isLog == 'true') {
+      if (isLog == false || isLog == true) {
         UserItem userItem2 = await UserAPI.getUser(userId);
         user = userItem2.firstName;
         print('user aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');

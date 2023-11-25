@@ -22,7 +22,7 @@ const fieldColor = Color(0xFFD9D9D9);
 const NESred = Color(0xFFFF0000);
 int _selectedIndex = 0;
 bool isLoading = true;
-var user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [''], following: [''], logged: [''], reviews: ['']);
+var user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [''], following: [''], logged: [''], reviews: [''], lists: []);
 
 //List<ReviewItem> recentsIds = [];
 //List<GameItem> recents = [];
@@ -143,7 +143,7 @@ class _GamesWidgetState extends State<GamesWidget> {
     }
     final api = CoverAPI();
     await api.fetchData(343);
-    if (_selectedIndex == 0) {
+    if (mounted) {
       setState(() {
         popularGames = api.body;
         // might need to fetch friend games similarly and update the friendGames list.
@@ -821,7 +821,7 @@ class _AccountWidgetState extends State<AccountWidget> {
           height: 10,
         ),
         Container(
-          height: (MediaQuery.of(context).size.width / 4) * 1.25,
+          height: (MediaQuery.of(context).size.width / 5) * 1.5,
           width: (MediaQuery.of(context).size.width),
           alignment: Alignment.center,
           margin: EdgeInsets.only(left: 20, right: 20),
@@ -833,16 +833,16 @@ class _AccountWidgetState extends State<AccountWidget> {
               final curRev = recentsIds[index];
               final curGame = recents[index];
               final cover = curGame.image;
-              final String gameId = curGame.id;
+              final String gameId = curGame.igId;
               final revId = curRev.id;
 
               return InkWell (
                 onTap: () async {
                   Navigator.pushNamed(context, '/review',
-                  arguments: {'reviewId': revId, 'gameId': int.parse(gameId)});
+                  arguments: {'reviewId': revId, 'gameId': gameId});
                 },
                 child : Container(
-                  height: (MediaQuery.of(context).size.width / 4) * 1.25,
+                  height: (MediaQuery.of(context).size.width / 5) * 1.3,
                   width: MediaQuery.of(context).size.width / 5,
                   clipBehavior: Clip.antiAlias,
                   margin: EdgeInsets.all(4),
@@ -852,7 +852,7 @@ class _AccountWidgetState extends State<AccountWidget> {
                   child: cover != ''
                     ? Image.network(
                       cover,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fill,
                       width: double.infinity,
                       height: double.infinity,
                     )
@@ -977,7 +977,7 @@ class _AccountWidgetState extends State<AccountWidget> {
         ),
         InkWell(
           onTap: () async {
-            Navigator.pushNamed(context, '/games', arguments: user.reviews);
+            Navigator.pushNamed(context, '/games', arguments: {'reviews': user.reviews});
           },
           child: Container(
             height: 40,
@@ -1007,7 +1007,7 @@ class _AccountWidgetState extends State<AccountWidget> {
         ),
         InkWell(
           onTap: () async {
-            Navigator.pushNamed(context, '/lists');
+            Navigator.pushNamed(context, '/lists', arguments: user.lists);
           },
           child: Container(
             height: 40,
@@ -1022,7 +1022,11 @@ class _AccountWidgetState extends State<AccountWidget> {
         ),
         InkWell(
           onTap: () async {
-            Navigator.pushNamed(context, '/shelf');
+            print(user.lists[0]);
+            final String shelf = user.lists[0];
+            print('butts');
+            print(shelf);
+            Navigator.pushNamed(context, '/shelf', arguments: shelf);
           },
           child: Container(
             height: 40,
@@ -1037,7 +1041,7 @@ class _AccountWidgetState extends State<AccountWidget> {
         ),
         InkWell(
           onTap: () async {
-            Navigator.pushNamed(context, '/following');
+            Navigator.pushNamed(context, '/following', arguments: user.following);
           },
           child: Container(
             height: 40,
@@ -1052,7 +1056,7 @@ class _AccountWidgetState extends State<AccountWidget> {
         ),
         InkWell(
           onTap: () async {
-            Navigator.pushNamed(context, '/follower');
+            Navigator.pushNamed(context, '/follower', arguments: user.followers);
           },
           child: Container(
             height: 40,
@@ -1318,3 +1322,5 @@ class SettingsWidget extends StatelessWidget {
             )));
   }
 }
+
+

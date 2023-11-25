@@ -32,12 +32,13 @@ class SearchGameLocal {
       print('reviews is :::::::::::::::::::::::::::::::::::::::::::::::::');
       print(reviews);
       String image = jsonObject['image'];
+      String igId = jsonObject['igdbId'];
 
-      return GameItem(id: id, title: title, dev: dev, genre: genre, release: release, reviews: reviews, image: image);
+      return GameItem(id: id, title: title, dev: dev, genre: genre, release: release, reviews: reviews, image: image, igId: igId);
     }
     catch (e) {
       print('i got here somehow!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-      return GameItem(id: '', title: '', dev: '', genre: '', release: '', reviews: List.empty(), image: '');
+      return GameItem(id: '', title: '', dev: '', genre: '', release: '', reviews: List.empty(), image: '', igId: '');
     }
 
   }
@@ -54,6 +55,7 @@ class GameItem {
   final String release;
   final List<dynamic> reviews;
   final String image;
+  final String igId;
 
   GameItem ({
 
@@ -63,7 +65,8 @@ class GameItem {
     required this.genre,
     required this.release,
     required this.reviews,
-    required this.image
+    required this.image,
+    required this.igId
 
   });
 

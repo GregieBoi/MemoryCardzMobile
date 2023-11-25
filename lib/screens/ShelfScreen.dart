@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:mobile_project/screens/LoadingScreen.dart';
+import 'package:mobile_project/utils/SearchGameLocal.dart';
+import 'package:mobile_project/utils/ListsAPI.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
 const contColor = Color(0xFF8C8C8C);
 const fieldColor = Color(0xFFD9D9D9);
 const NESred = Color(0xFFFF0000);
+String shelfGlob = '';
+bool isLoading = true;
+ListItem list = ListItem(id: '', name: '', games: []);
+List<InkWell> listGames = [];
 
 class ShelfScreen extends StatefulWidget {
   @override
@@ -14,6 +21,77 @@ class ShelfScreen extends StatefulWidget {
 
 
 class _ShelfScreenState extends State<ShelfScreen> {
+
+  String? shelf;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // access the id argument passed from HubScreen
+    shelf ??= ModalRoute.of(context)?.settings.arguments as String?;
+    if(shelf == '') {print('poop');}
+    print(shelf! + 'this exist');
+    final String id = shelf!;
+    shelfGlob = id;
+    print(shelfGlob);
+
+    // check if gameId is not null before making the API call
+    if (shelf != null) {
+      fetchShelfData();
+    }
+  }
+
+  Future<void> fetchShelfData() async {
+    if (mounted) {
+      setState(() => isLoading = true);
+    }
+
+    listGames = [];
+
+    print(shelfGlob);
+
+    list = await getListsAPI.getList(shelfGlob);
+
+    List<String> games = list.games;
+
+    for (String game in games) {
+      if (!mounted) {continue;}
+      GameItem cur = await SearchGameLocal.getGame(game);
+
+      print(cur.id + 'gameId aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+      InkWell cover = InkWell(
+        onTap: () {
+          Navigator.pushNamed(context, '/game',
+          arguments: int.parse(cur.igId));
+        },
+        child: Container(
+          height: (MediaQuery.of(context).size.width/5)*1.5,
+          width: MediaQuery.of(context).size.width/5,
+          margin: EdgeInsets.all(4),
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            // this allows for the rounded edges. I can't get it the way
+            borderRadius: BorderRadius.all(Radius.circular(4))),
+          child: cur.image != ''
+            ? Image.network(
+              cur.image,
+              fit: BoxFit.fill,
+              width: double.infinity,
+              height: double.infinity,
+            )
+            : Text('Failed to load')
+
+          )
+        );
+      listGames.add(cover);
+
+    }
+
+    if (mounted) {
+      setState(() => isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +102,12 @@ class _ShelfScreenState extends State<ShelfScreen> {
           backgroundColor: Colors.black87,
           centerTitle: true,
           title: Text(
-            'Shelf',
+            list.name,
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
 
-        body: myShelfWidget()
+        body: isLoading ? LoadingPage() : myShelfWidget()
 
 
     );
@@ -71,7 +149,7 @@ class myShelfWidget extends StatelessWidget {
 
           Wrap(
 
-            children: [
+            children: listGames/*[
 
               Card(
                 child: SizedBox(
@@ -123,7 +201,7 @@ class myShelfWidget extends StatelessWidget {
                 ),
               ),
 
-            ],
+            ],*/
 
           )
         ]
