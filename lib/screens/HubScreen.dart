@@ -22,7 +22,18 @@ const fieldColor = Color(0xFFD9D9D9);
 const NESred = Color(0xFFFF0000);
 int _selectedIndex = 0;
 bool isLoading = true;
-var user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [''], following: [''], logged: [''], reviews: [''], lists: []);
+var user = UserItem(
+    id: '',
+    userName: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    bio: '',
+    followers: [''],
+    following: [''],
+    logged: [''],
+    reviews: [''],
+    lists: []);
 
 //List<ReviewItem> recentsIds = [];
 //List<GameItem> recents = [];
@@ -46,7 +57,8 @@ class _HubScreenState extends State<HubScreen> {
     setState(() {
       if (index == 2) {
         showModalBottomSheet<dynamic>(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             backgroundColor: backColor,
             isScrollControlled: true,
             context: context,
@@ -98,7 +110,10 @@ class _HubScreenState extends State<HubScreen> {
             icon: Icon(Icons.bolt),
             label: 'Activity',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account', backgroundColor: NESred),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Account',
+              backgroundColor: NESred),
         ],
       ),
     );
@@ -170,7 +185,8 @@ class _GamesWidgetState extends State<GamesWidget> {
             padding: EdgeInsets.only(left: 10),
             child: Text(
               'Popular (EMPTY FOR NOW)',
-              style: TextStyle(color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(height: 10),
@@ -185,9 +201,12 @@ class _GamesWidgetState extends State<GamesWidget> {
                 return Container(
                   height: 150,
                   width: 120,
-                  child: isLoading ? LoadingPage() : game.coverImageUrl.isNotEmpty
-                      ? Image.network(game.coverImageUrl, height: 170, width: 120, fit: BoxFit.fitHeight)
-                      : Container(),
+                  child: isLoading
+                      ? LoadingPage()
+                      : game.coverImageUrl.isNotEmpty
+                          ? Image.network(game.coverImageUrl,
+                              height: 170, width: 120, fit: BoxFit.fitHeight)
+                          : Container(),
                   //SizedBox(height: 5),
                   //Text(game.title, style: TextStyle(fontSize: 12), textAlign: TextAlign.center),
                 );
@@ -199,7 +218,8 @@ class _GamesWidgetState extends State<GamesWidget> {
             padding: EdgeInsets.only(left: 10),
             child: Text(
               'From Friends (EMPTY FOR NOW)',
-              style: TextStyle(color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(height: 10),
@@ -256,13 +276,15 @@ class _SearchWidgetState extends State<SearchWidget> {
         child: SearchAnchor(
             viewBackgroundColor: contColor,
             dividerColor: Colors.black87,
-            viewConstraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 16),
+            viewConstraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width - 16),
             isFullScreen: false,
             builder: (BuildContext context, SearchController controller) {
               return SearchBar(
                 backgroundColor: MaterialStateProperty.all(contColor),
                 controller: controller,
-                padding: const MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16.0)),
+                padding: const MaterialStatePropertyAll<EdgeInsets>(
+                    EdgeInsets.symmetric(horizontal: 16.0)),
                 onTap: () {
                   controller.openView();
                 },
@@ -272,16 +294,19 @@ class _SearchWidgetState extends State<SearchWidget> {
                 leading: const Icon(Icons.search),
               );
             },
-            suggestionsBuilder: (BuildContext context, SearchController controller) async {
+            suggestionsBuilder:
+                (BuildContext context, SearchController controller) async {
               _searchingWithQuery = controller.text;
               await Future.delayed(const Duration(seconds: 1));
-              final List<NameItem> results = (await NameAPI.fetchData(_searchingWithQuery!)).toList();
+              final List<NameItem> results =
+                  (await NameAPI.fetchData(_searchingWithQuery!)).toList();
 
               if (_searchingWithQuery != controller.text) {
                 return _lastOptions;
               }
 
-              _lastOptions = List<ListTile>.generate(results.length, (int index) {
+              _lastOptions =
+                  List<ListTile>.generate(results.length, (int index) {
                 final NameItem item = results[index];
                 return ListTile(
                     title: Text(item.title + ' ' + item.year),
@@ -315,7 +340,8 @@ class _AddWidgetState extends State<AddWidget> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(left: 5, right: 20, top: 10, bottom: 10),
+            padding:
+                const EdgeInsets.only(left: 5, right: 20, top: 10, bottom: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -327,7 +353,10 @@ class _AddWidgetState extends State<AddWidget> {
                     )),
                 const Text('Add a Game',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold)),
+                    style: TextStyle(
+                        color: fieldColor,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold)),
                 const Text(
                   'Cancel',
                   style: TextStyle(color: backColor, fontSize: 16),
@@ -341,13 +370,15 @@ class _AddWidgetState extends State<AddWidget> {
               child: SearchAnchor(
                   viewBackgroundColor: contColor,
                   dividerColor: Colors.black87,
-                  viewConstraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 16),
+                  viewConstraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width - 16),
                   isFullScreen: false,
                   builder: (BuildContext context, SearchController controller) {
                     return SearchBar(
                       backgroundColor: MaterialStateProperty.all(contColor),
                       controller: controller,
-                      padding: const MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16.0)),
+                      padding: const MaterialStatePropertyAll<EdgeInsets>(
+                          EdgeInsets.symmetric(horizontal: 16.0)),
                       onTap: () {
                         controller.openView();
                       },
@@ -357,21 +388,26 @@ class _AddWidgetState extends State<AddWidget> {
                       leading: const Icon(Icons.search),
                     );
                   },
-                  suggestionsBuilder: (BuildContext context, SearchController controller) async {
+                  suggestionsBuilder: (BuildContext context,
+                      SearchController controller) async {
                     _searchingWithQuery = controller.text;
-                    final List<NameItem> results = (await NameAPI.fetchData(_searchingWithQuery!)).toList();
+                    final List<NameItem> results =
+                        (await NameAPI.fetchData(_searchingWithQuery!))
+                            .toList();
 
                     if (_searchingWithQuery != controller.text) {
                       return _lastOptions;
                     }
 
-                    _lastOptions = List<ListTile>.generate(results.length, (int index) {
+                    _lastOptions =
+                        List<ListTile>.generate(results.length, (int index) {
                       final NameItem item = results[index];
                       return ListTile(
                           title: Text(item.title + ' ' + item.year),
                           onTap: () {
                             showModalBottomSheet<dynamic>(
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15)),
                                 backgroundColor: backColor,
                                 isScrollControlled: true,
                                 context: context,
@@ -408,8 +444,8 @@ class ReviewWidget extends StatefulWidget {
   final String route;
 
   @override
-  _ReviewWidgetState createState() =>
-      _ReviewWidgetState(id: id, title: title, release: release, year: year, route: route);
+  _ReviewWidgetState createState() => _ReviewWidgetState(
+      id: id, title: title, release: release, year: year, route: route);
 }
 
 class _ReviewWidgetState extends State<ReviewWidget> {
@@ -465,137 +501,170 @@ class _ReviewWidgetState extends State<ReviewWidget> {
 
     return SizedBox(
         height: MediaQuery.of(context).size.height - 32,
-        child: Column(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 5, right: 20, top: 10, bottom: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(color: contColor, fontSize: 16),
-                    )),
-                const Text('I Played...',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold)),
-                TextButton(
-                    onPressed: () async {
-                      _rating = roundRating(_rating);
-                      print(release);
-                      String gameId = await AddGameAPI.searchId('$id');
-                      if (gameId == '') {
-                        gameId = await AddGameAPI.addGame(title, release, '$id');
-                      }
-                      print('saved ' + '$_rating' + ' rating of ' + title);
-                      if (reviewController.text != '') {
-                        isLog = false;
-                      }
-                      print(id);
-                      String reviewId = await AddReviewAPI.createReview(GlobalData.userId!, gameId);
-                      print('\n\n\n\nthis is my reviewID!!!!!!!!!' + reviewId);
-                      await AddReviewAPI.updateReview(
-                          GlobalData.userId!, reviewId, date, _rating, reviewController.text, isLog);
-                      Navigator.of(context).popUntil(ModalRoute.withName(route));
-                    },
-                    child: const Text(
-                      'Save',
-                      style: TextStyle(color: NESred, fontSize: 16, fontWeight: FontWeight.bold),
-                    ))
-              ],
-            ),
-          ),
-          Container(
-            decoration: const BoxDecoration(color: Colors.black87),
-            padding: const EdgeInsets.all(20),
-            width: MediaQuery.of(context).size.width,
-            child: Wrap(
-              children: [
-                Text(
-                  title + ' ' + year,
-                  style: const TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
-                )
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Date',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 16,
-                  ),
-                ),
-                Text(date, style: const TextStyle(color: textColor, fontSize: 14))
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
-            decoration: const BoxDecoration(border: Border(top: BorderSide(color: Colors.black87, width: .25))),
-            child: Column(
-              children: [
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text('Rated',
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 16,
-                        )),
-                  ],
-                ),
-                Row(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 5, right: 20, top: 10, bottom: 10),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    GFRating(
-                      color: GFColors.SUCCESS,
-                      borderColor: GFColors.SUCCESS,
-                      allowHalfRating: true,
-                      defaultIcon: const Icon(Icons.star_outline_rounded, color: NESred, size: GFSize.LARGE),
-                      halfFilledIcon: const Icon(Icons.star_half_rounded, color: NESred, size: GFSize.LARGE),
-                      filledIcon: const Icon(
-                        Icons.star_rounded,
-                        color: NESred,
-                        size: GFSize.LARGE,
-                      ),
-                      size: GFSize.LARGE,
-                      value: _rating,
-                      onChanged: (value) {
-                        setState(() {
-                          _rating = value;
-                          print(_rating);
-                        });
-                      },
-                    ),
+                    TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: contColor, fontSize: 16),
+                        )),
+                    const Text('I Played...',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: fieldColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
+                    TextButton(
+                        onPressed: () async {
+                          _rating = roundRating(_rating);
+                          print(release);
+                          String gameId = await AddGameAPI.searchId('$id');
+                          if (gameId == '') {
+                            gameId =
+                                await AddGameAPI.addGame(title, release, '$id');
+                          }
+                          print('saved ' + '$_rating' + ' rating of ' + title);
+                          if (reviewController.text != '') {
+                            isLog = false;
+                          }
+                          print(id);
+                          String reviewId = await AddReviewAPI.createReview(
+                              GlobalData.userId!, gameId);
+                          print('\n\n\n\nthis is my reviewID!!!!!!!!!' +
+                              reviewId);
+                          await AddReviewAPI.updateReview(
+                              GlobalData.userId!,
+                              reviewId,
+                              date,
+                              _rating,
+                              reviewController.text,
+                              isLog);
+                          Navigator.of(context)
+                              .popUntil(ModalRoute.withName(route));
+                        },
+                        child: const Text(
+                          'Save',
+                          style: TextStyle(
+                              color: NESred,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ))
                   ],
-                )
-              ],
-            ),
-          ),
-          Container(
-              padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
-              decoration: const BoxDecoration(border: Border(top: BorderSide(color: Colors.black87, width: .25))),
-              child: TextField(
-                controller: reviewController,
-                maxLines: null,
-                style: const TextStyle(
-                  color: textColor,
-                  fontSize: 14,
                 ),
-                decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.all(0),
-                    floatingLabelStyle: TextStyle(color: Colors.transparent),
-                    labelText: 'Add Review...',
-                    labelStyle: TextStyle(color: textColor, fontSize: 14),
-                    border: OutlineInputBorder(borderSide: BorderSide.none)),
-              ))
-        ]));
+              ),
+              Container(
+                decoration: const BoxDecoration(color: Colors.black87),
+                padding: const EdgeInsets.all(20),
+                width: MediaQuery.of(context).size.width,
+                child: Wrap(
+                  children: [
+                    Text(
+                      title + ' ' + year,
+                      style: const TextStyle(
+                          color: textColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Date',
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(date,
+                        style: const TextStyle(color: textColor, fontSize: 14))
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.only(
+                    top: 10, left: 20, right: 20, bottom: 10),
+                decoration: const BoxDecoration(
+                    border: Border(
+                        top: BorderSide(color: Colors.black87, width: .25))),
+                child: Column(
+                  children: [
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Rated',
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: 16,
+                            )),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GFRating(
+                          color: GFColors.SUCCESS,
+                          borderColor: GFColors.SUCCESS,
+                          allowHalfRating: true,
+                          defaultIcon: const Icon(Icons.star_outline_rounded,
+                              color: NESred, size: GFSize.LARGE),
+                          halfFilledIcon: const Icon(Icons.star_half_rounded,
+                              color: NESred, size: GFSize.LARGE),
+                          filledIcon: const Icon(
+                            Icons.star_rounded,
+                            color: NESred,
+                            size: GFSize.LARGE,
+                          ),
+                          size: GFSize.LARGE,
+                          value: _rating,
+                          onChanged: (value) {
+                            setState(() {
+                              _rating = value;
+                              print(_rating);
+                            });
+                          },
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                  padding: const EdgeInsets.only(
+                      top: 10, left: 20, right: 20, bottom: 10),
+                  decoration: const BoxDecoration(
+                      border: Border(
+                          top: BorderSide(color: Colors.black87, width: .25))),
+                  child: TextField(
+                    controller: reviewController,
+                    maxLines: null,
+                    style: const TextStyle(
+                      color: textColor,
+                      fontSize: 14,
+                    ),
+                    decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.all(0),
+                        floatingLabelStyle:
+                            TextStyle(color: Colors.transparent),
+                        labelText: 'Add Review...',
+                        labelStyle: TextStyle(color: textColor, fontSize: 14),
+                        border:
+                            OutlineInputBorder(borderSide: BorderSide.none)),
+                  ))
+            ]));
   }
 }
 
@@ -612,17 +681,15 @@ class AccountWidget extends StatefulWidget {
 }
 
 class _AccountWidgetState extends State<AccountWidget> {
-
-  
   List<GameItem> recents = [];
   List<ReviewItem> recentsIds = [];
-  
+
   @override
   void initState() {
     super.initState();
     fetchUserId();
   }
-  
+
   Future<void> fetchUserId() async {
     if (mounted) {
       setState(() => isLoading = true);
@@ -639,7 +706,6 @@ class _AccountWidgetState extends State<AccountWidget> {
   }
 
   Future<void> fetchRecents() async {
-
     int logs = user.logged.length;
     int reviews = user.reviews.length;
     List<String> recentLogs = [];
@@ -647,35 +713,32 @@ class _AccountWidgetState extends State<AccountWidget> {
 
     List<GameItem> rec = [];
     List<ReviewItem> recIds = [];
-    
+
     if (logs >= 4) {
       for (int i = 0; i < 4; i++) {
-        recentLogs.add(user.logged[logs-i-1]);
+        recentLogs.add(user.logged[logs - i - 1]);
       }
-    }
-    else {
+    } else {
       for (int i = 0; i < logs; i++) {
-        recentLogs.add(user.logged[logs-i-1]);
+        recentLogs.add(user.logged[logs - i - 1]);
       }
     }
     if (reviews >= 4) {
       for (int i = 0; i < 4; i++) {
-        recentRevs.add(user.reviews[reviews-i-1]);
+        recentRevs.add(user.reviews[reviews - i - 1]);
       }
-    }
-    else {
+    } else {
       for (int i = 0; i < logs; i++) {
-        recentRevs.add(user.reviews[reviews-i-1]);
+        recentRevs.add(user.reviews[reviews - i - 1]);
       }
     }
 
     print(recentLogs);
     print(recentRevs);
-    
-    List<ReviewItem> revs = []; 
+
+    List<ReviewItem> revs = [];
 
     for (var rev in recentRevs) {
-
       print(rev);
 
       ReviewItem cur = await getReviewsAPI.getReview(rev);
@@ -689,7 +752,7 @@ class _AccountWidgetState extends State<AccountWidget> {
 
     print(revs);
 
-    List<ReviewItem> lgs = []; 
+    List<ReviewItem> lgs = [];
 
     for (var lg in recentLogs) {
       //lgs.add(await getReviewsAPI.getReview(lg));
@@ -712,157 +775,156 @@ class _AccountWidgetState extends State<AccountWidget> {
         recents = rec;
       });
     }
-    
   }
 
   @override
   Widget build(BuildContext context) {
-
-    return isLoading ? LoadingPage() 
-      : SingleChildScrollView(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 20,
-        ),
-        badges.Badge(
-          onTap: () {
-            showModalBottomSheet<dynamic>(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                backgroundColor: backColor,
-                isScrollControlled: true,
-                context: context,
-                builder: (BuildContext context) {
-                  return SettingsWidget();
-                });
-          },
-          badgeContent: Icon(
-            Icons.settings_outlined,
-            color: Colors.black87,
-          ),
-          badgeStyle: badges.BadgeStyle(badgeColor: Colors.transparent),
-          child: GFAvatar(
-            shape: GFAvatarShape.circle,
-          ),
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        Text(
-          user.bio,
-          style: TextStyle(color: textColor),
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        Text(
-          'Favorites',
-          style: TextStyle(fontSize: 20, color: textColor),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Container(
-          height: (MediaQuery.of(context).size.width / 4) * 1.25,
-          width: (MediaQuery.of(context).size.width),
-          alignment: Alignment.center,
-          margin: EdgeInsets.only(left: 20, right: 20),
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: <Card>[
-              Card(
-                child: SizedBox(
-                  height: (MediaQuery.of(context).size.width / 4) * 1.25,
-                  width: MediaQuery.of(context).size.width / 5,
-                  child: Center(
-                    child: Text('Card1'),
-                  ),
-                ),
+    return isLoading
+        ? LoadingPage()
+        : SingleChildScrollView(
+            child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 20,
               ),
-              Card(
-                child: SizedBox(
-                  height: 150,
-                  width: MediaQuery.of(context).size.width / 5,
-                  child: Center(
-                    child: Text('Card1'),
-                  ),
-                ),
-              ),
-              Card(
-                child: SizedBox(
-                  height: (MediaQuery.of(context).size.width / 5),
-                  width: MediaQuery.of(context).size.width / 5,
-                  child: Center(
-                    child: Text('Card1'),
-                  ),
-                ),
-              ),
-              Card(
-                child: SizedBox(
-                  height: 150,
-                  width: MediaQuery.of(context).size.width / 5,
-                  child: Center(
-                    child: Text('Card1'),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        Text(
-          'Recent',
-          style: TextStyle(fontSize: 20, color: textColor),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Container(
-          height: (MediaQuery.of(context).size.width / 5) * 1.5,
-          width: (MediaQuery.of(context).size.width),
-          alignment: Alignment.center,
-          margin: EdgeInsets.only(left: 20, right: 20),
-          child: ListView.builder(
-
-            scrollDirection: Axis.horizontal,
-            itemCount: recents.length,
-            itemBuilder: ((context, index) {
-              final curRev = recentsIds[index];
-              final curGame = recents[index];
-              final cover = curGame.image;
-              final String gameId = curGame.igId;
-              final revId = curRev.id;
-
-              return InkWell (
-                onTap: () async {
-                  Navigator.pushNamed(context, '/review',
-                  arguments: {'reviewId': revId, 'gameId': gameId});
+              badges.Badge(
+                onTap: () {
+                  showModalBottomSheet<dynamic>(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
+                      backgroundColor: backColor,
+                      isScrollControlled: true,
+                      context: context,
+                      builder: (BuildContext context) {
+                        return SettingsWidget();
+                      });
                 },
-                child : Container(
-                  height: (MediaQuery.of(context).size.width / 5) * 1.3,
-                  width: MediaQuery.of(context).size.width / 5,
-                  clipBehavior: Clip.antiAlias,
-                  margin: EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                      // this allows for the rounded edges. I can't get it the way
-                      borderRadius: BorderRadius.all(Radius.circular(4))),
-                  child: cover != ''
-                    ? Image.network(
-                      cover,
-                      fit: BoxFit.fill,
-                      width: double.infinity,
-                      height: double.infinity,
-                    )
-                  : Text('Failed to load')
-                )
-              );
-            })
-          
-          ),
-            /*scrollDirection: Axis.horizontal,
+                badgeContent: Icon(
+                  Icons.settings_outlined,
+                  color: Colors.black87,
+                ),
+                badgeStyle: badges.BadgeStyle(badgeColor: Colors.transparent),
+                child: GFAvatar(
+                  shape: GFAvatarShape.circle,
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Text(
+                user.bio,
+                style: TextStyle(color: textColor),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Text(
+                'Favorites',
+                style: TextStyle(fontSize: 20, color: textColor),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                height: (MediaQuery.of(context).size.width / 4) * 1.25,
+                width: (MediaQuery.of(context).size.width),
+                alignment: Alignment.center,
+                margin: EdgeInsets.only(left: 20, right: 20),
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: <Card>[
+                    Card(
+                      child: SizedBox(
+                        height: (MediaQuery.of(context).size.width / 4) * 1.25,
+                        width: MediaQuery.of(context).size.width / 5,
+                        child: Center(
+                          child: Text('Card1'),
+                        ),
+                      ),
+                    ),
+                    Card(
+                      child: SizedBox(
+                        height: 150,
+                        width: MediaQuery.of(context).size.width / 5,
+                        child: Center(
+                          child: Text('Card1'),
+                        ),
+                      ),
+                    ),
+                    Card(
+                      child: SizedBox(
+                        height: (MediaQuery.of(context).size.width / 5),
+                        width: MediaQuery.of(context).size.width / 5,
+                        child: Center(
+                          child: Text('Card1'),
+                        ),
+                      ),
+                    ),
+                    Card(
+                      child: SizedBox(
+                        height: 150,
+                        width: MediaQuery.of(context).size.width / 5,
+                        child: Center(
+                          child: Text('Card1'),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Text(
+                'Recent',
+                style: TextStyle(fontSize: 20, color: textColor),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                height: (MediaQuery.of(context).size.width / 5) * 1.5,
+                width: (MediaQuery.of(context).size.width),
+                alignment: Alignment.center,
+                margin: EdgeInsets.only(left: 20, right: 20),
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: recents.length,
+                    itemBuilder: ((context, index) {
+                      final curRev = recentsIds[index];
+                      final curGame = recents[index];
+                      final cover = curGame.image;
+                      final String gameId = curGame.igId;
+                      final revId = curRev.id;
+
+                      return InkWell(
+                          onTap: () async {
+                            Navigator.pushNamed(context, '/review', arguments: {
+                              'reviewId': revId,
+                              'gameId': gameId
+                            });
+                          },
+                          child: Container(
+                              height:
+                                  (MediaQuery.of(context).size.width / 5) * 1.3,
+                              width: MediaQuery.of(context).size.width / 5,
+                              clipBehavior: Clip.antiAlias,
+                              margin: EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                  // this allows for the rounded edges. I can't get it the way
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(4))),
+                              child: cover != ''
+                                  ? Image.network(
+                                      cover,
+                                      fit: BoxFit.fill,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                    )
+                                  : Text('Failed to load')));
+                    })),
+                /*scrollDirection: Axis.horizontal,
             children: <Card>[
               Card(
                 child: SizedBox(
@@ -902,175 +964,205 @@ class _AccountWidgetState extends State<AccountWidget> {
               ),
             ],
           ),*/
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Container(
-          margin: EdgeInsets.only(top: 20),
-          padding: EdgeInsets.all(20),
-          width: MediaQuery.of(context).size.width + 40,
-          decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor, width: .25))),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'RATINGS',
-                style: TextStyle(color: textColor),
               ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Icon(
-                    Icons.star,
-                    color: NESred,
-                    size: 10,
-                  ),
-                  Container(
-                    height: 50,
-                    width: (MediaQuery.of(context).size.width - 40) * 2 / 3,
-                    child: SfSparkBarChart(
-                      data: [0.025, 0.025, 0.1, 0.05, 0.05, 1, 2, 3, 1, 1],
-                      color: textColor,
-                    ),
-                  ),
-                  Column(children: [
+              const SizedBox(
+                height: 20,
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 20),
+                padding: EdgeInsets.all(20),
+                width: MediaQuery.of(context).size.width + 40,
+                decoration: BoxDecoration(
+                    border:
+                        Border(top: BorderSide(color: contColor, width: .25))),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      '3.9',
-                      style: TextStyle(fontSize: 20, color: textColor),
+                      'RATINGS',
+                      style: TextStyle(color: textColor),
                     ),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Icon(
                           Icons.star,
                           color: NESred,
                           size: 10,
                         ),
-                        Icon(
-                          Icons.star,
-                          color: NESred,
-                          size: 10,
+                        Container(
+                          height: 50,
+                          width:
+                              (MediaQuery.of(context).size.width - 40) * 2 / 3,
+                          child: SfSparkBarChart(
+                            data: [
+                              0.025,
+                              0.025,
+                              0.1,
+                              0.05,
+                              0.05,
+                              1,
+                              2,
+                              3,
+                              1,
+                              1
+                            ],
+                            color: textColor,
+                          ),
                         ),
-                        Icon(
-                          Icons.star,
-                          color: NESred,
-                          size: 10,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: NESred,
-                          size: 10,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: NESred,
-                          size: 10,
-                        ),
+                        Column(children: [
+                          Text(
+                            '3.9',
+                            style: TextStyle(fontSize: 20, color: textColor),
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.star,
+                                color: NESred,
+                                size: 10,
+                              ),
+                              Icon(
+                                Icons.star,
+                                color: NESred,
+                                size: 10,
+                              ),
+                              Icon(
+                                Icons.star,
+                                color: NESred,
+                                size: 10,
+                              ),
+                              Icon(
+                                Icons.star,
+                                color: NESred,
+                                size: 10,
+                              ),
+                              Icon(
+                                Icons.star,
+                                color: NESred,
+                                size: 10,
+                              ),
+                            ],
+                          )
+                        ])
                       ],
                     )
-                  ])
-                ],
-              )
+                  ],
+                ),
+              ),
+              InkWell(
+                onTap: () async {
+                  Navigator.pushNamed(context, '/games',
+                      arguments: {'reviews': user.reviews});
+                },
+                child: Container(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          top: BorderSide(color: contColor, width: .25))),
+                  child: Text(
+                    'Games',
+                    style: TextStyle(fontSize: 16, color: textColor),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () async {
+                  Navigator.pushNamed(context, '/diary',
+                      arguments: user.reviews);
+                },
+                child: Container(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          top: BorderSide(color: contColor, width: .25))),
+                  child: Text(
+                    'Diary',
+                    style: TextStyle(fontSize: 16, color: textColor),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () async {
+                  Navigator.pushNamed(context, '/lists', arguments: user.lists);
+                },
+                child: Container(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          top: BorderSide(color: contColor, width: .25))),
+                  child: Text(
+                    'Lists',
+                    style: TextStyle(fontSize: 16, color: textColor),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () async {
+                  print(user.lists[0]);
+                  final String shelf = user.lists[0];
+                  print('butts');
+                  print(shelf);
+                  Navigator.pushNamed(context, '/shelf', arguments: shelf);
+                },
+                child: Container(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          top: BorderSide(color: contColor, width: .25))),
+                  child: Text(
+                    'Shelf',
+                    style: TextStyle(fontSize: 16, color: textColor),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () async {
+                  Navigator.pushNamed(context, '/following',
+                      arguments: user.following);
+                },
+                child: Container(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          top: BorderSide(color: contColor, width: .25))),
+                  child: Text(
+                    'Following',
+                    style: TextStyle(fontSize: 16, color: textColor),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () async {
+                  Navigator.pushNamed(context, '/follower',
+                      arguments: user.followers);
+                },
+                child: Container(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          top: BorderSide(color: contColor, width: .25))),
+                  child: Text(
+                    'Followers',
+                    style: TextStyle(fontSize: 16, color: textColor),
+                  ),
+                ),
+              ),
             ],
-          ),
-        ),
-        InkWell(
-          onTap: () async {
-            Navigator.pushNamed(context, '/games', arguments: {'reviews': user.reviews});
-          },
-          child: Container(
-            height: 40,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor, width: .25))),
-            child: Text(
-              'Games',
-              style: TextStyle(fontSize: 16, color: textColor),
-            ),
-          ),
-        ),
-        InkWell(
-          onTap: () async {
-            Navigator.pushNamed(context, '/diary');
-          },
-          child: Container(
-            height: 40,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor, width: .25))),
-            child: Text(
-              'Diary',
-              style: TextStyle(fontSize: 16, color: textColor),
-            ),
-          ),
-        ),
-        InkWell(
-          onTap: () async {
-            Navigator.pushNamed(context, '/lists', arguments: user.lists);
-          },
-          child: Container(
-            height: 40,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor, width: .25))),
-            child: Text(
-              'Lists',
-              style: TextStyle(fontSize: 16, color: textColor),
-            ),
-          ),
-        ),
-        InkWell(
-          onTap: () async {
-            print(user.lists[0]);
-            final String shelf = user.lists[0];
-            print('butts');
-            print(shelf);
-            Navigator.pushNamed(context, '/shelf', arguments: shelf);
-          },
-          child: Container(
-            height: 40,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor, width: .25))),
-            child: Text(
-              'Shelf',
-              style: TextStyle(fontSize: 16, color: textColor),
-            ),
-          ),
-        ),
-        InkWell(
-          onTap: () async {
-            Navigator.pushNamed(context, '/following', arguments: user.following);
-          },
-          child: Container(
-            height: 40,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor, width: .25))),
-            child: Text(
-              'Following',
-              style: TextStyle(fontSize: 16, color: textColor),
-            ),
-          ),
-        ),
-        InkWell(
-          onTap: () async {
-            Navigator.pushNamed(context, '/follower', arguments: user.followers);
-          },
-          child: Container(
-            height: 40,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor, width: .25))),
-            child: Text(
-              'Followers',
-              style: TextStyle(fontSize: 16, color: textColor),
-            ),
-          ),
-        ),
-      ],
-    ));
+          ));
   }
 }
 
@@ -1094,26 +1186,31 @@ class SettingsWidget extends StatelessWidget {
                         onTap: () {
                           Navigator.pop(context);
                         },
-                        child: Text('Cancel', style: TextStyle(color: textColor, fontSize: 16)),
+                        child: Text('Cancel',
+                            style: TextStyle(color: textColor, fontSize: 16)),
                       ),
-                      Text('Settings', style: TextStyle(color: fieldColor, fontSize: 20)),
+                      Text('Settings',
+                          style: TextStyle(color: fieldColor, fontSize: 20)),
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
                         },
-                        child: Text('Save', style: TextStyle(color: NESred, fontSize: 16, fontWeight: FontWeight.bold)),
+                        child: Text('Save',
+                            style: TextStyle(
+                                color: NESred,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding:
+                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
-                          top: BorderSide(
-                    color: textColor, width: .25
-                  ))),
+                          top: BorderSide(color: textColor, width: .25))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -1126,12 +1223,11 @@ class SettingsWidget extends StatelessWidget {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding:
+                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
-                          top: BorderSide(
-                    color: textColor, width: .25
-                  ))),
+                          top: BorderSide(color: textColor, width: .25))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -1144,12 +1240,11 @@ class SettingsWidget extends StatelessWidget {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding:
+                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
-                          top: BorderSide(
-                    color: textColor, width: .25
-                  ))),
+                          top: BorderSide(color: textColor, width: .25))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -1163,12 +1258,11 @@ class SettingsWidget extends StatelessWidget {
                 Container(
                   height: 50,
                   width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding:
+                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
-                          top: BorderSide(
-                    color: textColor, width: .25
-                  ))),
+                          top: BorderSide(color: textColor, width: .25))),
                 ),
                 Container(
                   padding: EdgeInsets.only(left: 20, bottom: 10),
@@ -1187,12 +1281,11 @@ class SettingsWidget extends StatelessWidget {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding:
+                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
-                          top: BorderSide(
-                    color: textColor, width: .25
-                  ))),
+                          top: BorderSide(color: textColor, width: .25))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -1209,12 +1302,11 @@ class SettingsWidget extends StatelessWidget {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding:
+                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
-                          top: BorderSide(
-                    color: textColor, width: .25
-                  ))),
+                          top: BorderSide(color: textColor, width: .25))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -1231,12 +1323,11 @@ class SettingsWidget extends StatelessWidget {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding:
+                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
-                          top: BorderSide(
-                    color: textColor, width: .25
-                  ))),
+                          top: BorderSide(color: textColor, width: .25))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -1253,18 +1344,20 @@ class SettingsWidget extends StatelessWidget {
                 ),
                 Container(
                     width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
+                    padding: EdgeInsets.only(
+                        left: 20, right: 20, top: 10, bottom: 20),
                     decoration: BoxDecoration(
                         border: Border(
-                            top: BorderSide(
-                      color: textColor, width: .25
-                    ))),
+                            top: BorderSide(color: textColor, width: .25))),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Icons',
-                          style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: textColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
                         ),
                         SizedBox(
                           height: 20,
@@ -1275,22 +1368,26 @@ class SettingsWidget extends StatelessWidget {
                             Container(
                               height: 60,
                               width: 60,
-                              decoration: BoxDecoration(shape: BoxShape.circle, color: fieldColor),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle, color: fieldColor),
                             ),
                             Container(
                               height: 60,
                               width: 60,
-                              decoration: BoxDecoration(shape: BoxShape.circle, color: fieldColor),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle, color: fieldColor),
                             ),
                             Container(
                               height: 60,
                               width: 60,
-                              decoration: BoxDecoration(shape: BoxShape.circle, color: fieldColor),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle, color: fieldColor),
                             ),
                             Container(
                               height: 60,
                               width: 60,
-                              decoration: BoxDecoration(shape: BoxShape.circle, color: fieldColor),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle, color: fieldColor),
                             ),
                           ],
                         ),
@@ -1298,18 +1395,20 @@ class SettingsWidget extends StatelessWidget {
                     )),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                  padding:
+                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
                   decoration: BoxDecoration(
                       border: Border(
-                          top: BorderSide(
-                    color: textColor, width: .25
-                  ))),
+                          top: BorderSide(color: textColor, width: .25))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         'Delete Account',
-                        style: TextStyle(color: NESred, fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: NESred,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
                       ),
                       Icon(
                         Icons.arrow_right,
@@ -1322,5 +1421,3 @@ class SettingsWidget extends StatelessWidget {
             )));
   }
 }
-
-
