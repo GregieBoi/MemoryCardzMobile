@@ -27,6 +27,7 @@ bool isLiked = false;
 List<InkWell> edits = [];
 InkWell edit = InkWell();
 InkWell delete = InkWell();
+bool? edited = false;
 
 ReviewItem oneReview = ReviewItem(
     id: '0',
@@ -112,7 +113,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
 
       edit = InkWell(
         onTap: () async {
-          showModalBottomSheet<dynamic>(
+          bool? edit = false;
+          edit = await showModalBottomSheet<bool>(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15)),
             backgroundColor: backColor,
@@ -130,6 +132,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                   rating: oneReview.rating,
                 );
             });
+          if (edit!) {edited = edit; didChangeDependencies();}
         },
         child: Container(
           padding: EdgeInsets.only(left: 20, top: 10, bottom: 10, right: 20),
@@ -241,7 +244,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
             Icons.arrow_back,
             color: Colors.white
           ),
-          onPressed: (() => Navigator.of(context).pop(false)),
+          onPressed: (() => Navigator.of(context).pop(edited)),
         ),
         backgroundColor: Colors.black87,
         centerTitle: true,
@@ -697,7 +700,7 @@ class _editReviewWidgetState extends State<editReviewWidget> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => Navigator.of(context).pop(false),
                         child: const Text(
                           'Cancel',
                           style: TextStyle(color: contColor, fontSize: 16),
@@ -730,8 +733,7 @@ class _editReviewWidgetState extends State<editReviewWidget> {
                               reviewController.text,
                               isLog);
                           Navigator.of(context)
-                              ..pop()
-                              ..pop();
+                              ..pop(true);
                         },
                         child: const Text(
                           'Save',

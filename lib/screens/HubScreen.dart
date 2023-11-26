@@ -911,10 +911,12 @@ class _AccountWidgetState extends State<AccountWidget> {
 
                       return InkWell(
                           onTap: () async {
-                            Navigator.pushNamed(context, '/review', arguments: {
+                            bool deleted = false;
+                            deleted = await Navigator.pushNamed(context, '/review', arguments: {
                               'reviewId': revId,
                               'gameId': int.parse(gameId)
-                            });
+                            }) as bool;
+                            if (deleted) {didChangeDependencies();}
                           },
                           child: Container(
                               height:

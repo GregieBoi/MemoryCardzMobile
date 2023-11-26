@@ -195,10 +195,15 @@ class _GameScreenState extends State<GameScreen> {
           
           if (rating > 0 && rating < 13) {
             _ageRatings.add(rating);
+
+            if(rating > 5 && rating < 13) {
+              ageRating = ageRatingsLookup[rating - 1];
+              break;
+            }
           }
 
         }
-        if (_ageRatings.isNotEmpty) {
+        if (_ageRatings.isNotEmpty && ageRating == '') {
           int whatRating = _ageRatings.length;
           ageRating = ageRatingsLookup[_ageRatings[whatRating-1]-1];
         }
@@ -347,7 +352,7 @@ class gameWidget extends StatelessWidget {
             margin: EdgeInsets.only(top: 20),
             padding: EdgeInsets.all(20),
             width: MediaQuery.of(context).size.width + 40,
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: contColor, width: .25))),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -415,7 +420,7 @@ class gameWidget extends StatelessWidget {
           Container(
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(border: Border(top: BorderSide(color: textColor))),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: textColor, width: .25))),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -548,7 +553,7 @@ class gameWidget extends StatelessWidget {
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: textColor)),
+              border: Border(top: BorderSide(color: textColor, width: .25)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -582,7 +587,7 @@ class gameWidget extends StatelessWidget {
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: textColor)),
+              border: Border(top: BorderSide(color: textColor, width: .25)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -624,7 +629,7 @@ class gameWidget extends StatelessWidget {
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: textColor)),
+              border: Border(top: BorderSide(color: textColor, width: .25)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -907,8 +912,15 @@ class _addToListState extends State<addToListWidget> {
             ),
           ),
 
-          isLoading ? Column(children: [SizedBox(height: 50,), LoadingPage()]) : Column(
-            children: column,
+          isLoading ? Column(children: [SizedBox(height: 50,), LoadingPage()]) : 
+          Container(
+            height: MediaQuery.sizeOf(context).height -160,
+            child: SingleChildScrollView(  
+              scrollDirection: Axis.vertical,
+              child: Column(
+                children: column,
+              )
+            )
           )
           
         ]

@@ -119,6 +119,52 @@ class getListsAPI {
 
   }  
 
+  static Future<void> deleteListGame(String id, String gameId) async {
+
+    String payload = '{"listId":"' + id.trim() + '", "gameId":"' + gameId.trim() + '"}';
+    var jsonObject;
+
+    try {
+      String url =
+          'https://cop4331-25-c433f0fd0594.herokuapp.com/api/listDeleteGame';
+      String ret = await CardsData.getJson(url, payload);
+      print("The ret is: " + ret); // ret is {"accessToken":"blahblahblahblah"}
+
+      jsonObject = json.decode(ret);
+
+      return;
+
+    }
+    catch (e) {
+      print('add to list failed');
+      return;
+    }
+
+  }
+
+  static Future<void> updateListName(String id, String newName) async {
+
+    String payload = '{"listId":"' + id.trim() + '", "listName":"' + newName.trim() + '"}';
+    var jsonObject;
+
+    try {
+      String url =
+          'https://cop4331-25-c433f0fd0594.herokuapp.com/api/updateListName';
+      String ret = await CardsData.getJson(url, payload);
+      print("The ret is: " + ret); // ret is {"accessToken":"blahblahblahblah"}
+
+      jsonObject = json.decode(ret);
+
+      return;
+
+    }
+    catch (e) {
+      print('update name failed');
+      return;
+    }
+
+  }
+
 }
 
 class ListItem {

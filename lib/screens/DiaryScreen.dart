@@ -134,7 +134,175 @@ class _DiaryScreenState extends State<DiaryScreen> {
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
-        body: isLoading ? LoadingPage() : diaryWidget());
+        body: isLoading ? LoadingPage() : 
+          Container(
+      width: MediaQuery.of(context).size.width,
+      child: ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: reviews.length,
+        itemBuilder: (context, index) {
+          final review = reviews[index];
+          final theIgdb = gameIgdbIds[index];
+          final theRelease = releaseDates[index];
+          final theEditDate = editDates[index];
+          return InkWell(
+            onTap: () async {
+              bool deleted = false;
+              deleted = await Navigator.pushNamed(context, '/review', arguments: {
+                'reviewId': review.id,
+                'gameId': int.parse(theIgdb.igId),
+              }) as bool;
+              if (deleted) {didChangeDependencies();}
+            },
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: textColor, width: .25),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(5),
+                    margin: EdgeInsets.only(right: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: textColor)),
+                    child: Text(
+                      theEditDate,
+                      style: TextStyle(color: textColor, fontSize: 16),
+                    ),
+                  ),
+                  Container(
+                  width: MediaQuery.sizeOf(context).width * .65,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.end,
+                        children: [
+                          Text(
+                            theIgdb.title + ' ',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: fieldColor,
+                              fontWeight: FontWeight.bold
+                            ),
+                          ),
+                          Text(
+                            theRelease,
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: 10,
+                            ),
+                          )
+                        ]
+                      ),
+                      Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              height: 20,
+                              width: 80,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: review.rating ~/ 2 + review.rating % 2,
+                                itemBuilder: (context, jndex) {
+                                  if (((jndex + 1) !=
+                                          (review.rating ~/ 2 +
+                                              review.rating % 2)) ||
+                                      (review.rating % 2 == 0)) {
+                                    return const Icon(
+                                      Icons.star,
+                                      color: NESred,
+                                      size: 16,
+                                    );
+                                  }
+                                  return const Icon(
+                                    Icons.star_half,
+                                    color: NESred,
+                                    size: 16,
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),),/*
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          height: 20,
+                          width: 80,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: review.rating ~/ 2 + review.rating % 2,
+                            itemBuilder: (context, jndex) {
+                              if (((jndex + 1) !=
+                                      (review.rating ~/ 2 +
+                                          review.rating % 2)) ||
+                                  (review.rating % 2 == 0)) {
+                                return const Icon(
+                                  Icons.star,
+                                  color: NESred,
+                                  size: 16,
+                                );
+                              }
+                              return const Icon(
+                                Icons.star_half,
+                                color: NESred,
+                                size: 16,
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  // Added: Review date
+                  Text(
+                    'Review Date: ${theEditDate}',
+                    style: TextStyle(color: textColor),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  // Added: Game name
+                  Text(
+                    'Game Name: ${theIgdb.title}',
+                    style: TextStyle(color: textColor),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  // Added: Game release year
+                  Text(
+                    'Release Year: ${theRelease}',
+                    style: TextStyle(color: textColor),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),*/
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    ));
   }
 }
 
@@ -251,10 +419,10 @@ class diaryWidget extends StatelessWidget {
           final theEditDate = editDates[index];
           return InkWell(
             onTap: () async {
-              Navigator.pushNamed(context, '/review', arguments: {
+              await Navigator.pushNamed(context, '/review', arguments: {
                 'reviewId': review.id,
                 'gameId': int.parse(theIgdb.igId),
-              });
+              }) as bool;
             },
             child: Container(
               width: MediaQuery.of(context).size.width,
