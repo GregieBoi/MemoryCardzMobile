@@ -78,8 +78,8 @@ class _GamesScreenState extends State<GamesScreen> {
           arguments: int.parse(game.igId));
         },
         child: Container(
-          height: (MediaQuery.of(context).size.width/5)*1.5,
-          width: MediaQuery.of(context).size.width/5,
+          height: ((MediaQuery.of(context).size.width - 44)/4)*1.5,
+          width: (MediaQuery.of(context).size.width - 44)/4,
           margin: EdgeInsets.all(4),
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
@@ -155,7 +155,7 @@ class myGamesWidget extends StatelessWidget {
 
     return Container(
 
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.all(6),
 
       child: SingleChildScrollView(        
 

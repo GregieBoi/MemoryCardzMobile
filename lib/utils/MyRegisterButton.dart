@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:mobile_project/utils/ListsAPI.dart';
 import 'dart:convert';
 import 'package:mobile_project/utils/getAPI.dart';
 
@@ -247,6 +248,7 @@ class _MyRegisterButtonState extends State<MyRegisterButton> {
                           GlobalData.lastName = jsonObject["lastName"];
                           GlobalData.username = username;
                           GlobalData.password = password;
+                          getListsAPI.createList(GlobalData.userId!, 'Shelf');
                           Navigator.pushNamed(context, '/hub');
                         }
                       },

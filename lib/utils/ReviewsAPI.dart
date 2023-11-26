@@ -110,6 +110,27 @@ class getReviewsAPI {
           editDate: '');
     }
   }
+
+  static Future<void> deleteReview(String id) async {
+
+    String payload = '{"reviewId":"' + id.trim() + '"}';
+    var jsonObject;
+
+    try {
+      String url =
+          'https://cop4331-25-c433f0fd0594.herokuapp.com/api/deleteReviewId';
+      String ret = await CardsData.getJson(url, payload);
+      print("The ret is: " + ret); // ret is {"accessToken":"blahblahblahblah"}
+
+      jsonObject = json.decode(ret);
+
+      return;
+    } catch (e) {
+      print('delete Review failed');
+      return; 
+    }
+
+  }
 }
 
 class ReviewItem {
@@ -117,7 +138,7 @@ class ReviewItem {
   String user;
   final String userId;
   final int rating;
-  final String text;
+  String text;
   final String game;
   final bool isLog;
   final List<String> likedBy;

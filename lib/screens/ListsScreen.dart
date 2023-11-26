@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:mobile_project/screens/HubScreen.dart';
 import 'package:mobile_project/screens/LoadingScreen.dart';
 import 'package:mobile_project/utils/ListsAPI.dart';
 
@@ -12,6 +13,17 @@ const NESred = Color(0xFFFF0000);
 List<dynamic>? listsIdsGlob = [];
 bool isLoading = true;
 List<InkWell> column = [];
+String userIdGlob = '';
+
+class listAndUser {
+  String userId;
+  String listId;
+
+  listAndUser ({
+    required this.userId,
+    required this.listId
+  });
+}
 
 class ListsScreen extends StatefulWidget {
   @override
@@ -28,7 +40,15 @@ class _ListsScreenState extends State<ListsScreen> {
     super.didChangeDependencies();
 
     // access the id argument passed from HubScreen
-    listsIds ??= ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    listsAndUser item = ModalRoute.of(context)?.settings.arguments as listsAndUser;
+
+    listsIds = item.lists;
+    userIdGlob = item.userId;
+
+    print(listsIds);
+
+
+    //listsIds ??= ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     listsIdsGlob = listsIds;
 
     print(listsIds);
@@ -57,12 +77,15 @@ class _ListsScreenState extends State<ListsScreen> {
 
       int numGames = cur.games.length;
 
-      if (!mounted || cur.name == 'Shelf') {continue;}
+      if (!mounted || cur.name == 'Shelf' || cur.name == '') {continue;}
 
       InkWell list = InkWell(
 
         onTap: () async {
-          Navigator.pushNamed(context, '/shelf', arguments: cur.id);
+          await Navigator.pushNamed(context, '/shelf', arguments: listAndUser(userId: userIdGlob, listId: cur.id));
+          print('butttttttttttttttttttttttttttttttttttttttttttttttttts');
+          didChangeDependencies();
+          print('buttttttttttttttttttttttttttttttttttttttttttttttttttttttt');
         },
 
         child: Container(

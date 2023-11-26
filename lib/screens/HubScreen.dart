@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:mobile_project/screens/ListsScreen.dart';
 import 'package:mobile_project/utils/ReviewsAPI.dart';
 import 'package:mobile_project/utils/SearchGameLocal.dart';
 //import 'package:mobile_project/screens/GameScreen.dart';
@@ -675,6 +676,16 @@ class ActivityWidget extends StatelessWidget {
   }
 }
 
+class listsAndUser {
+  List<dynamic> lists;
+  String userId;
+
+  listsAndUser ({
+    required this.lists,
+    required this.userId
+  });
+}
+
 class AccountWidget extends StatefulWidget {
   @override
   _AccountWidgetState createState() => _AccountWidgetState();
@@ -728,7 +739,7 @@ class _AccountWidgetState extends State<AccountWidget> {
         recentRevs.add(user.reviews[reviews - i - 1]);
       }
     } else {
-      for (int i = 0; i < logs; i++) {
+      for (int i = 0; i < reviews; i++) {
         recentRevs.add(user.reviews[reviews - i - 1]);
       }
     }
@@ -884,10 +895,10 @@ class _AccountWidgetState extends State<AccountWidget> {
                 height: 10,
               ),
               Container(
-                height: (MediaQuery.of(context).size.width / 5) * 1.5,
+                height: ((MediaQuery.of(context).size.width - 44) / 4) * 1.5,
                 width: (MediaQuery.of(context).size.width),
                 alignment: Alignment.center,
-                margin: EdgeInsets.only(left: 20, right: 20),
+                margin: EdgeInsets.only(left: 6, right: 6),
                 child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: recents.length,
@@ -902,13 +913,13 @@ class _AccountWidgetState extends State<AccountWidget> {
                           onTap: () async {
                             Navigator.pushNamed(context, '/review', arguments: {
                               'reviewId': revId,
-                              'gameId': gameId
+                              'gameId': int.parse(gameId)
                             });
                           },
                           child: Container(
                               height:
-                                  (MediaQuery.of(context).size.width / 5) * 1.3,
-                              width: MediaQuery.of(context).size.width / 5,
+                                  ((MediaQuery.of(context).size.width - 44) / 4) * 1.3,
+                              width: (MediaQuery.of(context).size.width - 44) / 4,
                               clipBehavior: Clip.antiAlias,
                               margin: EdgeInsets.all(4),
                               decoration: BoxDecoration(
@@ -1089,7 +1100,7 @@ class _AccountWidgetState extends State<AccountWidget> {
               ),
               InkWell(
                 onTap: () async {
-                  Navigator.pushNamed(context, '/lists', arguments: user.lists);
+                  Navigator.pushNamed(context, '/lists', arguments: listsAndUser(lists: user.lists, userId: user.id));
                 },
                 child: Container(
                   height: 40,
@@ -1110,7 +1121,7 @@ class _AccountWidgetState extends State<AccountWidget> {
                   final String shelf = user.lists[0];
                   print('butts');
                   print(shelf);
-                  Navigator.pushNamed(context, '/shelf', arguments: shelf);
+                  Navigator.pushNamed(context, '/shelf', arguments: listAndUser(listId: shelf, userId: user.id));
                 },
                 child: Container(
                   height: 40,

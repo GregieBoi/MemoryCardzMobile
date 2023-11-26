@@ -1,6 +1,7 @@
 import 'package:mobile_project/utils/getAPI.dart';
 import 'dart:convert';
 import 'package:mobile_project/utils/SearchGameLocal.dart';
+import 'package:mobile_project/utils/addGame.dart';
 
 class getListsAPI {
 
@@ -38,6 +39,85 @@ class getListsAPI {
     }
 
   }
+
+  static Future<void> addToList(String id, String gameIgId, String title, String release) async {
+
+    String gameId = await AddGameAPI.searchId(gameIgId);
+    if (gameId == '') {
+      gameId = await AddGameAPI.addGame(title, release, gameIgId);
+    }
+
+    String payload = '{"listId":"' + id.trim() + '", "gameId":"' + gameId.trim() + '"}';
+    var jsonObject;
+
+    try {
+      String url =
+          'https://cop4331-25-c433f0fd0594.herokuapp.com/api/listAddGame';
+      String ret = await CardsData.getJson(url, payload);
+      print("The ret is: " + ret); // ret is {"accessToken":"blahblahblahblah"}
+
+      jsonObject = json.decode(ret);
+
+      return;
+
+    }
+    catch (e) {
+      print('add to list failed');
+      return;
+    }
+
+  }
+
+  static Future<String> createList(String userId, String name) async {
+
+    String payload = '{"userId":"' + userId.trim() + '", "listName":"' + name.trim() + '"}';
+    var jsonObject;
+    String listId = '';
+
+    try {
+      String url =
+          'https://cop4331-25-c433f0fd0594.herokuapp.com/api/addList';
+      String ret = await CardsData.getJson(url, payload);
+      print("The ret is: " + ret); // ret is {"accessToken":"blahblahblahblah"}
+
+      jsonObject = json.decode(ret);
+
+      if(jsonObject['listId'] != null) {
+        listId = jsonObject['listId'];
+      }
+
+      return listId;
+
+    }
+    catch (e) {
+      print('create list failed');
+      return '';
+    }
+
+  }
+
+  static Future<void> deleteList(String id) async {
+
+    String payload = '{"listId":"' + id.trim() + '"}';
+    var jsonObject;
+
+    try {
+      String url =
+          'https://cop4331-25-c433f0fd0594.herokuapp.com/api/deleteListId';
+      String ret = await CardsData.getJson(url, payload);
+      print("The ret is: " + ret); // ret is {"accessToken":"blahblahblahblah"}
+
+      jsonObject = json.decode(ret);
+
+      return;
+
+    }
+    catch (e) {
+      print('delete list failed');
+      return;
+    }
+
+  }  
 
 }
 

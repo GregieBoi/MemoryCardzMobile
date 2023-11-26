@@ -719,12 +719,13 @@ class _addToListState extends State<addToListWidget> {
 
       int numGames = cur.games.length;
 
-      if (!mounted || cur.name == 'Shelf') {continue;}
+      if (!mounted) {continue;}
 
       InkWell list = InkWell(
 
         onTap: () async {
-          Navigator.pushNamed(context, '/shelf', arguments: cur.id);
+          await getListsAPI.addToList(id, '$gameIdGlob', gameTitle, gameDate);
+          Navigator.pop(context);
         },
 
         child: Container(
@@ -743,12 +744,15 @@ class _addToListState extends State<addToListWidget> {
 
             children: [
 
-              Text(
-                cur.name,
-                style: TextStyle(
-                  color: fieldColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold
+              Container(
+                width: MediaQuery.sizeOf(context).width / 1.75,
+                child: Text(
+                  cur.name,
+                  style: TextStyle(
+                    color: fieldColor,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold
+                  ),
                 ),
               ),
 
@@ -769,6 +773,71 @@ class _addToListState extends State<addToListWidget> {
       );
       
       column.add(list);
+
+    }
+
+    if (mounted) {
+
+    InkWell createList = InkWell(
+
+      onTap: () async {
+        showModalBottomSheet<dynamic>(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          backgroundColor: backColor,
+          isScrollControlled: true,
+          context: context,
+          builder: (BuildContext context) {
+          return createListWidget();
+          }
+        );
+      },
+
+      child: Container(
+
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(color: Colors.black87, width: .25)
+          )
+        ),
+
+        child: Row(
+
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+          children: [
+
+            Container(
+              width: MediaQuery.sizeOf(context).width / 1.75,
+              child: Text(
+                'Create New List',
+                style: TextStyle(
+                  color: fieldColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+            ),
+
+            Text(
+              '+',
+              style: TextStyle(
+                color: NESred,
+                fontSize: 20,
+                fontWeight: FontWeight.bold
+              ),
+            )
+
+          ],
+
+        ),
+
+      ),
+
+    );
+
+    column.add(createList);
 
     }
 
@@ -799,7 +868,7 @@ class _addToListState extends State<addToListWidget> {
                     textAlign: TextAlign.center,
                     style: TextStyle(color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold)),
                 TextButton(
-                    onPressed: () async {
+                    onPressed: () {
                       /*_rating = roundRating(_rating);
                       print(release);
                       String gameId = await AddGameAPI.searchId('$id');
@@ -816,6 +885,78 @@ class _addToListState extends State<addToListWidget> {
                       await AddReviewAPI.updateReview(
                           GlobalData.userId!, reviewId, date, _rating, reviewController.text, isLog);
                       Navigator.of(context).popUntil(ModalRoute.withName(route));*/
+                    },
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: backColor, fontSize: 16, fontWeight: FontWeight.bold),
+                    ))
+              ],
+            ),
+          ),
+          Container(
+            decoration: const BoxDecoration(color: Colors.black87),
+            padding: const EdgeInsets.all(20),
+            width: MediaQuery.of(context).size.width,
+            child: Wrap(
+              children: [
+                Text(
+                  gameTitle,
+                  style: const TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+          ),
+
+          isLoading ? Column(children: [SizedBox(height: 50,), LoadingPage()]) : Column(
+            children: column,
+          )
+          
+        ]
+      )
+    );
+
+  }
+
+}
+
+class createListWidget extends StatefulWidget {
+
+  @override
+  _createListState createState() => _createListState();
+
+}
+
+class _createListState extends State<createListWidget> {
+
+  TextEditingController listNameController = TextEditingController();
+  String listNameText = '';
+
+  @override
+  Widget build(BuildContext context) {
+
+    return SizedBox(
+        height: MediaQuery.of(context).size.height - 32,
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 5, right: 5, top: 10, bottom: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: contColor, fontSize: 16),
+                    )),
+                const Text('Create List to Add...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold)),
+                TextButton(
+                    onPressed: () async {
+                      String newListId = await getListsAPI.createList(GlobalData.userId!, listNameController.text);
+                      await getListsAPI.addToList(newListId, '$gameIdGlob', gameTitle, gameTitle);
+                      print('created and added to new list');
+                      Navigator.of(context).popUntil(ModalRoute.withName('/game'));
                     },
                     child: const Text(
                       'Save',
@@ -838,9 +979,28 @@ class _addToListState extends State<addToListWidget> {
             ),
           ),
 
-          Column(
-            children: column,
-          )
+          Container(
+            padding: const EdgeInsets.only(
+              top: 10, left: 20, right: 20, bottom: 10),
+            decoration: const BoxDecoration(
+              border: Border(
+                top: BorderSide(color: Colors.black87, width: .25))),
+            child: TextField(
+              controller: listNameController,
+              maxLines: null,
+              style: const TextStyle(
+              color: textColor,
+              fontSize: 14,
+            ),
+              decoration: const InputDecoration(
+                contentPadding: EdgeInsets.all(0),
+                floatingLabelStyle:
+                  TextStyle(color: Colors.transparent),
+                labelText: 'List Title...',
+                labelStyle: TextStyle(color: textColor, fontSize: 16),
+                border:
+                  OutlineInputBorder(borderSide: BorderSide.none)),
+            ))
           
         ]
       )
@@ -849,3 +1009,5 @@ class _addToListState extends State<addToListWidget> {
   }
 
 }
+
+

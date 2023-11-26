@@ -16,6 +16,8 @@ class SearchGameLocal {
       print("The ret is: " + ret); // ret is {"accessToken":"blahblahblahblah"}
 
       jsonObject = json.decode(ret);
+
+      if (jsonObject['error'] != null) {print('aaaaaaaaaaaaaaaaaaaaaaa'); return GameItem(id: '', title: '', dev: '', genre: '', release: '', reviews: List.empty(), image: '', igId: '');}
       //print("the jsonObject is:" + jsonObject);
 
       String id = jsonObject['id'];
@@ -28,7 +30,11 @@ class SearchGameLocal {
       print('genre is :::::::::::::::::::::::::::::::::::::::::::::::::' + genre);
       String release = jsonObject['release'];
       print('release is :::::::::::::::::::::::::::::::::::::::::::::::::' + release);
-      List<dynamic> reviews = jsonObject['reviews'];
+      List<dynamic> reviews = [];
+      if (jsonObject['reviews'] != null) {
+        reviews = jsonObject['reviews'];
+      }
+
       print('reviews is :::::::::::::::::::::::::::::::::::::::::::::::::');
       print(reviews);
       String image = jsonObject['image'];

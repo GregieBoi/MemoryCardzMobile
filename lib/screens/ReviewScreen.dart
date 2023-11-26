@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:mobile_project/screens/LoadingScreen.dart';
 import 'package:mobile_project/utils/LikeAPI.dart';
 import 'package:mobile_project/utils/getAPI.dart';
+import 'package:mobile_project/utils/AddReviewAPI.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
@@ -23,6 +24,9 @@ int? gameIdIgdbGlob;
 int likeArraySize = 0;
 String viewingUserId = GlobalData.userId!;
 bool isLiked = false;
+List<InkWell> edits = [];
+InkWell edit = InkWell();
+InkWell delete = InkWell();
 
 ReviewItem oneReview = ReviewItem(
     id: '0',
@@ -37,10 +41,11 @@ ReviewItem oneReview = ReviewItem(
 
 class ReviewScreen extends StatefulWidget {
   @override
-  _ReviewScreenState createState() => _ReviewScreenState();
+  _ReviewScreenState createState() => new _ReviewScreenState();
 }
 
 class _ReviewScreenState extends State<ReviewScreen> {
+  
   List<Map<String, dynamic>> gamesList = [];
   List<CoverItem> images = [];
 
@@ -97,6 +102,106 @@ class _ReviewScreenState extends State<ReviewScreen> {
         images = api2.body;
       });
     }
+
+    edit = InkWell(child: Container(height: 0),);
+    delete = InkWell(child: Container(height: 0),);
+
+    if (GlobalData.userId == oneReview.userId && mounted) {
+
+      print(GlobalData.userId! +'is'+ oneReview.user);
+
+      edit = InkWell(
+        onTap: () async {
+          showModalBottomSheet<dynamic>(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15)),
+            backgroundColor: backColor,
+            isScrollControlled: true,
+            context: context,
+            builder: (BuildContext context) {
+              return editReviewWidget(
+                  id: gameIdIgdbGlob!,
+                  title: gameTitle,
+                  release: gameDate,
+                  year: '',
+                  route: '/hub',
+                  reviewId: oneReview.id,
+                  text: oneReview.text,
+                  rating: oneReview.rating,
+                );
+            });
+        },
+        child: Container(
+          padding: EdgeInsets.only(left: 20, top: 10, bottom: 10, right: 20),
+          width: MediaQuery.sizeOf(context).width,
+          height: 40,
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(color: textColor, width: .25)
+            )
+          ),
+
+          child: Text(
+            'Edit Review',
+            style: TextStyle(
+              color: textColor,
+              fontSize: 16
+            ),
+          ),
+        ),
+      );
+
+      edits.add(edit);
+      
+      delete = InkWell(
+        onTap: () async {
+          showModalBottomSheet<dynamic>(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15)),
+            backgroundColor: backColor,
+            isScrollControlled: true,
+            context: context,
+            builder: (BuildContext context) {
+              return deleteReviewWidget(
+                  reviewId: oneReview.id,
+                );
+            });
+        },
+        child: Container(
+          padding: EdgeInsets.only(left: 20, top: 10, bottom: 10, right: 20),
+          width: MediaQuery.sizeOf(context).width,
+          height: 40,
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(color: textColor, width: .25)
+            )
+          ),
+
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Delete Review',
+                style: TextStyle(
+                  color: NESred,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+              Icon(
+                Icons.delete,
+                color: NESred,
+                size: 16,
+              )
+            ]
+          ),
+        ),
+      );
+
+      edits.add(delete);
+
+    }
+
     await Future.delayed(const Duration(seconds: 0));
     if (mounted) {
       setState(() => isLoading = false);
@@ -131,6 +236,13 @@ class _ReviewScreenState extends State<ReviewScreen> {
     return Scaffold(
       backgroundColor: backColor,
       appBar: GFAppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white
+          ),
+          onPressed: (() => Navigator.of(context).pop(false)),
+        ),
         backgroundColor: Colors.black87,
         centerTitle: true,
         title: Text(
@@ -322,7 +434,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
         children: [
           Container(
             padding: EdgeInsets.all(20),
-            height: MediaQuery.of(context).size.width / 2,
+            height: MediaQuery.of(context).size.width / 1.75,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,10 +503,15 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                     ],
                   ),
                 ),
-                Card(
+                Container(
+                  decoration: BoxDecoration(
+                      // this allows for the rounded edges. I can't get it the way
+                      borderRadius: BorderRadius.all(Radius.circular(4))),
+                  clipBehavior: Clip.antiAlias,
                   child: SizedBox(
-                    width: (MediaQuery.of(context).size.width - 40) / 4,
-                    child: GestureDetector(
+                    width: (MediaQuery.sizeOf(context).width - 60 ) / 2.5, // (MediaQuery.of(context).size.width - 44) / 4,
+                    height: 160, //((MediaQuery.of(context).size.width - 44) / 4) * 1.5,
+                    child: InkWell(
                       onTap: () async {
                         Navigator.pushNamed(context, '/game',
                             arguments: gameIdIgdbGlob);
@@ -407,7 +524,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                                 width: double.infinity,
                                 height: double.infinity,
                               )
-                            : Text('No cover Image'),
+                            : Text('Failed to Load'),
                       ),
                     ),
                   ),
@@ -426,7 +543,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(20),
+            padding: EdgeInsets.all(5),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -466,8 +583,355 @@ class _ReviewWidgetState extends State<ReviewWidget> {
               ],
             ),
           ),
+          edit,
+          delete
         ],
       ),
     );
   }
 }
+
+class editReviewWidget extends StatefulWidget {
+  editReviewWidget(
+      {required this.id,
+      required this.title,
+      required this.release,
+      required this.year,
+      required this.route,
+      required this.rating,
+      required this.text,
+      required this.reviewId
+    });
+  final int id;
+  final String title;
+  final String release;
+  final String year;
+  final String route;
+  final int rating;
+  final String text;
+  final String reviewId;
+
+  @override
+  _editReviewWidgetState createState() => _editReviewWidgetState(
+      id: id, title: title, release: release, year: year, route: route, rating: rating, text: text, reviewId: reviewId);
+}
+
+class _editReviewWidgetState extends State<editReviewWidget> {
+  _editReviewWidgetState(
+      {required this.id,
+      required this.title,
+      required this.release,
+      required this.year,
+      required this.route,
+      required this.rating,
+      required this.text,
+      required this.reviewId
+    });
+  final int id;
+  final String title;
+  final String release;
+  final String year;
+  final String route;
+  final int rating;
+  final String text;
+  final String reviewId;
+
+  String date = DateFormat('yMMMMd').format(DateTime.now());
+  bool isLog = true;
+  double _rating = 0;
+  String userId = GlobalData.userId!;
+
+  TextEditingController reviewController = TextEditingController();
+  String reviewText = '';
+
+  double roundRating(double rating) {
+    if (rating <= 0) {
+      return rating;
+    } else if (rating <= .5) {
+      return 0.5;
+    } else if (rating <= 1) {
+      return 1;
+    } else if (rating <= 1.5) {
+      return 1.5;
+    } else if (rating <= 2) {
+      return 2;
+    } else if (rating <= 2.5) {
+      return 2.5;
+    } else if (rating <= 3) {
+      return 3;
+    } else if (rating <= 3.5) {
+      return 3.5;
+    } else if (rating <= 4) {
+      return 4;
+    } else if (rating <= 4.5) {
+      return 4.5;
+    } else {
+      return 5;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _rating = rating.toDouble() / 2 - .01;
+    print(_rating);
+    reviewController.text = text;
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print(release);
+
+    return SizedBox(
+        height: MediaQuery.of(context).size.height - 32,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 5, right: 5, top: 10, bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: contColor, fontSize: 16),
+                        )),
+                    const Text('Update...',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: fieldColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
+                    TextButton(
+                        onPressed: () async {
+                          _rating = roundRating(_rating);
+                          print(release);
+                          String gameId = oneReview.game;//await AddGameAPI.searchId('$id');
+                          if (gameId == '') {
+                            gameId =
+                                await '';// AddGameAPI.addGame(title, release, '$id');
+                          }
+                          print('saved ' + '$_rating' + ' rating of ' + title);
+                          if (reviewController.text != '') {
+                            isLog = false;
+                          }
+                          print(id);
+                          await AddReviewAPI.updateReview(
+                              GlobalData.userId!,
+                              reviewId,
+                              date,
+                              _rating,
+                              reviewController.text,
+                              isLog);
+                          Navigator.of(context)
+                              ..pop()
+                              ..pop();
+                        },
+                        child: const Text(
+                          'Save',
+                          style: TextStyle(
+                              color: NESred,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ))
+                  ],
+                ),
+              ),
+              Container(
+                decoration: const BoxDecoration(color: Colors.black87),
+                padding: const EdgeInsets.all(20),
+                width: MediaQuery.of(context).size.width,
+                child: Wrap(
+                  children: [
+                    Text(
+                      title + ' ' + year,
+                      style: const TextStyle(
+                          color: textColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Date',
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(date,
+                        style: const TextStyle(color: textColor, fontSize: 14))
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.only(
+                    top: 10, left: 20, right: 20, bottom: 10),
+                decoration: const BoxDecoration(
+                    border: Border(
+                        top: BorderSide(color: Colors.black87, width: .25))),
+                child: Column(
+                  children: [
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Rated',
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: 16,
+                            )),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GFRating(
+                          color: GFColors.SUCCESS,
+                          borderColor: GFColors.SUCCESS,
+                          allowHalfRating: true,
+                          defaultIcon: const Icon(Icons.star_outline_rounded,
+                              color: NESred, size: GFSize.LARGE),
+                          halfFilledIcon: const Icon(Icons.star_half_rounded,
+                              color: NESred, size: GFSize.LARGE),
+                          filledIcon: const Icon(
+                            Icons.star_rounded,
+                            color: NESred,
+                            size: GFSize.LARGE,
+                          ),
+                          size: GFSize.LARGE,
+                          value: _rating,
+                          onChanged: (value) {
+                            setState(() {
+                              _rating = value;
+                              print(_rating);
+                            });
+                          },
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                  padding: const EdgeInsets.only(
+                      top: 10, left: 20, right: 20, bottom: 10),
+                  decoration: const BoxDecoration(
+                      border: Border(
+                          top: BorderSide(color: Colors.black87, width: .25))),
+                  child: TextField(
+                    controller: reviewController,
+                    maxLines: null,
+                    style: const TextStyle(
+                      color: textColor,
+                      fontSize: 14,
+                    ),
+                    decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.all(0),
+                        floatingLabelStyle:
+                            TextStyle(color: Colors.transparent),
+                        labelText: 'Edit Review...',
+                        labelStyle: TextStyle(color: textColor, fontSize: 14),
+                        border:
+                            OutlineInputBorder(borderSide: BorderSide.none)),
+                  ))
+            ]));
+  }
+}
+
+class deleteReviewWidget extends StatefulWidget {
+  
+  final String reviewId;
+
+  deleteReviewWidget({
+    required this.reviewId
+  });
+
+  @override
+  _deleteReviewState createState() => _deleteReviewState(reviewId: reviewId);
+}
+
+class _deleteReviewState extends State<deleteReviewWidget> {
+  
+  final String reviewId;
+
+  _deleteReviewState({
+    required this.reviewId
+  });
+
+  Widget build(BuildContext context) {
+
+    return SizedBox(
+        height: MediaQuery.sizeOf(context).height / 2,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 5, right: 5, top: 10, bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: contColor, fontSize: 16),
+                        )),
+                    const Text('Delete Review...',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: fieldColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
+                    TextButton(
+                        onPressed: () async {
+                          await getReviewsAPI.deleteReview(reviewId);
+                          Navigator.of(context)
+                              ..pop()
+                              ..pop(true);
+                        },
+                        child: const Text(
+                          'Save',
+                          style: TextStyle(
+                              color: NESred,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ))
+                  ],
+                ),
+              ),
+              Container(
+                decoration: const BoxDecoration(color: Colors.black87),
+                padding: const EdgeInsets.all(20),
+                width: MediaQuery.of(context).size.width,
+                child: Wrap(
+                  children: [
+                    Text(
+                      'Are You Sure?',
+                      style: const TextStyle(
+                          color: textColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              ),
+            ]));
+  }
+
+  }
+
+

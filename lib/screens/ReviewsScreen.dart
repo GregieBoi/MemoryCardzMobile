@@ -15,7 +15,7 @@ List<ReviewItem> reviews = [];
 
 class ReviewsScreen extends StatefulWidget {
   @override
-  _ReviewsScreenState createState() => _ReviewsScreenState();
+  _ReviewsScreenState createState() => new _ReviewsScreenState();
 }
 
 class _ReviewsScreenState extends State<ReviewsScreen> {
@@ -59,7 +59,144 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
-        body: isLoading ? LoadingPage() : reviewsWidget());
+        body: isLoading ? LoadingPage() : Container(
+      width: MediaQuery.of(context).size.width,
+      child: ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: reviews.length,
+        itemBuilder: (context, index) {
+          final review = reviews[index];
+          return InkWell(
+            onTap: () async {
+              bool didDelete = false;
+              didDelete = await Navigator.pushNamed(context, '/review',
+                  arguments: {'reviewId': review.id, 'gameId': gameIdGlob}) as bool;
+              if (didDelete) {print('deleted.................................');}
+              didDelete ? didChangeDependencies() : didDelete = false;
+            },
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                  border: Border(
+                top: BorderSide(color: textColor, width: .25),
+              )),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          height: 20,
+                          width: 80,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: review.rating ~/ 2 + review.rating % 2,
+                            itemBuilder: (context, jndex) {
+                              if (((jndex + 1) !=
+                                      (review.rating ~/ 2 +
+                                          review.rating % 2)) ||
+                                  (review.rating % 2 == 0)) {
+                                return const Icon(
+                                  Icons.star,
+                                  color: NESred,
+                                  size: 16,
+                                );
+                              }
+                              return const Icon(
+                                Icons.star_half,
+                                color: NESred,
+                                size: 16,
+                              );
+                            },
+                          ),
+                        ),
+                        Text(
+                          review.user,
+                          style: const TextStyle(
+                              color: textColor, fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    review.text,
+                    style: TextStyle(color: textColor),
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+        /*
+        children: [
+          InkWell(
+            onTap: () async {
+              Navigator.pushNamed(context, '/review');
+            },
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(border: Border(top: BorderSide(color: textColor))),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.star,
+                              color: NESred,
+                              size: 12,
+                            ),
+                            Icon(
+                              Icons.star,
+                              color: NESred,
+                              size: 12,
+                            ),
+                            Icon(
+                              Icons.star,
+                              color: NESred,
+                              size: 12,
+                            ),
+                            Icon(
+                              Icons.star,
+                              color: NESred,
+                              size: 12,
+                            ),
+                          ],
+                        ),
+                        Text(
+                          'UserName',
+                          style: TextStyle(color: textColor),
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'blah blah blah',
+                    style: TextStyle(color: textColor),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ],*/
+      ),
+    ));
   }
 }
 
@@ -81,6 +218,7 @@ class _MainPageState extends State<MainPage> {
 }
 
 class reviewsWidget extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -92,8 +230,11 @@ class reviewsWidget extends StatelessWidget {
           final review = reviews[index];
           return InkWell(
             onTap: () async {
-              Navigator.pushNamed(context, '/review',
-                  arguments: {'reviewId': review.id, 'gameId': gameIdGlob});
+              bool didDelete = false;
+              didDelete = await Navigator.pushNamed(context, '/review',
+                  arguments: {'reviewId': review.id, 'gameId': gameIdGlob}) as bool;
+              if (didDelete) {print('deleted.................................');}
+              //didDelete ? _ReviewsScreenState.didChangeDependencies() : didDelete = false;
             },
             child: Container(
               width: MediaQuery.of(context).size.width,

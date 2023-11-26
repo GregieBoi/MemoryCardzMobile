@@ -3,6 +3,8 @@ import 'package:getwidget/getwidget.dart';
 import 'package:mobile_project/screens/LoadingScreen.dart';
 import 'package:mobile_project/utils/SearchGameLocal.dart';
 import 'package:mobile_project/utils/ListsAPI.dart';
+import 'package:mobile_project/screens/ListsScreen.dart';
+import 'package:mobile_project/utils/getAPI.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
@@ -10,6 +12,7 @@ const contColor = Color(0xFF8C8C8C);
 const fieldColor = Color(0xFFD9D9D9);
 const NESred = Color(0xFFFF0000);
 String shelfGlob = '';
+String userIdGlob = '';
 bool isLoading = true;
 ListItem list = ListItem(id: '', name: '', games: []);
 List<InkWell> listGames = [];
@@ -29,7 +32,12 @@ class _ShelfScreenState extends State<ShelfScreen> {
     super.didChangeDependencies();
 
     // access the id argument passed from HubScreen
-    shelf ??= ModalRoute.of(context)?.settings.arguments as String?;
+    listAndUser item = ModalRoute.of(context)?.settings.arguments as listAndUser;
+
+    shelf = item.listId;
+    userIdGlob = item.userId;
+    print(userIdGlob + 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+
     if(shelf == '') {print('poop');}
     print(shelf! + 'this exist');
     final String id = shelf!;
@@ -66,8 +74,8 @@ class _ShelfScreenState extends State<ShelfScreen> {
           arguments: int.parse(cur.igId));
         },
         child: Container(
-          height: (MediaQuery.of(context).size.width/5)*1.5,
-          width: MediaQuery.of(context).size.width/5,
+          height: ((MediaQuery.of(context).size.width - 44) / 4)*1.5,
+          width: (MediaQuery.of(context).size.width - 44) / 4,
           margin: EdgeInsets.all(4),
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
@@ -85,6 +93,97 @@ class _ShelfScreenState extends State<ShelfScreen> {
           )
         );
       listGames.add(cover);
+
+    }
+
+    if (userIdGlob == GlobalData.userId && mounted) {
+      print('user is the sameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+
+      InkWell edit = InkWell(
+        onTap: () {
+          
+        },
+        child: Container(
+          padding: EdgeInsets.only(top: 10, left: 4, right: 4, bottom: 10),
+          margin: EdgeInsets.only(top: 5),
+          width: MediaQuery.sizeOf(context).width,
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: textColor,
+                width: .25
+              )
+            )
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                'Edit',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: textColor,
+                ),
+              ),
+            ]
+          ),
+        )
+      );
+
+      listGames.add(edit);
+
+      if (list.name != 'Shelf') {
+
+        InkWell delete = InkWell(
+          onTap: () {
+            showModalBottomSheet<dynamic>(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15)),
+            backgroundColor: backColor,
+            isScrollControlled: true,
+            context: context,
+            builder: (BuildContext context) {
+              return deleteListWidget(
+                  listId: list.id,
+                );
+            });
+          },
+          child: Container(
+            padding: EdgeInsets.only(top: 10, left: 4, right: 4, bottom: 10),
+            //margin: EdgeInsets.only(top: 0),
+            width: MediaQuery.sizeOf(context).width,
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: textColor,
+                  width: .25
+                )
+              )
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Delete',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: NESred,
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+                Icon(
+                  Icons.delete,
+                  color: NESred,
+                  size: 16,
+                )
+              ]
+            ),
+          )
+        );
+
+        listGames.add(delete);
+
+      }
 
     }
 
@@ -139,7 +238,7 @@ class myShelfWidget extends StatelessWidget {
 
     return Container(
 
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.all(6),
 
       child: Column(
 
@@ -212,3 +311,88 @@ class myShelfWidget extends StatelessWidget {
   }
 
 }
+
+class deleteListWidget extends StatefulWidget {
+  
+  final String listId;
+
+  deleteListWidget({
+    required this.listId
+  });
+
+  @override
+  _deleteListState createState() => _deleteListState(listId: listId);
+}
+
+class _deleteListState extends State<deleteListWidget> {
+  
+  final String listId;
+
+  _deleteListState({
+    required this.listId
+  });
+
+  Widget build(BuildContext context) {
+
+    return SizedBox(
+        height: MediaQuery.sizeOf(context).height / 2,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 5, right: 5, top: 10, bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: contColor, fontSize: 16),
+                        )),
+                    const Text('Delete List...',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: fieldColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
+                    TextButton(
+                        onPressed: () async {
+                          print('delete');
+                          await getListsAPI.deleteList(listId);
+                          Navigator.of(context)
+                              ..pop()
+                              ..pop();
+                        },
+                        child: const Text(
+                          'Delete',
+                          style: TextStyle(
+                              color: NESred,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ))
+                  ],
+                ),
+              ),
+              Container(
+                decoration: const BoxDecoration(color: Colors.black87),
+                padding: const EdgeInsets.all(20),
+                width: MediaQuery.of(context).size.width,
+                child: Wrap(
+                  children: [
+                    Text(
+                      'Are You Sure?',
+                      style: const TextStyle(
+                          color: textColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              ),
+            ]));
+  }
+
+  }
