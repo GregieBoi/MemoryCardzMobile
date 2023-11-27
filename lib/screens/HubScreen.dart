@@ -188,154 +188,157 @@ class _GamesWidgetState extends State<GamesWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 25),
-          Padding(
-            padding: EdgeInsets.only(left: 10),
-            child: Text(
-              'Popular',
-              style: TextStyle(
-                  color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 25),
+            Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Text(
+                'Popular',
+                style: TextStyle(
+                    color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
-          SizedBox(height: 10),
-          isLoading ? Container(
-            height: 180,
-            padding: EdgeInsets.all(10),
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(right: 5),
-                  height: 150,
-                  width: 120,
-                  child: LoadingPage(),
-                ),
-                Container(
-                  margin: EdgeInsets.only(right: 5),
-                  height: 150,
-                  width: 120,
-                  child: LoadingPage(),
-                ),
-                Container(
-                  margin: EdgeInsets.only(right: 5),
-                  height: 150,
-                  width: 120,
-                  child: LoadingPage(),
-                )
-              ],
-            )
-            ): 
-            Container(
-            height: 180,
-            padding: EdgeInsets.all(10),
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: popularGames.length,
-              itemBuilder: (context, index) {
-                final game = popularGames[index];
-                return InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/game', arguments: int.parse(game.igdbId));
-                  },
-                  child: Container(
+            SizedBox(height: 10),
+            isLoading ? Container(
+              height: 180,
+              padding: EdgeInsets.all(10),
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  Container(
                     margin: EdgeInsets.only(right: 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4)
-                    ),
-                    clipBehavior: Clip.antiAlias,
                     height: 150,
                     width: 120,
-                    child: isLoading
-                        ? LoadingPage()
-                        : game.image.isNotEmpty
-                            ? Image.network(game.image,
-                                height: 170, width: 120, fit: BoxFit.fill)
-                            : Container(),
-                    //SizedBox(height: 5),
-                    //Text(game.title, style: TextStyle(fontSize: 12), textAlign: TextAlign.center),
-                  )
-                );
-              },
-            ),
-          ),
-          SizedBox(height: 25),
-          Padding(
-            padding: EdgeInsets.only(left: 10),
-            child: Text(
-              'From Friends',
-              style: TextStyle(
-                  color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ),
-          SizedBox(height: 10),
-          isLoading ? Container(
-            height: 180,
-            padding: EdgeInsets.all(10),
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(right: 5),
-                  height: 150,
-                  width: 120,
-                  child: LoadingPage(),
-                ),
-                Container(
-                  margin: EdgeInsets.only(right: 5),
-                  height: 150,
-                  width: 120,
-                  child: LoadingPage(),
-                ),
-                Container(
-                  margin: EdgeInsets.only(right: 5),
-                  height: 150,
-                  width: 120,
-                  child: LoadingPage(),
-                )
-              ],
-            )
-            ): 
-            Container(
-            height: 180,
-            padding: EdgeInsets.all(10),
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: friendGames.length,
-              itemBuilder: (context, index) {
-                final game = friendGames[index];
-                return InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/review', arguments: {
-                              'reviewId': game.reviewId,
-                              'gameId': int.parse(game.igdbId)
-                            });
-                  },
-                  child: Container(
+                    child: LoadingPage(),
+                  ),
+                  Container(
                     margin: EdgeInsets.only(right: 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4)
-                    ),
-                    clipBehavior: Clip.antiAlias,
                     height: 150,
                     width: 120,
-                    child: isLoading
-                        ? LoadingPage()
-                        : game.image.isNotEmpty
-                            ? Image.network(game.image,
-                                height: 170, width: 120, fit: BoxFit.fill)
-                            : Container(),
-                    //SizedBox(height: 5),
-                    //Text(game.title, style: TextStyle(fontSize: 12), textAlign: TextAlign.center),
+                    child: LoadingPage(),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(right: 5),
+                    height: 150,
+                    width: 120,
+                    child: LoadingPage(),
                   )
-                );
-              },
+                ],
+              )
+              ): 
+              Container(
+              height: 180,
+              padding: EdgeInsets.all(10),
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: popularGames.length,
+                itemBuilder: (context, index) {
+                  final game = popularGames[index];
+                  return InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/game', arguments: int.parse(game.igdbId));
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(right: 5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4)
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      height: 150,
+                      width: 120,
+                      child: isLoading
+                          ? LoadingPage()
+                          : game.image.isNotEmpty
+                              ? Image.network(game.image,
+                                  height: 170, width: 120, fit: BoxFit.fill)
+                              : Container(),
+                      //SizedBox(height: 5),
+                      //Text(game.title, style: TextStyle(fontSize: 12), textAlign: TextAlign.center),
+                    )
+                  );
+                },
+              ),
             ),
-          )
-        ],
-      ),
+            SizedBox(height: 25),
+            Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Text(
+                'From Friends',
+                style: TextStyle(
+                    color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+            SizedBox(height: 10),
+            isLoading ? Container(
+              height: 180,
+              padding: EdgeInsets.all(10),
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(right: 5),
+                    height: 150,
+                    width: 120,
+                    child: LoadingPage(),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(right: 5),
+                    height: 150,
+                    width: 120,
+                    child: LoadingPage(),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(right: 5),
+                    height: 150,
+                    width: 120,
+                    child: LoadingPage(),
+                  )
+                ],
+              )
+              ): 
+              Container(
+              height: 180,
+              padding: EdgeInsets.all(10),
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: friendGames.length,
+                itemBuilder: (context, index) {
+                  final game = friendGames[index];
+                  return InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/review', arguments: {
+                                'reviewId': game.reviewId,
+                                'gameId': int.parse(game.igdbId)
+                              });
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(right: 5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4)
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      height: 150,
+                      width: 120,
+                      child: isLoading
+                          ? LoadingPage()
+                          : game.image.isNotEmpty
+                              ? Image.network(game.image,
+                                  height: 170, width: 120, fit: BoxFit.fill)
+                              : Container(),
+                      //SizedBox(height: 5),
+                      //Text(game.title, style: TextStyle(fontSize: 12), textAlign: TextAlign.center),
+                    )
+                  );
+                },
+              ),
+            )
+          ],
+        ),
+      )
     );
   }
 }
@@ -779,6 +782,12 @@ class _AccountWidgetState extends State<AccountWidget> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
     fetchUserId();
   }
 
@@ -806,15 +815,6 @@ class _AccountWidgetState extends State<AccountWidget> {
     List<GameItem> rec = [];
     List<ReviewItem> recIds = [];
 
-    if (logs >= 4) {
-      for (int i = 0; i < 4; i++) {
-        recentLogs.add(user.logged[logs - i - 1]);
-      }
-    } else {
-      for (int i = 0; i < logs; i++) {
-        recentLogs.add(user.logged[logs - i - 1]);
-      }
-    }
     if (reviews >= 4) {
       for (int i = 0; i < 4; i++) {
         recentRevs.add(user.reviews[reviews - i - 1]);
@@ -825,18 +825,29 @@ class _AccountWidgetState extends State<AccountWidget> {
       }
     }
 
-    print(recentLogs);
+    Iterable<dynamic> blah = user.reviews.reversed;
+
     print(recentRevs);
 
     List<ReviewItem> revs = [];
 
-    for (var rev in recentRevs) {
+    for (var rev in blah) {
       print(rev);
 
-      ReviewItem cur = await getReviewsAPI.getReview(rev);
+      if (revs.length >= 4) break;
+
+      String curRev = rev as String;
+
+      ReviewItem cur = await getReviewsAPI.getReview(curRev);
+
+      if(cur.game == '') {continue;}
 
       revs.add(cur);
 
+      print('I am hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+
+      print(cur.game);
+      
       GameItem curGame = await SearchGameLocal.getGame(cur.game);
 
       rec.add(curGame);
@@ -997,7 +1008,7 @@ class _AccountWidgetState extends State<AccountWidget> {
                               'reviewId': revId,
                               'gameId': int.parse(gameId)
                             }) as bool;
-                            if (deleted) {didChangeDependencies();}
+                            if (deleted) {print('ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh');didChangeDependencies();}
                           },
                           child: Container(
                               height:
@@ -1165,8 +1176,10 @@ class _AccountWidgetState extends State<AccountWidget> {
               ),
               InkWell(
                 onTap: () async {
-                  Navigator.pushNamed(context, '/diary',
-                      arguments: user.reviews);
+                  bool? deleted = false;
+                  deleted = await Navigator.pushNamed(context, '/diary',
+                      arguments: user.reviews) as bool;
+                  if (deleted) {print('heyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy');didChangeDependencies();}
                 },
                 child: Container(
                   height: 40,

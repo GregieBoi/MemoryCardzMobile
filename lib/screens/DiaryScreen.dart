@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:mobile_project/screens/ReviewScreen.dart';
 import 'package:mobile_project/utils/ReviewsAPI.dart';
 import 'package:mobile_project/utils/SearchGameLocal.dart';
 import 'package:mobile_project/screens/LoadingScreen.dart';
@@ -18,6 +19,7 @@ List<GameItem> gameIgdbIds = [];
 List<String> releaseDates = [];
 List<String> editDates = [];
 int length = 0;
+bool deleted = false;
 
 class DiaryScreen extends StatefulWidget {
   @override
@@ -52,7 +54,10 @@ class _DiaryScreenState extends State<DiaryScreen> {
       setState(() => isLoading = true);
     }
 
-    // Initialize the reviews list with empty ReviewItems
+    // Initialize the reviews list with empty 
+    reviews = []; 
+
+    /*
     reviews = List.generate(
         length,
         (index) => ReviewItem(
@@ -65,6 +70,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
             isLog: false,
             likedBy: [],
             editDate: '0'));
+      */
 
     // Initialize the reviews list with empty ReviewItems
     gameIgdbIds = List.generate(
@@ -81,22 +87,25 @@ class _DiaryScreenState extends State<DiaryScreen> {
 
     // each index in reviews represents a different review
     for (int i = 0; i < length; i++) {
-      reviews[i] = await getReviewsAPI.getReview('${userReviewsGlobal?[i]}');
-      //print('the review is::::::::: ${reviews[i].text}');
+      ReviewItem cur = await getReviewsAPI.getReview('${userReviewsGlobal?[length - i - 1]}');
+      
+      if (cur.game == '') {continue;}
+
+      reviews.add(cur); //print('the review is::::::::: ${reviews[i].text}');
     }
 
     //print('the review for latest one is: ${reviews[length - 1].text}');
     //print('the game id is: ${reviews[length - 1].game}');
 
     // each index in gameIgdbIds represents a different game for that review
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < reviews.length; i++) {
       gameIgdbIds[i] = await SearchGameLocal.getGame('${reviews[i].game}');
     }
 
     // game release date calculation
     releaseDates = [];
 
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < reviews.length; i++) {
       String releaseDate = gameIgdbIds[i].release;
 
       List<String> dateParts = releaseDate.split(', ');
@@ -107,7 +116,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
     // review date calculation
     editDates = [];
 
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < reviews.length; i++) {
       String editDateString = reviews[i].editDate;
 
       DateTime dateTime = DateFormat('MMMM dd, yyyy').parse(editDateString);
@@ -127,6 +136,13 @@ class _DiaryScreenState extends State<DiaryScreen> {
     return Scaffold(
         backgroundColor: backColor,
         appBar: GFAppBar(
+          leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white
+          ),
+          onPressed: (() => Navigator.of(context).pop(deleted)),
+        ),
           backgroundColor: Colors.black87,
           centerTitle: true,
           title: Text(
@@ -147,12 +163,20 @@ class _DiaryScreenState extends State<DiaryScreen> {
           final theEditDate = editDates[index];
           return InkWell(
             onTap: () async {
-              bool deleted = false;
-              deleted = await Navigator.pushNamed(context, '/review', arguments: {
+              setState(() {
+                deleted = false;
+              });
+              bool delete = false;
+              delete = await Navigator.pushNamed(context, '/review', arguments: {
                 'reviewId': review.id,
                 'gameId': int.parse(theIgdb.igId),
               }) as bool;
-              if (deleted) {didChangeDependencies();}
+              if (delete) {
+                setState(() {
+                  deleted = true;
+                });
+                didChangeDependencies();
+              }
             },
             child: Container(
               width: MediaQuery.of(context).size.width,
