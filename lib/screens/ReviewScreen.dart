@@ -22,7 +22,7 @@ String gameCoverImage = '';
 String? reviewIdGlob;
 int? gameIdIgdbGlob;
 int likeArraySize = 0;
-String viewingUserId = GlobalData.userId!;
+String viewingUserId = '';
 bool isLiked = false;
 List<InkWell> edits = [];
 InkWell edit = InkWell();
@@ -88,12 +88,17 @@ class _ReviewScreenState extends State<ReviewScreen> {
     print('the array is ${oneReview.likedBy}');
     likeArraySize = (oneReview.likedBy.length);
 
-    isLiked = false;
+    setState(() {
+      isLiked = false;
+      viewingUserId = GlobalData.userId!;
+    });
 
     for (int i = 0; i < likeArraySize; i++) {
       if (oneReview.likedBy[i] == viewingUserId) {
         print('this user already liked this review!!!!!!!!!!!!!!!!');
-        isLiked = true;
+        setState(() {
+          isLiked = true;
+        });
       }
     }
 
@@ -450,7 +455,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                     children: [
                       GestureDetector(
                         onTap: () async {
-                          Navigator.pushNamed(context, '/user');
+                          Navigator.pushNamed(context, '/user', arguments: oneReview.userId);
                         },
                         child: Text(
                           widget.review.user,

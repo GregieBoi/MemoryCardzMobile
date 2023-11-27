@@ -15,6 +15,7 @@ import 'package:mobile_project/utils/AddGame.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_project/screens/LoadingScreen.dart';
 import 'package:mobile_project/utils/getUserAPI.dart';
+import 'package:mobile_project/utils/getGlobalsAPI.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
@@ -50,7 +51,6 @@ class _HubScreenState extends State<HubScreen> {
     GamesWidget(),
     SearchWidget(),
     AddWidget(),
-    ActivityWidget(),
     AccountWidget()
   ];
 
@@ -108,10 +108,6 @@ class _HubScreenState extends State<HubScreen> {
             label: 'Add Game',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bolt),
-            label: 'Activity',
-          ),
-          BottomNavigationBarItem(
               icon: Icon(Icons.person),
               label: 'Account',
               backgroundColor: NESred),
@@ -144,8 +140,8 @@ class GamesWidget extends StatefulWidget {
 }
 
 class _GamesWidgetState extends State<GamesWidget> {
-  List<CoverItem> popularGames = [];
-  List<CoverItem> friendGames = [];
+  List<gameCover> popularGames = [];
+  List<reviewCover> friendGames = [];
 
   @override
   void initState() {
@@ -157,6 +153,19 @@ class _GamesWidgetState extends State<GamesWidget> {
     if (mounted) {
       setState(() => isLoading = true);
     }
+
+    List<gameCover> popCov = await getGlobalsAPI.getPopular();
+    List<reviewCover> revCov = await getGlobalsAPI.getFriendReviews(GlobalData.userId!);
+
+    if (mounted) {
+      setState(() {
+        popularGames = popCov;
+
+        friendGames = revCov;
+      }); 
+    }
+
+    /*
     final api = CoverAPI();
     await api.fetchData(343);
     if (mounted) {
@@ -168,7 +177,8 @@ class _GamesWidgetState extends State<GamesWidget> {
       });
     } else {
       return;
-    }
+    }*/
+
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
       setState(() => isLoading = false);
@@ -185,13 +195,40 @@ class _GamesWidgetState extends State<GamesWidget> {
           Padding(
             padding: EdgeInsets.only(left: 10),
             child: Text(
-              'Popular (EMPTY FOR NOW)',
+              'Popular',
               style: TextStyle(
                   color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(height: 10),
-          Container(
+          isLoading ? Container(
+            height: 180,
+            padding: EdgeInsets.all(10),
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(right: 5),
+                  height: 150,
+                  width: 120,
+                  child: LoadingPage(),
+                ),
+                Container(
+                  margin: EdgeInsets.only(right: 5),
+                  height: 150,
+                  width: 120,
+                  child: LoadingPage(),
+                ),
+                Container(
+                  margin: EdgeInsets.only(right: 5),
+                  height: 150,
+                  width: 120,
+                  child: LoadingPage(),
+                )
+              ],
+            )
+            ): 
+            Container(
             height: 180,
             padding: EdgeInsets.all(10),
             child: ListView.builder(
@@ -199,17 +236,27 @@ class _GamesWidgetState extends State<GamesWidget> {
               itemCount: popularGames.length,
               itemBuilder: (context, index) {
                 final game = popularGames[index];
-                return Container(
-                  height: 150,
-                  width: 120,
-                  child: isLoading
-                      ? LoadingPage()
-                      : game.coverImageUrl.isNotEmpty
-                          ? Image.network(game.coverImageUrl,
-                              height: 170, width: 120, fit: BoxFit.fitHeight)
-                          : Container(),
-                  //SizedBox(height: 5),
-                  //Text(game.title, style: TextStyle(fontSize: 12), textAlign: TextAlign.center),
+                return InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/game', arguments: int.parse(game.igdbId));
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(right: 5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4)
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    height: 150,
+                    width: 120,
+                    child: isLoading
+                        ? LoadingPage()
+                        : game.image.isNotEmpty
+                            ? Image.network(game.image,
+                                height: 170, width: 120, fit: BoxFit.fill)
+                            : Container(),
+                    //SizedBox(height: 5),
+                    //Text(game.title, style: TextStyle(fontSize: 12), textAlign: TextAlign.center),
+                  )
                 );
               },
             ),
@@ -218,38 +265,72 @@ class _GamesWidgetState extends State<GamesWidget> {
           Padding(
             padding: EdgeInsets.only(left: 10),
             child: Text(
-              'From Friends (EMPTY FOR NOW)',
+              'From Friends',
               style: TextStyle(
                   color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(height: 10),
-          Container(
-            height: 160,
+          isLoading ? Container(
+            height: 180,
+            padding: EdgeInsets.all(10),
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(right: 5),
+                  height: 150,
+                  width: 120,
+                  child: LoadingPage(),
+                ),
+                Container(
+                  margin: EdgeInsets.only(right: 5),
+                  height: 150,
+                  width: 120,
+                  child: LoadingPage(),
+                ),
+                Container(
+                  margin: EdgeInsets.only(right: 5),
+                  height: 150,
+                  width: 120,
+                  child: LoadingPage(),
+                )
+              ],
+            )
+            ): 
+            Container(
+            height: 180,
+            padding: EdgeInsets.all(10),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: friendGames.length,
               itemBuilder: (context, index) {
                 final game = friendGames[index];
-                /*
-                return Card(
-                  child: SizedBox(
+                return InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/review', arguments: {
+                              'reviewId': game.reviewId,
+                              'gameId': int.parse(game.igdbId)
+                            });
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(right: 5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4)
+                    ),
+                    clipBehavior: Clip.antiAlias,
                     height: 150,
                     width: 120,
-                    child: Column(
-                      children: [
-                        
-                        game.coverImageUrl.isNotEmpty
-                            ? Image.network(game.coverImageUrl, height: 152, width: 120, fit: BoxFit.cover)
+                    child: isLoading
+                        ? LoadingPage()
+                        : game.image.isNotEmpty
+                            ? Image.network(game.image,
+                                height: 170, width: 120, fit: BoxFit.fill)
                             : Container(),
-                            
-                        //SizedBox(height: 5),
-                        //Text(game.title, style: TextStyle(fontSize: 12), textAlign: TextAlign.center),
-                      ],
-                    ),
-                  ),
+                    //SizedBox(height: 5),
+                    //Text(game.title, style: TextStyle(fontSize: 12), textAlign: TextAlign.center),
+                  )
                 );
-                */
               },
             ),
           )

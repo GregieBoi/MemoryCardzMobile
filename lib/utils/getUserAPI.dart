@@ -57,6 +57,52 @@ class getUserAPI {
 
   }
 
+  static Future<void> followUser(String id, String userId) async {
+
+    String payload = '{"userId":"' + id.trim() + '", "followId":"' + userId.trim() + '"}';
+    var jsonObject;
+
+    try {
+      String url =
+          'https://cop4331-25-c433f0fd0594.herokuapp.com/api/followUser';
+      String ret = await CardsData.getJson(url, payload);
+      print("The ret is: " + ret); // ret is {"accessToken":"blahblahblahblah"}
+
+      jsonObject = json.decode(ret);
+
+      return;
+
+    }
+    catch (e) {
+      print('follow failed');
+      return;
+    }
+
+  }
+
+  static Future<void> unfollowUser(String id, String userId) async {
+
+    String payload = '{"userId":"' + id.trim() + '", "followId":"' + userId.trim() + '"}';
+    var jsonObject;
+
+    try {
+      String url =
+          'https://cop4331-25-c433f0fd0594.herokuapp.com/api/unfollowUser';
+      String ret = await CardsData.getJson(url, payload);
+      print("The ret is: " + ret); // ret is {"accessToken":"blahblahblahblah"}
+
+      jsonObject = json.decode(ret);
+
+      return;
+
+    }
+    catch (e) {
+      print('unfollow failed');
+      return;
+    }
+
+  }
+
 }
 
 class UserItem {

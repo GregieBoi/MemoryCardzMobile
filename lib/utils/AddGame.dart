@@ -20,6 +20,7 @@ class AddGameAPI {
     print(ageRating);
     print(image);
     description = '';*/
+    if (title.length > 35) {title = '';}
 
     String payload = '{"title":"' + title.trim() + '","developer":"' + rest.dev + '","category":"' + rest.genre + '","releaseDate":"' + release + '","igdbId":"' + igId.trim() + '","description":"' + '' + '","ageRating":"' + rest.ageRating + '","image":"' + rest.image + '"}';
     print(payload);

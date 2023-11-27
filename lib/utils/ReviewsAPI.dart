@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:mobile_project/utils/AddGame.dart';
 import 'package:mobile_project/utils/SearchGameLocal.dart';
-import 'package:mobile_project/utils/UserAPI.dart';
+import 'package:mobile_project/utils/getUserAPI.dart';
 
 class getReviewsAPI {
   static Future<List<ReviewItem>> getReviews(String id) async {
@@ -26,8 +26,8 @@ class getReviewsAPI {
 
         print(cur.userId + ' this is the user id!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 
-        UserItem userItem = await UserAPI.getUser(cur.userId);
-        cur.user = userItem.firstName;
+        UserItem userItem = await getUserAPI.getUser(cur.userId);
+        cur.user = userItem.userName;
 
         reviewList.add(cur);
       }
@@ -77,8 +77,8 @@ class getReviewsAPI {
       String user = '';
 
       if (isLog == false || isLog == true) {
-        UserItem userItem2 = await UserAPI.getUser(userId);
-        user = userItem2.firstName;
+        UserItem userItem2 = await getUserAPI.getUser(userId);
+        user = userItem2.userName;
         print('user aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
       }
 
