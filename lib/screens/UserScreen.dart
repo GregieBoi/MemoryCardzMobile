@@ -32,6 +32,8 @@ class _UserScreenState extends State<UserScreen> {
   List<GameItem> recents = [];
   List<ReviewItem> recentsIds = [];
 
+  String profilePic = profilePics[0];
+
   String? userId;
 
   @override
@@ -56,6 +58,37 @@ class _UserScreenState extends State<UserScreen> {
 
     user = await getUserAPI.getUser(userId);
     print(user.bio);
+
+    String decider = user.id.substring(user.id.length-1);
+    decider = decider.trim();
+
+    print('\n' + decider + '\n');
+
+    if (decider == 'a' || decider == 'b' || decider == 'c' || decider == 'd') {
+      profilePic = profilePics[0];
+    }
+    else if (decider == 'e' || decider == 'f' || decider == 'g' || decider == 'h') {
+      profilePic = profilePics[1];
+    }
+    else if (decider == 'i' || decider == 'j' || decider == 'k' || decider == 'l') {
+      profilePic = profilePics[2];
+    }
+    else if (decider == 'm' || decider == 'n' || decider == 'o' || decider == 'p') {
+      profilePic = profilePics[3];
+    }
+    else if (decider == 'q' || decider == 'r' || decider == 's' || decider == 't') {
+      profilePic = profilePics[4];
+    }
+    else if (decider == 'u' || decider == 'v' || decider == 'w' || decider == 'x') {
+      profilePic = profilePics[5];
+    }
+    else if (decider == 'y' || decider == 'z') {
+      profilePic = profilePics[6];
+    }
+    else {
+      profilePic = profilePics[7];
+    }
+
     fetchRecents();
 
     await Future.delayed(const Duration(seconds: 3));
@@ -174,8 +207,18 @@ class _UserScreenState extends State<UserScreen> {
               SizedBox(
                 height: 20,
               ),
-              GFAvatar(
-                shape: GFAvatarShape.circle,
+              Container(
+                height: 60,
+                width: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle, color: fieldColor),
+                clipBehavior: Clip.antiAlias,
+                child: Image.network(
+                  profilePic,
+                  height: 60,
+                  width: 60,
+                  fit: BoxFit.contain,
+                ),
               ),
               SizedBox(
                 height: 20,

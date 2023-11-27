@@ -736,7 +736,8 @@ class _editReviewWidgetState extends State<editReviewWidget> {
                               date,
                               _rating,
                               reviewController.text,
-                              isLog);
+                              isLog,
+                              gameId);
                           Navigator.of(context)
                               ..pop(true);
                         },

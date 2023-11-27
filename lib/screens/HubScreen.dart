@@ -36,6 +36,16 @@ var user = UserItem(
     logged: [''],
     reviews: [''],
     lists: []);
+List<String> profilePics = [
+  'https://mariopartylegacy.com/wp-content/uploads/2011/08/marioprofile-275x275.png',
+  'https://mariopartylegacy.com/wp-content/uploads/2011/08/luigiprofile-275x275.png',
+  'https://mariopartylegacy.com/wp-content/uploads/2011/08/yoshiprofile-275x275.png',
+  'https://mariopartylegacy.com/wp-content/uploads/2011/08/peachprofile-275x275.png',
+  'https://mariopartylegacy.com/wp-content/uploads/2011/08/toadprofile-275x275.png',
+  'https://mariopartylegacy.com/wp-content/uploads/2011/08/warioprofile-275x275.png',
+  'https://mariopartylegacy.com/wp-content/uploads/2011/08/waluigiprofile-275x275.png',
+  'https://mariopartylegacy.com/wp-content/uploads/2011/08/dkprofile-275x275.png'
+];
 
 //List<ReviewItem> recentsIds = [];
 //List<GameItem> recents = [];
@@ -632,7 +642,8 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                               date,
                               _rating,
                               reviewController.text,
-                              isLog);
+                              isLog,
+                              gameId);
                           Navigator.of(context)
                               .popUntil(ModalRoute.withName(route));
                         },
@@ -779,6 +790,8 @@ class _AccountWidgetState extends State<AccountWidget> {
   List<GameItem> recents = [];
   List<ReviewItem> recentsIds = [];
 
+  String profilePic = profilePics[0];
+
   @override
   void initState() {
     super.initState();
@@ -797,10 +810,38 @@ class _AccountWidgetState extends State<AccountWidget> {
     }
 
     user = await getUserAPI.getUser(GlobalData.userId);
+
+    String decider = user.id[user.id.length -1];
+
+    if (decider == 'a' || decider == 'b' || decider == 'c' || decider == 'd') {
+      profilePic = profilePics[0];
+    }
+    else if (decider == 'e' || decider == 'f' || decider == 'g' || decider == 'h') {
+      profilePic = profilePics[1];
+    }
+    else if (decider == 'i' || decider == 'j' || decider == 'k' || decider == 'l') {
+      profilePic = profilePics[2];
+    }
+    else if (decider == 'm' || decider == 'n' || decider == 'o' || decider == 'p') {
+      profilePic = profilePics[3];
+    }
+    else if (decider == 'q' || decider == 'r' || decider == 's' || decider == 't') {
+      profilePic = profilePics[4];
+    }
+    else if (decider == 'u' || decider == 'v' || decider == 'w' || decider == 'x') {
+      profilePic = profilePics[5];
+    }
+    else if (decider == 'y' || decider == 'z') {
+      profilePic = profilePics[6];
+    }
+    else {
+      profilePic = profilePics[7];
+    }
+
     print(user.bio);
     fetchRecents();
 
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 3));
     if (mounted) {
       setState(() => isLoading = false);
     }
@@ -892,8 +933,9 @@ class _AccountWidgetState extends State<AccountWidget> {
                 height: 20,
               ),
               badges.Badge(
-                onTap: () {
-                  showModalBottomSheet<dynamic>(
+                onTap: () async {
+                  bool? updated = false;
+                  updated = await showModalBottomSheet<bool>(
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15)),
                       backgroundColor: backColor,
@@ -902,14 +944,25 @@ class _AccountWidgetState extends State<AccountWidget> {
                       builder: (BuildContext context) {
                         return SettingsWidget();
                       });
+                    if(updated!) {didChangeDependencies();}
                 },
                 badgeContent: Icon(
                   Icons.settings_outlined,
                   color: Colors.black87,
                 ),
                 badgeStyle: badges.BadgeStyle(badgeColor: Colors.transparent),
-                child: GFAvatar(
-                  shape: GFAvatarShape.circle,
+                child: Container(
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle, color: fieldColor),
+                  clipBehavior: Clip.antiAlias,
+                  child: Image.network(
+                    profilePic,
+                    height: 60,
+                    width: 60,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
               SizedBox(
@@ -1273,7 +1326,14 @@ class _AccountWidgetState extends State<AccountWidget> {
   }
 }
 
+
+String updatedBio = '';
+bool? somethingUpdated = false;
+
 class SettingsWidget extends StatelessWidget {
+
+  //bool? somethingUpdated = false;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -1291,18 +1351,24 @@ class SettingsWidget extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.pop(context);
+                          Navigator.pop(context, false);
                         },
                         child: Text('Cancel',
-                            style: TextStyle(color: textColor, fontSize: 16)),
+                            style: TextStyle(color: backColor, fontSize: 16)),
                       ),
                       Text('Settings',
                           style: TextStyle(color: fieldColor, fontSize: 20)),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
+                        onTap: () async {
+                          bool updated = somethingUpdated!;
+                          if(!updated) {print('\nnotUpdated\n');}
+                          if (updated) {
+                            print('\nupdated\n');
+                            await getUserAPI.updateUser(user.id, user.firstName, user.lastName, user.userName, GlobalData.password!, user.email, updatedBio);
+                          }
+                          Navigator.pop(context, somethingUpdated);
                         },
-                        child: Text('Save',
+                        child: Text('  Done',
                             style: TextStyle(
                                 color: NESred,
                                 fontSize: 16,
@@ -1322,9 +1388,13 @@ class SettingsWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        'Signed in as ' + GlobalData.username!,
+                        'Signed in as ',
                         style: TextStyle(color: textColor, fontSize: 16),
-                      )
+                      ),
+                      Text(
+                        GlobalData.username!,
+                        style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                 ),
@@ -1345,21 +1415,28 @@ class SettingsWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  padding:
-                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: textColor, width: .25))),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Sign Out',
-                        style: TextStyle(color: NESred, fontSize: 16),
-                      )
-                    ],
+                InkWell(
+                  onTap: () async {
+                    Navigator.of(context)
+                      ..pop(somethingUpdated)
+                      ..pop();
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    padding:
+                        EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            top: BorderSide(color: textColor, width: .25))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Sign Out',
+                          style: TextStyle(color: NESred, fontSize: 16),
+                        )
+                      ],
+                    ),
                   ),
                 ),
                 Container(
@@ -1407,25 +1484,41 @@ class SettingsWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  padding:
-                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: textColor, width: .25))),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Bio',
-                        style: TextStyle(color: textColor, fontSize: 16),
-                      ),
-                      Icon(
-                        Icons.arrow_right,
-                        color: textColor,
-                      )
-                    ],
+                InkWell(
+                  onTap: () async {
+                    String? newBio = user.bio;
+                    newBio = await showModalBottomSheet<String>(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    backgroundColor: backColor,
+                    isScrollControlled: true,
+                    context: context,
+                    builder: (BuildContext context) {
+                      return editBio();
+                    });
+                    print(newBio);
+                    if (newBio != user.bio) {updatedBio = newBio!; somethingUpdated = true;}
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    padding:
+                        EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            top: BorderSide(color: textColor, width: .25))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Bio',
+                          style: TextStyle(color: textColor, fontSize: 16),
+                        ),
+                        Icon(
+                          Icons.arrow_right,
+                          color: textColor,
+                        )
+                      ],
+                    ),
                   ),
                 ),
                 Container(
@@ -1449,7 +1542,7 @@ class SettingsWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
+                /*Container(
                     width: MediaQuery.of(context).size.width,
                     padding: EdgeInsets.only(
                         left: 20, right: 20, top: 10, bottom: 20),
@@ -1499,7 +1592,7 @@ class SettingsWidget extends StatelessWidget {
                           ],
                         ),
                       ],
-                    )),
+                    )),*/
                 Container(
                   width: MediaQuery.of(context).size.width,
                   padding:
@@ -1528,3 +1621,97 @@ class SettingsWidget extends StatelessWidget {
             )));
   }
 }
+
+class editBio extends StatefulWidget {
+
+    @override
+    _editBioState createState() => _editBioState();
+
+  }
+
+  class _editBioState extends State<editBio> {
+
+    TextEditingController bioController = TextEditingController();
+
+    @override
+    void didChangeDependencies() {
+      super.didChangeDependencies();
+
+      bioController.text = user.bio;
+    }
+
+    @override
+    Widget build(BuildContext context) {
+
+      return SizedBox(
+        height: MediaQuery.sizeOf(context).height * 2 / 3,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 5, right: 5, top: 10, bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context, user.bio),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: contColor, fontSize: 16),
+                        )),
+                    const Text('Edit Bio...',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: fieldColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
+                    TextButton(
+                        onPressed: () async {
+                          print('delete');
+                          //await getListsAPI.updateListName(list.id, listNameController.text);
+                          Navigator.of(context)
+                              ..pop(bioController.text);
+                        },
+                        child: const Text(
+                          'Save',
+                          style: TextStyle(
+                              color: NESred,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ))
+                  ],
+                ),
+              ),
+              Container(
+                height: 50,
+                padding: const EdgeInsets.only(
+                  top: 10, left: 20, right: 20, bottom: 10),
+                decoration: const BoxDecoration(
+                  border: Border(
+                    top: BorderSide(color: Colors.black87, width: .25))),
+                child: TextField(
+                  controller: bioController,
+                  maxLines: null,
+                  style: const TextStyle(
+                  color: textColor,
+                  fontSize: 14,
+                ),
+                  decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.all(0),
+                    floatingLabelStyle:
+                      TextStyle(color: Colors.transparent),
+                    labelText: 'Edit Bio...',
+                    labelStyle: TextStyle(color: textColor, fontSize: 16),
+                    border:
+                      OutlineInputBorder(borderSide: BorderSide.none)),
+                )),
+                
+                
+
+            ]));
+
+    }
+
+  }

@@ -103,6 +103,29 @@ class getUserAPI {
 
   }
 
+  static Future<void> updateUser(String id, String firstName, String lastName, String username, String password, String email, String bio) async {
+
+    String payload = '{"userId":"' + id.trim() + '", "firstName":"' + firstName.trim() + '", "lastName":"' + lastName.trim() + '", "username":"' + username.trim() + '", "password":"' + password.trim() + '", "email":"' + email.trim() + '", "bio":"' + bio.trim() + '"}';
+    var jsonObject;
+
+    try {
+      String url =
+          'https://cop4331-25-c433f0fd0594.herokuapp.com/api/updateUserInfo';
+      String ret = await CardsData.getJson(url, payload);
+      print("The ret is: " + ret); // ret is {"accessToken":"blahblahblahblah"}
+
+      jsonObject = json.decode(ret);
+
+      return;
+
+    }
+    catch (e) {
+      print('updateUser failed');
+      return;
+    }
+
+  }
+
 }
 
 class UserItem {

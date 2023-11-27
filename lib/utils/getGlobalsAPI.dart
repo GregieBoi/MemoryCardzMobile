@@ -24,9 +24,17 @@ class getGlobalsAPI {
       }
 
       List<gameCover> popular = [];
+      List<String> gameIds = [];
 
       for (var id in popularIds) {
+
+        if (gameIds.contains(id)) {continue;}
+
+        gameIds.add(id);
+
         GameItem cur = await SearchGameLocal.getGame(id);
+
+        if(cur.id == '') {continue;}
 
         gameCover curCover = gameCover(image: cur.image, igdbId: cur.igId);
 
