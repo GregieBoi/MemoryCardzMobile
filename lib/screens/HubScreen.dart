@@ -1309,7 +1309,7 @@ class SettingsWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        'Signed in as ' + 'UserName',
+                        'Signed in as ' + GlobalData.username!,
                         style: TextStyle(color: textColor, fontSize: 16),
                       )
                     ],
