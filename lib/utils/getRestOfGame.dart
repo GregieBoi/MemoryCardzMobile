@@ -49,11 +49,14 @@ class RestAPI {
             }
           }
         }
-        if (ageRating == '') {
+        if (ageRating == '' && _ageRatings.length != 0) {
           int whatRating = _ageRatings.length;
 
           ageRating = ratings[_ageRatings[whatRating-1]-1];
           print(ageRating);
+        }
+        if (_ageRatings.length == 0) {
+          ageRating = 'unavailable';
         }
       }
 

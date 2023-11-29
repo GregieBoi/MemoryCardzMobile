@@ -17,7 +17,7 @@ const fieldColor = Color(0xFFD9D9D9);
 const NESred = Color(0xFFFF0000);
 
 bool isLoading = true;
-UserItem user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [], following: [], logged: [], reviews: [], lists: []);
+UserItem user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [], following: [], logged: [], reviews: [], lists: [], favorites: []);
 String? userIdGlob;
 bool isFollowed = false;
 
@@ -31,6 +31,8 @@ class _UserScreenState extends State<UserScreen> {
 
   List<GameItem> recents = [];
   List<ReviewItem> recentsIds = [];
+
+  List<GameItem> favorites = [];
 
   String profilePic = profilePics[0];
 
@@ -89,11 +91,43 @@ class _UserScreenState extends State<UserScreen> {
       profilePic = profilePics[7];
     }
 
+    fetchFavorites();
+
     fetchRecents();
 
     await Future.delayed(const Duration(seconds: 3));
     if (mounted) {
       setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> fetchFavorites() async {
+
+    List<GameItem> faves = [];
+
+    print('\nyoooooooooooooooooooooooooooooooooooooooo\n');
+
+    print(user.favorites);
+
+    for (var fav in user.favorites) {
+
+      print('\nuhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh\n' + fav);
+
+      String curId = fav as String;
+
+      GameItem cur = await SearchGameLocal.getGame(curId);
+
+      if(cur.id != '') {
+        faves.add(cur);
+      }
+    }
+
+
+
+    if (mounted) {
+      setState(() {
+        favorites = faves;
+      });
     }
   }
 
@@ -279,50 +313,49 @@ class _UserScreenState extends State<UserScreen> {
                 height: 10,
               ),
               Container(
-                height: (MediaQuery.of(context).size.width / 4) * 1.25,
+                height: ((MediaQuery.of(context).size.width - 44) / 4) * 1.5,
                 width: (MediaQuery.of(context).size.width),
                 alignment: Alignment.center,
-                margin: EdgeInsets.only(left: 20, right: 20),
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: <Card>[
-                    Card(
-                      child: SizedBox(
-                        height: (MediaQuery.of(context).size.width / 4) * 1.25,
-                        width: MediaQuery.of(context).size.width / 5,
-                        child: Center(
-                          child: Text('Card1'),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      child: SizedBox(
-                        height: 150,
-                        width: MediaQuery.of(context).size.width / 5,
-                        child: Center(
-                          child: Text('Card1'),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      child: SizedBox(
-                        height: (MediaQuery.of(context).size.width / 5),
-                        width: MediaQuery.of(context).size.width / 5,
-                        child: Center(
-                          child: Text('Card1'),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      child: SizedBox(
-                        height: 150,
-                        width: MediaQuery.of(context).size.width / 5,
-                        child: Center(
-                          child: Text('Card1'),
-                        ),
-                      ),
-                    ),
-                  ],
+                margin: EdgeInsets.only(left: 6, right: 6),
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: favorites.length,
+                    itemBuilder: ((context, index) {
+                      GameItem curGame = GameItem(id: '', title: '', dev: '', genre: '', release: '', reviews: List.empty(), image: '', igId: '', spread: spread);;
+                      String cover = '';
+                      String gameId = '';
+                      if (index <= favorites.length - 1) {
+                        curGame = favorites[index];
+                        cover = curGame.image;
+                        gameId = curGame.igId;
+                      }
+
+                      return InkWell(
+                          onTap: () async {
+                            await Navigator.pushNamed(context, '/game', arguments: int.parse(gameId));
+                          },
+                          child: Container(
+                              height:
+                                  ((MediaQuery.of(context).size.width - 44) / 4) * 1.3,
+                              width: (MediaQuery.of(context).size.width - 44) / 4,
+                              clipBehavior: Clip.antiAlias,
+                              margin: EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                  // this allows for the rounded edges. I can't get it the way
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(4))),
+                              child: cover != ''
+                                  ? Image.network(
+                                      cover,
+                                      fit: BoxFit.fill,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                    )
+                                  : Text('Failed to load')
+                            )
+                        );
+                    }
+                  )
                 ),
               ),
               SizedBox(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_project/utils/AddGame.dart';
+import 'package:mobile_project/utils/SearchGameLocal.dart';
 import 'package:mobile_project/utils/getUserAPI.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:getwidget/getwidget.dart';
@@ -37,6 +38,9 @@ List<int> gameAgeRatings = [];
 List<String> gameGenres = [];
 bool isLoading = true;
 String ageRating = '';
+List<int> ratingSpread = [0,0,0,0,0,0,0,0,0,0];
+String ratingAverage = 'N/A';
+String numReviews = '0';
 
 class GameScreen extends StatefulWidget {
   @override
@@ -94,6 +98,25 @@ class _GameScreenState extends State<GameScreen> {
     await api5.fetchAgeRatings(gameId);
     await api6.fetchGenres(gameId);
 
+    String localId = await AddGameAPI.searchId('$gameIdGlob');
+    GameItem local = GameItem(id: '', title: '', dev: '', genre: '', release: '', reviews: List.empty(), image: '', igId: '', spread: [0,0,0,0,0,0,0,0,0,0]);
+    if (localId != '') {
+      local = await SearchGameLocal.getGame(localId);
+    }
+    String average = 'N/A';
+    int sum = 0;
+    int total = 0;
+    for(int i = 0; i < 10; i++) {
+      int cur = local.spread[i];
+      sum += cur * (i + 1);
+      total += cur;
+    }
+    if (sum != 0) {  
+      double avg = (sum/total) / 2;
+      average = '$avg';
+    }
+    int numReviewsLocal = local.reviews.length;
+
     if (mounted) {
       setState(() {
         gamesList = api.gamesList;
@@ -103,6 +126,9 @@ class _GameScreenState extends State<GameScreen> {
         platformNames = api4.body;
         ageRatingNames = api5.body;
         genreNames = api6.body;
+        ratingSpread = local.spread;
+        ratingAverage = average;
+        numReviews = '$numReviewsLocal';
       });
     }
     await Future.delayed(const Duration(seconds: 2));
@@ -372,14 +398,26 @@ class gameWidget extends StatelessWidget {
                     Container(
                       height: 50,
                       width: (MediaQuery.of(context).size.width - 40) * 2 / 3,
-                      child: SfSparkBarChart(
-                        data: [0.025, 0.025, 0.1, 0.05, 0.05, 1, 2, 3, 1, 1],
-                        color: textColor,
-                      ),
+                      child: ratingAverage == 'N/A' ?
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border(bottom: BorderSide(
+                              color: textColor,
+                              width: .25
+                            )
+                          )
+                          ),
+                        ): 
+                        SfSparkBarChart(
+                          data: ratingSpread,
+                          color: textColor,
+                          axisLineColor: textColor,
+                          axisLineWidth: .25,
+                        ),
                     ),
                     Column(children: [
                       Text(
-                        '3.9',
+                        '$ratingAverage',
                         style: TextStyle(fontSize: 20, color: textColor),
                       ),
                       Row(
@@ -480,21 +518,21 @@ class gameWidget extends StatelessWidget {
                       height: (MediaQuery.of(context).size.width - 80) / 3.5,
                       decoration: BoxDecoration(color: textColor, borderRadius: BorderRadius.circular(3)),
                       padding: EdgeInsets.all(10),
-                      child: const Column(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.text_snippet,
                             color: fieldColor,
                           ),
-                          Text(
+                          const Text(
                             'Reviews',
                             style: TextStyle(color: fieldColor, fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            '100k',
-                            style: TextStyle(
+                            numReviews,
+                            style: const TextStyle(
                               color: fieldColor,
                             ),
                           )
@@ -681,7 +719,7 @@ class addToListWidget extends StatefulWidget {
 
 }
 
-UserItem _user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [], following: [], logged: [], reviews: [], lists: []);
+UserItem _user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [], following: [], logged: [], reviews: [], lists: [], favorites: []);
 String? _gameId;
 List<InkWell> column = [];
 

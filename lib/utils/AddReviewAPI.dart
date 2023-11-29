@@ -6,9 +6,12 @@ class AddReviewAPI {
 
   static Future<String> createReview(String userId, String gameId) async {
 
-    String payload = '{"userId":"' + userId.trim() + '","gameId":"' + gameId.trim() + '"}';
+    print(gameId);
+
+    String payload = '{"userId":"' + userId.trim() + '","gameId":"' + gameId.trim() + '","createDate":"' + ' ' + '"}';
     String reviewId = '';
     var jsonObject;
+    print(payload);
 
     try {
       String url = 'https://cop4331-25-c433f0fd0594.herokuapp.com/api/addReview';

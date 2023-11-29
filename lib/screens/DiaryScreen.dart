@@ -83,7 +83,8 @@ class _DiaryScreenState extends State<DiaryScreen> {
             release: '0',
             reviews: [],
             image: '0',
-            igId: '0'));
+            igId: '0',
+            spread: [0,0,0,0,0,0,0,0,0,0]));
 
     // each index in reviews represents a different review
     for (int i = 0; i < length; i++) {

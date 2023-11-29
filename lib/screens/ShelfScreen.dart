@@ -494,7 +494,7 @@ class _deleteListState extends State<deleteListWidget> {
                   ],
                 ),
               ),
-              Container(
+              (list.name == 'Shelf') ? SizedBox(height: 0,) : Container(
                 height: 50,
                 padding: const EdgeInsets.only(
                   top: 10, left: 20, right: 20, bottom: 10),
@@ -662,7 +662,9 @@ class _deleteListState extends State<deleteListWidget> {
                   ],
                 ),
               ),
-            ]));
+            ]
+          )
+        );
 
     }
 

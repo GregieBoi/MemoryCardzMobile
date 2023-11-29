@@ -3,6 +3,7 @@ import 'package:getwidget/getwidget.dart';
 import 'package:mobile_project/screens/ListsScreen.dart';
 import 'package:mobile_project/utils/ReviewsAPI.dart';
 import 'package:mobile_project/utils/SearchGameLocal.dart';
+import 'package:mobile_project/utils/faveGamesAPI.dart';
 //import 'package:mobile_project/screens/GameScreen.dart';
 import 'package:mobile_project/utils/getAPI.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
@@ -35,7 +36,8 @@ var user = UserItem(
     following: [''],
     logged: [''],
     reviews: [''],
-    lists: []);
+    lists: [],
+    favorites: []);
 List<String> profilePics = [
   'https://mariopartylegacy.com/wp-content/uploads/2011/08/marioprofile-275x275.png',
   'https://mariopartylegacy.com/wp-content/uploads/2011/08/luigiprofile-275x275.png',
@@ -624,14 +626,14 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                           print(release);
                           String gameId = await AddGameAPI.searchId('$id');
                           if (gameId == '') {
-                            gameId =
-                                await AddGameAPI.addGame(title, release, '$id');
+                            gameId = await AddGameAPI.addGame(title, release, '$id');
                           }
                           print('saved ' + '$_rating' + ' rating of ' + title);
                           if (reviewController.text != '') {
                             isLog = false;
                           }
                           print(id);
+                          print(gameId);
                           String reviewId = await AddReviewAPI.createReview(
                               GlobalData.userId!, gameId);
                           print('\n\n\n\nthis is my reviewID!!!!!!!!!' +
@@ -790,6 +792,8 @@ class _AccountWidgetState extends State<AccountWidget> {
   List<GameItem> recents = [];
   List<ReviewItem> recentsIds = [];
 
+  List<GameItem> favorites = [];
+
   String profilePic = profilePics[0];
 
   @override
@@ -809,7 +813,13 @@ class _AccountWidgetState extends State<AccountWidget> {
       setState(() => isLoading = true);
     }
 
-    user = await getUserAPI.getUser(GlobalData.userId);
+    UserItem curUser = await getUserAPI.getUser(GlobalData.userId);
+
+    if (mounted) {
+      setState(() {
+        user = curUser;
+      });
+    }
 
     String decider = user.id[user.id.length -1];
 
@@ -839,11 +849,44 @@ class _AccountWidgetState extends State<AccountWidget> {
     }
 
     print(user.bio);
+
+    fetchFavorites();
+
     fetchRecents();
 
     await Future.delayed(const Duration(seconds: 3));
     if (mounted) {
       setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> fetchFavorites() async {
+
+    List<GameItem> faves = [];
+
+    print('\nyoooooooooooooooooooooooooooooooooooooooo\n');
+
+    print(user.favorites);
+
+    for (var fav in user.favorites) {
+
+      print('\nuhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh\n' + fav);
+
+      String curId = fav as String;
+
+      GameItem cur = await SearchGameLocal.getGame(curId);
+
+      if(cur.id != '') {
+        faves.add(cur);
+      }
+    }
+
+
+
+    if (mounted) {
+      setState(() {
+        favorites = faves;
+      });
     }
   }
 
@@ -983,50 +1026,119 @@ class _AccountWidgetState extends State<AccountWidget> {
                 height: 10,
               ),
               Container(
-                height: (MediaQuery.of(context).size.width / 4) * 1.25,
+                height: ((MediaQuery.of(context).size.width - 44) / 4) * 1.5,
                 width: (MediaQuery.of(context).size.width),
                 alignment: Alignment.center,
-                margin: EdgeInsets.only(left: 20, right: 20),
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: <Card>[
-                    Card(
-                      child: SizedBox(
-                        height: (MediaQuery.of(context).size.width / 4) * 1.25,
-                        width: MediaQuery.of(context).size.width / 5,
-                        child: Center(
-                          child: Text('Card1'),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      child: SizedBox(
-                        height: 150,
-                        width: MediaQuery.of(context).size.width / 5,
-                        child: Center(
-                          child: Text('Card1'),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      child: SizedBox(
-                        height: (MediaQuery.of(context).size.width / 5),
-                        width: MediaQuery.of(context).size.width / 5,
-                        child: Center(
-                          child: Text('Card1'),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      child: SizedBox(
-                        height: 150,
-                        width: MediaQuery.of(context).size.width / 5,
-                        child: Center(
-                          child: Text('Card1'),
-                        ),
-                      ),
-                    ),
-                  ],
+                margin: EdgeInsets.only(left: 6, right: 6),
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 4,
+                    itemBuilder: ((context, index) {
+                      bool noFav = true;
+                      GameItem curGame = GameItem(id: '', title: '', dev: '', genre: '', release: '', reviews: List.empty(), image: '', igId: '', spread: spread);;
+                      String cover = '';
+                      String gameId = '';
+                      String localId = '';
+                      if (index <= favorites.length - 1) {
+                        curGame = favorites[index];
+                        cover = curGame.image;
+                        gameId = curGame.igId;
+                        localId = curGame.id;
+                        noFav = false;
+                      }
+
+                      return noFav ? 
+                        InkWell(
+                          onTap: () async {
+                            print('\nadddddddddddddddddddddddddddddddddddddd\n');
+                            bool? add = false;
+                            add = await showModalBottomSheet<bool>(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                              backgroundColor: backColor,
+                              isScrollControlled: true,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AddFavoriteWidget(gameId: '', title: '', replace: false);
+                              }
+                            );
+                            if (add!) {
+                              didChangeDependencies();
+                            }
+                          },
+                          child: Container(
+                              height:
+                                  ((MediaQuery.of(context).size.width - 44) / 4) * 1.3,
+                              width: (MediaQuery.of(context).size.width - 44) / 4,
+                              clipBehavior: Clip.antiAlias,
+                              margin: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                  // this allows for the rounded edges. I can't get it the way
+                                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                                  color: fieldColor,
+                                  ),
+                              child: const Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.add_box_outlined,
+                                      color: textColor,
+                                    ),
+                                    Text(
+                                      'Add Favorite',
+                                      style: TextStyle(
+                                        color: textColor,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )
+                            ),
+                        ) :
+                        InkWell(
+                          onTap: () async {
+                            await Navigator.pushNamed(context, '/game', arguments: int.parse(gameId));
+                          },
+                          onLongPress: () async {
+                            bool? changed = false;
+                            changed = await showModalBottomSheet<bool>(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                              backgroundColor: backColor,
+                              isScrollControlled: true,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return editFavoriteGame(gameId: localId, title: curGame.title);
+                              }
+                            );
+                            if (changed!) {
+                              didChangeDependencies();
+                            }
+                          },
+                          child: Container(
+                              height:
+                                  ((MediaQuery.of(context).size.width - 44) / 4) * 1.3,
+                              width: (MediaQuery.of(context).size.width - 44) / 4,
+                              clipBehavior: Clip.antiAlias,
+                              margin: EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                  // this allows for the rounded edges. I can't get it the way
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(4))),
+                              child: cover != ''
+                                  ? Image.network(
+                                      cover,
+                                      fit: BoxFit.fill,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                    )
+                                  : Text('Failed to load')
+                            )
+                        );
+                    }
+                  )
                 ),
               ),
               SizedBox(
@@ -1167,6 +1279,8 @@ class _AccountWidgetState extends State<AccountWidget> {
                               1
                             ],
                             color: textColor,
+                            axisLineColor: textColor,
+                            axisLineWidth: .25,
                           ),
                         ),
                         Column(children: [
@@ -1710,6 +1824,400 @@ class editBio extends StatefulWidget {
                 
                 
 
+            ]));
+
+    }
+
+  }
+
+class AddFavoriteWidget extends StatefulWidget {
+
+  final String gameId;
+  final String title;
+  final bool replace;
+
+  AddFavoriteWidget ({
+    required this.gameId,
+    required this.title,
+    required this.replace
+  });
+
+  @override
+  _AddFavoriteWidgetState createState() => _AddFavoriteWidgetState(gameId: gameId, title: title, replace: replace);
+}
+
+class _AddFavoriteWidgetState extends State<AddFavoriteWidget> {
+
+  final String gameId;
+  final String title;
+  final bool replace;
+
+  _AddFavoriteWidgetState ({
+    required this.gameId,
+    required this.title,
+    required this.replace
+  });
+
+  List<String> results = [];
+  String? _searchingWithQuery;
+  late Iterable<Widget> _lastOptions = <Widget>[];
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height - 32,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Padding(
+            padding:
+                const EdgeInsets.only(left: 5, right: 20, top: 10, bottom: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: contColor, fontSize: 16),
+                    )),
+
+                replace ? const Text(
+                  'Replace Favorite',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: fieldColor,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold
+                  )
+                ) :
+                const Text(
+                  'Add a Favorite',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: fieldColor,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold
+                  )
+                ),
+                const Text(
+                  'Cancel',
+                  style: TextStyle(color: backColor, fontSize: 16),
+                )
+              ],
+            ),
+          ),
+          replace ? 
+          Container(
+            decoration: const BoxDecoration(color: Colors.black87),
+            padding: const EdgeInsets.all(20),
+            width: MediaQuery.of(context).size.width,
+            child: Wrap(
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                      color: textColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+          ) : 
+          Container(height: 0),
+          Container(
+              alignment: Alignment.topCenter,
+              padding: EdgeInsets.all(16),
+              child: SearchAnchor(
+                  viewBackgroundColor: contColor,
+                  dividerColor: Colors.black87,
+                  viewConstraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width - 16),
+                  isFullScreen: false,
+                  builder: (BuildContext context, SearchController controller) {
+                    return SearchBar(
+                      backgroundColor: MaterialStateProperty.all(contColor),
+                      controller: controller,
+                      padding: const MaterialStatePropertyAll<EdgeInsets>(
+                          EdgeInsets.symmetric(horizontal: 16.0)),
+                      onTap: () {
+                        controller.openView();
+                      },
+                      onChanged: (_) {
+                        controller.openView();
+                      },
+                      leading: const Icon(Icons.search),
+                    );
+                  },
+                  suggestionsBuilder: (BuildContext context,
+                      SearchController controller) async {
+                    _searchingWithQuery = controller.text;
+                    final List<NameItem> results =
+                        (await NameAPI.fetchData(_searchingWithQuery!))
+                            .toList();
+
+                    if (_searchingWithQuery != controller.text) {
+                      return _lastOptions;
+                    }
+
+                    _lastOptions =
+                        List<ListTile>.generate(results.length, (int index) {
+                      final NameItem item = results[index];
+                      return ListTile(
+                          title: Text(item.title + ' ' + item.year),
+                          onTap: () async {
+                            if (replace) {await faveGamesAPI.deleteFavorite(user.id, gameId);} 
+                            String igId = item.id.toString();
+                            await faveGamesAPI.addFavorite(user.id, igId, item.title, item.release);
+                            Navigator.of(context)
+                              ..pop()
+                              ..pop(true)
+                              ..pop(true);
+                          });
+                    });
+
+                    return _lastOptions;
+                  }))
+        ],
+      ),
+    );
+  }
+}
+
+class editFavoriteGame extends StatefulWidget {
+
+    final String gameId;
+    final String title;
+
+    editFavoriteGame ({required this.gameId, required this.title});
+
+    @override
+    _editFavoriteState createState() => _editFavoriteState(gameId: gameId, title: title);
+
+  }
+
+  class _editFavoriteState extends State<editFavoriteGame> {
+
+    String gameId;
+    String title;
+
+    _editFavoriteState({required this.gameId, required this.title});
+
+    @override
+    Widget build(BuildContext context) {
+
+      return SizedBox(
+        height: MediaQuery.sizeOf(context).height / 2,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 5, right: 5, top: 10, bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: contColor, fontSize: 16),
+                        )),
+                    const Text('Edit Favorite...',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: fieldColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Delete',
+                      style: TextStyle(
+                          color: backColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                decoration: const BoxDecoration(color: Colors.black87),
+                padding: const EdgeInsets.all(20),
+                width: MediaQuery.of(context).size.width,
+                child: Wrap(
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                          color: textColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              ),
+              InkWell(
+                onTap: () async {
+                  bool? edited = false;
+                  edited = await showModalBottomSheet<bool>(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15)),
+                  backgroundColor: backColor,
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AddFavoriteWidget(gameId: gameId, title: title, replace: true);
+                  });
+                  if (edited!) {didChangeDependencies();}
+                },
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  width: MediaQuery.sizeOf(context).width,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Replace',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: textColor,
+                        ),
+                      ),
+                    ]
+                  ),
+                )
+              ),
+              InkWell(
+                onTap: () {
+                  showModalBottomSheet<dynamic>(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15)),
+                  backgroundColor: backColor,
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return deleteFavoriteGame(gameId: gameId, title: title);
+                  });
+                },
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  //margin: EdgeInsets.only(top: 0),
+                  width: MediaQuery.sizeOf(context).width,
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(
+                        color: textColor,
+                        width: .25
+                      )
+                    )
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Delete',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: NESred,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                      Icon(
+                        Icons.delete,
+                        color: NESred,
+                        size: 16,
+                      )
+                    ]
+                  ),
+                )
+              )
+            ]));
+
+    }
+
+  }
+
+class deleteFavoriteGame extends StatefulWidget {
+
+    final String gameId;
+    final String title;
+
+    deleteFavoriteGame ({required this.gameId, required this.title});
+
+    @override
+    _deleteFavoriteState createState() => _deleteFavoriteState(gameId: gameId, title: title);
+
+  }
+
+class _deleteFavoriteState extends State<deleteFavoriteGame> {
+
+    String gameId;
+    String title;
+
+    _deleteFavoriteState({required this.gameId, required this.title});
+
+    @override
+    Widget build(BuildContext context) {
+
+      return SizedBox(
+        height: MediaQuery.sizeOf(context).height / 2,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 5, right: 5, top: 10, bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: contColor, fontSize: 16),
+                        )),
+                    const Text('Delete...',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: fieldColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
+                    TextButton(
+                        onPressed: () async {
+                          print('delete');
+                          await faveGamesAPI.deleteFavorite(user.id, gameId);
+                          Navigator.of(context)
+                              ..pop()
+                              ..pop(true);
+                        },
+                        child: const Text(
+                          'Delete',
+                          style: TextStyle(
+                              color: NESred,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ))
+                  ],
+                ),
+              ),
+              Container(
+                decoration: const BoxDecoration(color: Colors.black87),
+                padding: const EdgeInsets.all(20),
+                width: MediaQuery.of(context).size.width,
+                child: Wrap(
+                  children: [
+                    Text(
+                      'Delete ' + title + ' from ' + 'favorites' + '?',
+                      style: const TextStyle(
+                          color: textColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              ),
             ]));
 
     }
