@@ -510,7 +510,11 @@ class gameWidget extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () async {
-                    Navigator.pushNamed(context, '/reviews', arguments: gameIdGlob);
+                    String curTitle = gameTitle;
+                    int curIgId = gameIdGlob!;
+                    await Navigator.pushNamed(context, '/reviews', arguments: gameIdGlob);
+                    gameTitle = curTitle;
+                    gameIdGlob = curIgId;
                   },
                   child: Card(
                     child: Container(

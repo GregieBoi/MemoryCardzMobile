@@ -995,6 +995,7 @@ class _AccountWidgetState extends State<AccountWidget> {
                 ),
                 badgeStyle: badges.BadgeStyle(badgeColor: Colors.transparent),
                 child: Container(
+                  margin: EdgeInsets.only(left: 10),
                   height: 60,
                   width: 60,
                   decoration: BoxDecoration(
@@ -1635,27 +1636,6 @@ class SettingsWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  padding:
-                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: textColor, width: .25))),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Favorites',
-                        style: TextStyle(color: textColor, fontSize: 16),
-                      ),
-                      Icon(
-                        Icons.arrow_right,
-                        color: textColor,
-                      )
-                    ],
-                  ),
-                ),
                 /*Container(
                     width: MediaQuery.of(context).size.width,
                     padding: EdgeInsets.only(
@@ -1972,7 +1952,6 @@ class _AddFavoriteWidgetState extends State<AddFavoriteWidget> {
                             await faveGamesAPI.addFavorite(user.id, igId, item.title, item.release);
                             Navigator.of(context)
                               ..pop()
-                              ..pop(true)
                               ..pop(true);
                           });
                     });

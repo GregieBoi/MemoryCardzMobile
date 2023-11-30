@@ -3,6 +3,8 @@ import 'package:getwidget/getwidget.dart';
 import 'package:mobile_project/screens/HubScreen.dart';
 import 'package:mobile_project/screens/LoadingScreen.dart';
 import 'package:mobile_project/utils/ListsAPI.dart';
+import 'package:mobile_project/utils/getAPI.dart';
+import 'package:mobile_project/utils/getUserAPI.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
@@ -10,10 +12,11 @@ const contColor = Color(0xFF8C8C8C);
 const fieldColor = Color(0xFFD9D9D9);
 const NESred = Color(0xFFFF0000);
 
-List<dynamic>? listsIdsGlob = [];
+List<dynamic> listsIdsGlob = [];
 bool isLoading = true;
-List<InkWell> column = [];
+List<ListItem> column = [];
 String userIdGlob = '';
+bool isSameUser = false;
 
 class listAndUser {
   String userId;
@@ -33,53 +36,98 @@ class ListsScreen extends StatefulWidget {
 
 class _ListsScreenState extends State<ListsScreen> {
 
-  List<dynamic>? listsIds;
+  List<dynamic> listsIds = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
   
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
+
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+        isSameUser = false;
+        column = [];
+        listsIdsGlob = [];
+        listsIds = [];
+      });
+    }
+
+    print('\nhereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\n\n');
+
+    listsIds = [];
 
     // access the id argument passed from HubScreen
     listsAndUser item = ModalRoute.of(context)?.settings.arguments as listsAndUser;
 
-    listsIds = item.lists;
     userIdGlob = item.userId;
+
+    if (userIdGlob == GlobalData.userId) {
+      setState(() {
+        isSameUser = true;
+        listsIdsGlob = [];
+      });
+      UserItem user = await getUserAPI.getUser(userIdGlob);
+      listsIds  = user.lists;
+    }
+    else {
+      listsIds = item.lists;
+    }
 
     print(listsIds);
 
 
     //listsIds ??= ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-    listsIdsGlob = listsIds;
+    if (mounted) {
+      setState(() {
+        listsIdsGlob = listsIds;
+      });
+    }
 
     print(listsIds);
     print(listsIdsGlob);
 
     // check if gameId is not null before making the API call
-    if (listsIds != null) {
+    if (listsIdsGlob != null) {
       fetchListData();
     }
+
+    int numLists = column.length;
+
+    print('\n$numLists\n');
   }
 
   Future<void> fetchListData() async {
 
     if (mounted) {
-      setState(() => isLoading = true);
+      setState(() {
+        isLoading = true;
+        column = [];
+      });
     }
 
     column = [];
 
-    for (var listId in listsIdsGlob!) {
+    int numLists = listsIdsGlob.length;
+
+    print('\n# of lists ' + '$numLists' + '\n\n');
+
+    for (var listId in listsIdsGlob) {
       if (!mounted) {continue;}
 
       final String id = listId;
 
       ListItem cur = await getListsAPI.getList(id);
 
-      int numGames = cur.games.length;
-
       if (!mounted || cur.name == 'Shelf' || cur.name == '') {continue;}
 
-      InkWell list = InkWell(
+      column.add(cur);
+
+      /*InkWell list = InkWell(
 
         onTap: () async {
           await Navigator.pushNamed(context, '/shelf', arguments: listAndUser(userId: userIdGlob, listId: cur.id));
@@ -127,15 +175,89 @@ class _ListsScreenState extends State<ListsScreen> {
 
         ),
 
-      );
+      );*/
       
-      column.add(list);
+      //column.add(list);
 
     }
+
+    if (mounted && userIdGlob == GlobalData.userId) {
+
+      InkWell createList = InkWell(
+
+        onTap: () async {
+          bool? add = false;
+          add = await showModalBottomSheet<bool>(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            backgroundColor: backColor,
+            isScrollControlled: true,
+            context: context,
+            builder: (BuildContext context) {
+            return createListWidget();
+            }
+          );
+          if (add!) {
+            column.add(ListItem(id: '', name: 'name', games: []));
+          }
+        },
+
+        child: Container(
+
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(color: textColor, width: .25)
+            )
+          ),
+
+          child: Row(
+
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+            children: [
+
+              Container(
+                width: MediaQuery.sizeOf(context).width / 1.75,
+                child: Text(
+                  'Create New List',
+                  style: TextStyle(
+                    color: fieldColor,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+              ),
+
+              Text(
+                '+',
+                style: TextStyle(
+                  color: NESred,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold
+                ),
+              )
+
+            ],
+
+          ),
+
+        ),
+
+      );
+
+      //column.add(createList);
+
+    } 
 
     if (mounted) {
       setState(() => isLoading = false);
     }
+  }
+
+  @override
+  void dispose() async{
+    super.dispose();
   }
 
   @override
@@ -152,7 +274,161 @@ class _ListsScreenState extends State<ListsScreen> {
           ),
         ),
 
-        body: isLoading ? LoadingPage() : listsWidget()
+        body: isLoading ? 
+          LoadingPage() : 
+          SingleChildScrollView(
+
+            child: Container(
+
+              width: MediaQuery.sizeOf(context).width,
+              height: MediaQuery.sizeOf(context).height - 18,
+
+              child: ListView.builder(
+                
+                scrollDirection: Axis.vertical,
+                itemCount: isSameUser ? listsIdsGlob.length : listsIdsGlob.length,
+                itemBuilder: (context, index) {
+                  ListItem curList = ListItem(id: '', name: '', games: []);
+                  int numLists = column.length;
+                  int numGames = 0;
+                  if(isSameUser) {print('\nis the same user\n');}
+                  print('\n$numLists\n' + '\n$index\n');
+                  if (index != numLists || (index == numLists && !isSameUser)) {
+                    curList = column[index];
+                    numGames = curList.games.length;
+                  }
+                  bool specialWidget = false;
+                  if (isSameUser && index == numLists) {specialWidget = true; print('\nits true\n');}
+                  return specialWidget ? 
+                    InkWell(
+
+                      onTap: () async {
+                        ListItem? add = ListItem(id: '', name: '', games: []);
+                        add = await showModalBottomSheet<ListItem>(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                          backgroundColor: backColor,
+                          isScrollControlled: true,
+                          context: context,
+                          builder: (BuildContext context) {
+                          return createListWidget();
+                          }
+                        );
+                        add!;
+                        if (add.id != '') {
+                          setState(() {
+                            column.insert(index - 1, add!);
+                          });
+                          print(column.length);
+                        }
+                      },
+
+                      child: Container(
+
+                        width: MediaQuery.of(context).size.width,
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            top: BorderSide(color: textColor, width: .25)
+                          )
+                        ),
+
+                        child: Row(
+
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+
+                          children: [
+
+                            Container(
+                              height: 85,
+                              width: MediaQuery.sizeOf(context).width / 1.75,
+                              child: Text(
+                                'Create New List',
+                                style: TextStyle(
+                                  color: fieldColor,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ),
+
+                            Container(
+                              height: 85,
+                              child: Text(
+                                '+',
+                                style: TextStyle(
+                                  color: NESred,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              )
+                            )
+
+                          ],
+
+                        ),
+
+                      ),
+
+                    ) :
+
+                    InkWell(
+
+                      onTap: () async {
+                        await Navigator.pushNamed(context, '/shelf', arguments: listAndUser(userId: userIdGlob, listId: curList.id));
+                        print('butttttttttttttttttttttttttttttttttttttttttttttttttts');
+                        didChangeDependencies();
+                        print('buttttttttttttttttttttttttttttttttttttttttttttttttttttttt');
+                      },
+
+                      child: Container(
+
+                        width: MediaQuery.of(context).size.width,
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            top: BorderSide(color: textColor, width: .25)
+                          )
+                        ),
+
+                        child: Row(
+
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                          children: [
+
+                            Text(
+                              curList.name,
+                              style: TextStyle(
+                                color: fieldColor,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+
+                            Text(
+                              '$numGames' + ' Games',
+                              style: TextStyle(
+                                color: textColor,
+                                fontSize: 16,
+                              ),
+                            )
+
+                          ],
+
+                        ),
+
+                      ),
+
+                    );
+                },
+
+              )
+              
+
+            ),
+
+      )
 
 
     );
@@ -177,72 +453,243 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-class listsWidget extends StatelessWidget {
+class listsWidget extends StatefulWidget {
+
+  @override
+  _listsWidgetState createState() => _listsWidgetState();
+}
+
+class _listsWidgetState extends State<listsWidget> {
 
   @override
   Widget build(BuildContext context) {
 
     return SingleChildScrollView(
 
-      child: Column(
+      child: Container(
 
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        width: MediaQuery.sizeOf(context).width,
+        height: MediaQuery.sizeOf(context).height - 18,
 
-        children: column/*[
+        child: ListView.builder(
+          
+          scrollDirection: Axis.vertical,
+          itemCount: isSameUser ? listsIdsGlob.length : listsIdsGlob.length,
+          itemBuilder: (context, index) {
+            ListItem curList = ListItem(id: '', name: '', games: []);
+            int numLists = column.length;
+            int numGames = 0;
+            if(isSameUser) {print('\nis the same user\n');}
+            print('\n$numLists\n' + '\n$index\n');
+            if (index != numLists || (index == numLists && !isSameUser)) {
+              curList = column[index];
+              numGames = curList.games.length;
+            }
+            bool specialWidget = false;
+            if (isSameUser && index == numLists) {specialWidget = true; print('\nits true\n');}
+            return specialWidget ? 
+              InkWell(
 
-          InkWell(
+                onTap: () async {
+                  bool? add = false;
+                  add = await showModalBottomSheet<bool>(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    backgroundColor: backColor,
+                    isScrollControlled: true,
+                    context: context,
+                    builder: (BuildContext context) {
+                    return createListWidget();
+                    }
+                  );
+                  if (add!) {
+                    didChangeDependencies();
+                  }
+                },
 
-            onTap: () async {
-              Navigator.pushNamed(context, '/shelf');
-            },
+                child: Container(
 
-            child: Container(
-
-              width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: textColor)
-                )
-              ),
-
-              child: Row(
-
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-                children: [
-
-                  Text(
-                    'Name of List',
-                    style: TextStyle(
-                      color: fieldColor,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold
-                    ),
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(color: textColor, width: .25)
+                    )
                   ),
 
-                  Text(
-                    '# ' + 'Games',
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: 16,
-                    ),
-                  )
+                  child: Row(
 
-                ],
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
 
-              ),
+                    children: [
 
-            ),
+                      Container(
+                        height: 85,
+                        width: MediaQuery.sizeOf(context).width / 1.75,
+                        child: Text(
+                          'Create New List',
+                          style: TextStyle(
+                            color: fieldColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ),
 
-          )
-          
+                      Container(
+                        height: 85,
+                        child: Text(
+                          '+',
+                          style: TextStyle(
+                            color: NESred,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold
+                          ),
+                        )
+                      )
 
-        ],*/
+                    ],
+
+                  ),
+
+                ),
+
+              ) :
+
+              InkWell(
+
+                onTap: () async {
+                  await Navigator.pushNamed(context, '/shelf', arguments: listAndUser(userId: userIdGlob, listId: curList.id));
+                  print('butttttttttttttttttttttttttttttttttttttttttttttttttts');
+                  didChangeDependencies();
+                  print('buttttttttttttttttttttttttttttttttttttttttttttttttttttttt');
+                },
+
+                child: Container(
+
+                  width: MediaQuery.of(context).size.width,
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(color: textColor, width: .25)
+                    )
+                  ),
+
+                  child: Row(
+
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                    children: [
+
+                      Text(
+                        curList.name,
+                        style: TextStyle(
+                          color: fieldColor,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+
+                      Text(
+                        '$numGames' + ' Games',
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 16,
+                        ),
+                      )
+
+                    ],
+
+                  ),
+
+                ),
+
+              );
+          },
+
+        )
+        
 
       ),
 
+    );
+
+  }
+
+}
+
+class createListWidget extends StatefulWidget {
+
+  @override
+  _createListState createState() => _createListState();
+
+}
+
+class _createListState extends State<createListWidget> {
+
+  TextEditingController listNameController = TextEditingController();
+  String listNameText = '';
+
+  @override
+  Widget build(BuildContext context) {
+
+    return SizedBox(
+        height: MediaQuery.of(context).size.height - 32,
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 5, right: 5, top: 10, bottom: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: contColor, fontSize: 16),
+                    )),
+                const Text('Create List New List...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold)),
+                TextButton(
+                    onPressed: () async {
+                      String newListId = await getListsAPI.createList(userIdGlob, listNameController.text);
+                      print('created and added to new list');
+                      Navigator.pop(context, ListItem(id: newListId, name: listNameController.text, games: []));
+                      //Navigator.pushNamed(context, '/shelf', arguments: listAndUser(userId: userIdGlob, listId: newListId));
+                    },
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(color: NESred, fontSize: 16, fontWeight: FontWeight.bold),
+                    ))
+              ],
+            ),
+          ),
+
+          Container(
+            padding: const EdgeInsets.only(
+              top: 10, left: 20, right: 20, bottom: 10),
+            decoration: const BoxDecoration(
+              border: Border(
+                top: BorderSide(color: Colors.black87, width: .25))),
+            child: TextField(
+              controller: listNameController,
+              maxLines: null,
+              style: const TextStyle(
+              color: textColor,
+              fontSize: 14,
+            ),
+              decoration: const InputDecoration(
+                contentPadding: EdgeInsets.all(0),
+                floatingLabelStyle:
+                  TextStyle(color: Colors.transparent),
+                labelText: 'List Title...',
+                labelStyle: TextStyle(color: textColor, fontSize: 16),
+                border:
+                  OutlineInputBorder(borderSide: BorderSide.none)),
+            ))
+          
+        ]
+      )
     );
 
   }

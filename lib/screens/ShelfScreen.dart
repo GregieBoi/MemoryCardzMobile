@@ -133,7 +133,7 @@ class _ShelfScreenState extends State<ShelfScreen> {
           builder: (BuildContext context) {
             return editList();
           });
-          if (edited!) {didChangeDependencies();}
+          //if (edited!) {didChangeDependencies();}
         },
         child: Container(
           padding: EdgeInsets.only(top: 10, left: 4, right: 4, bottom: 10),
@@ -500,7 +500,7 @@ class _deleteListState extends State<deleteListWidget> {
                   top: 10, left: 20, right: 20, bottom: 10),
                 decoration: const BoxDecoration(
                   border: Border(
-                    top: BorderSide(color: Colors.black87, width: .25))),
+                    top: BorderSide(color: textColor, width: .25))),
                 child: TextField(
                   controller: listNameController,
                   maxLines: null,
@@ -538,7 +538,7 @@ class _deleteListState extends State<deleteListWidget> {
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       border: Border(
-                        top: BorderSide(color: Colors.black87, width: .25)
+                        top: BorderSide(color: textColor, width: .25)
                       )
                     ),
 
@@ -843,12 +843,12 @@ class _AddWidgetState extends State<AddWidget> with SingleTickerProviderStateMix
                               borderColor: Colors.red,
                             );
                             setState(() {
-                              active = false;
+                              active = true;
                             });
                             await Future.delayed(const Duration(seconds: 2 ));
                             removeHighlightOverlay();
                             setState(() {
-                              active = true;
+                              active = false;
                             });
                             //Navigator.of(context)..pop()..pop(true);
                           });
