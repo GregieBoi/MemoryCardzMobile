@@ -113,7 +113,7 @@ class _GameScreenState extends State<GameScreen> {
     }
     if (sum != 0) {  
       double avg = (sum/total) / 2;
-      average = '$avg';
+      average = avg.toStringAsFixed(1);
     }
     int numReviewsLocal = local.reviews.length;
 

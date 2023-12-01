@@ -1949,10 +1949,19 @@ class _AddFavoriteWidgetState extends State<AddFavoriteWidget> {
                           onTap: () async {
                             if (replace) {await faveGamesAPI.deleteFavorite(user.id, gameId);} 
                             String igId = item.id.toString();
+                            // deleting await may keep from having the double tap issue staying
                             await faveGamesAPI.addFavorite(user.id, igId, item.title, item.release);
-                            Navigator.of(context)
+                            if (replace) {
+                              Navigator.of(context)
+                              ..pop()
                               ..pop()
                               ..pop(true);
+                            }
+                            else {
+                              Navigator.of(context)
+                                ..pop()
+                                ..pop(true);
+                            }
                           });
                     });
 
@@ -2048,7 +2057,7 @@ class editFavoriteGame extends StatefulWidget {
                   builder: (BuildContext context) {
                     return AddFavoriteWidget(gameId: gameId, title: title, replace: true);
                   });
-                  if (edited!) {didChangeDependencies();}
+                  //if (edited!) {didChangeDependencies();}
                 },
                 child: Container(
                   padding: EdgeInsets.all(10),

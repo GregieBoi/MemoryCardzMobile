@@ -473,6 +473,12 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          widget.review.rating == 0 ? 
+                          const Icon(
+                            Icons.videogame_asset_outlined,
+                            color: NESred,
+                            size: 20,
+                          ) : 
                           Container(
                             height: 20,
                             width: 80,
@@ -550,6 +556,8 @@ class _ReviewWidgetState extends State<ReviewWidget> {
               style: TextStyle(color: fieldColor),
             ),
           ),
+          widget.review.userId == GlobalData.userId ? 
+          SizedBox(height: 0) :
           Container(
             padding: EdgeInsets.all(5),
             child: Row(

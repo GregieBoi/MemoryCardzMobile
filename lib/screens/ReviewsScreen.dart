@@ -89,6 +89,12 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        review.rating == 0 ? 
+                        Icon(
+                          Icons.videogame_asset_outlined,
+                          color: NESred,
+                          size: 20,
+                        ) :
                         Container(
                           height: 20,
                           width: 80,
@@ -122,10 +128,10 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                       ],
                     ),
                   ),
-                  SizedBox(
+                  review.isLog ? SizedBox(height: 0) : SizedBox(
                     height: 20,
                   ),
-                  Text(
+                  review.isLog ? SizedBox(height: 0) : Text(
                     review.text,
                     style: TextStyle(color: textColor),
                   )
@@ -284,10 +290,10 @@ class reviewsWidget extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(
+                  review.isLog ? SizedBox(height: 0) : SizedBox(
                     height: 20,
                   ),
-                  Text(
+                  review.isLog ? SizedBox (height: 0) :Text(
                     review.text,
                     style: TextStyle(color: textColor),
                   )

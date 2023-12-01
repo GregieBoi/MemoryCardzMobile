@@ -62,6 +62,11 @@ class _ShelfScreenState extends State<ShelfScreen> {
       setState(() => isLoading = true);
     }
 
+    bool isSameUser = false;
+    if (userIdGlob == GlobalData.userId) {
+      isSameUser = true;
+    }
+
     listGames = [];
 
     print(shelfGlob);
@@ -84,7 +89,7 @@ class _ShelfScreenState extends State<ShelfScreen> {
         },
         onLongPress: () async {
           bool? deleted = false;
-          deleted = await showModalBottomSheet<bool>(
+          deleted = !isSameUser ? false : await showModalBottomSheet<bool>(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15)),
           backgroundColor: backColor,

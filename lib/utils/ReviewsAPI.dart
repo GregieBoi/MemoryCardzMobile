@@ -20,9 +20,9 @@ class getReviewsAPI {
       for (var review in reviews) {
         ReviewItem cur = await getReviewsAPI.getReview(review);
 
-        if (cur.isLog == true) {
+        /*if (cur.isLog == true) {
           continue;
-        }
+        }*/
 
         print(cur.userId + ' this is the user id!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 

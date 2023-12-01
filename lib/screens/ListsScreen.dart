@@ -123,7 +123,7 @@ class _ListsScreenState extends State<ListsScreen> {
 
       ListItem cur = await getListsAPI.getList(id);
 
-      if (!mounted || cur.name == 'Shelf' || cur.name == '') {continue;}
+      if (!mounted || cur.name == 'Shelf') {continue;}
 
       column.add(cur);
 
@@ -286,7 +286,7 @@ class _ListsScreenState extends State<ListsScreen> {
               child: ListView.builder(
                 
                 scrollDirection: Axis.vertical,
-                itemCount: isSameUser ? listsIdsGlob.length : listsIdsGlob.length,
+                itemCount: isSameUser ? listsIdsGlob.length : listsIdsGlob.length - 1,
                 itemBuilder: (context, index) {
                   ListItem curList = ListItem(id: '', name: '', games: []);
                   int numLists = column.length;
@@ -642,12 +642,12 @@ class _createListState extends State<createListWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
-                    onPressed: () => Navigator.pop(context, false),
+                    onPressed: () => Navigator.pop(context, ListItem(id: '', name: '', games: [])),
                     child: const Text(
                       'Cancel',
                       style: TextStyle(color: contColor, fontSize: 16),
                     )),
-                const Text('Create List New List...',
+                const Text('Create New List...',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: fieldColor, fontSize: 20, fontWeight: FontWeight.bold)),
                 TextButton(
