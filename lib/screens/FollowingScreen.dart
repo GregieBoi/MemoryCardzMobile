@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:mobile_project/screens/LoadingScreen.dart';
 import 'package:mobile_project/utils/getUserApi.dart';
+import 'package:mobile_project/utils/getAPI.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
@@ -52,6 +53,8 @@ class _FollowingScreenState extends State<FollowingScreen> {
       if (!mounted) {continue;}
 
       final String id = friendId;
+
+      if (GlobalData.userId == id) {continue;}
 
       UserItem cur = await getUserAPI.getUser(id);
 

@@ -17,7 +17,7 @@ const fieldColor = Color(0xFFD9D9D9);
 const NESred = Color(0xFFFF0000);
 
 bool isLoading = true;
-UserItem user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [], following: [], logged: [], reviews: [], lists: [], favorites: []);
+UserItem user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [], following: [], logged: [], reviews: [], lists: [], favorites: [], spread: [0,0,0,0,0,0,0,0,0,0]);
 String? userIdGlob;
 bool isFollowed = false;
 
@@ -35,6 +35,8 @@ class _UserScreenState extends State<UserScreen> {
   List<GameItem> favorites = [];
 
   String profilePic = profilePics[0];
+
+  String average = 'N/A';
 
   String? userId;
 
@@ -94,6 +96,20 @@ class _UserScreenState extends State<UserScreen> {
     fetchFavorites();
 
     fetchRecents();
+
+    user.spread.removeAt(0);
+
+    int sum = 0;
+    int total = 0;
+    for(int i = 0; i < 10; i++) {
+      int cur = user.spread[i];
+      sum += cur * (i + 1);
+      total += cur;
+    }
+    if (sum != 0) {  
+      double avg = (sum/total) / 2;
+      average = avg.toStringAsFixed(1);
+    }
 
     await Future.delayed(const Duration(seconds: 3));
     if (mounted) {
@@ -177,21 +193,6 @@ class _UserScreenState extends State<UserScreen> {
     }
 
     print(revs);
-
-    List<ReviewItem> lgs = [];
-
-    for (var lg in recentLogs) {
-      //lgs.add(await getReviewsAPI.getReview(lg));
-    }
-
-    for (int i = 0; i < logs + reviews; i++) {
-      if (i == 0) {
-        //var curRevTime = DateFormat('yMMMMd').parse(revs[i].date).millisecondsSinceEpoch;
-        //var curLogTime = DateFormat('yMMMMd').parse(lgs[i].date).millisecondsSinceEpoch;
-
-        //if (curRevTime < curLogTime)
-      }
-    }
 
     recentsIds = revs;
 
@@ -480,27 +481,27 @@ class _UserScreenState extends State<UserScreen> {
                         ),
                         Container(
                           height: 50,
-                          width:
-                              (MediaQuery.of(context).size.width - 40) * 2 / 3,
-                          child: SfSparkBarChart(
-                            data: [
-                              0.025,
-                              0.025,
-                              0.1,
-                              0.05,
-                              0.05,
-                              1,
-                              2,
-                              3,
-                              1,
-                              1
-                            ],
-                            color: textColor,
+                          width: (MediaQuery.of(context).size.width - 40) * 2 / 3,
+                          child: average == 'N/A' ? 
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(
+                                  color: textColor,
+                                  width: .25
+                                )
+                              )
+                              ),
+                            ): 
+                            SfSparkBarChart(
+                              data: user.spread,
+                              color: textColor,
+                              axisLineColor: textColor,
+                              axisLineWidth: .25,
                           ),
                         ),
                         Column(children: [
                           Text(
-                            '3.9',
+                            average,
                             style: TextStyle(fontSize: 20, color: textColor),
                           ),
                           Row(

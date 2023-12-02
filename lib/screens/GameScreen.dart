@@ -723,7 +723,7 @@ class addToListWidget extends StatefulWidget {
 
 }
 
-UserItem _user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [], following: [], logged: [], reviews: [], lists: [], favorites: []);
+UserItem _user = UserItem(id: '', userName: '', firstName: '', lastName: '', email: '', bio: '', followers: [], following: [], logged: [], reviews: [], lists: [], favorites: [], spread: []);
 String? _gameId;
 List<InkWell> column = [];
 

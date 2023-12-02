@@ -37,7 +37,8 @@ var user = UserItem(
     logged: [''],
     reviews: [''],
     lists: [],
-    favorites: []);
+    favorites: [],
+    spread: [0,0,0,0,0,0,0,0,0,0]);
 List<String> profilePics = [
   'https://mariopartylegacy.com/wp-content/uploads/2011/08/marioprofile-275x275.png',
   'https://mariopartylegacy.com/wp-content/uploads/2011/08/luigiprofile-275x275.png',
@@ -796,6 +797,8 @@ class _AccountWidgetState extends State<AccountWidget> {
 
   String profilePic = profilePics[0];
 
+  String average = 'N/A';
+
   @override
   void initState() {
     super.initState();
@@ -853,6 +856,20 @@ class _AccountWidgetState extends State<AccountWidget> {
     fetchFavorites();
 
     fetchRecents();
+
+    user.spread.removeAt(0);
+
+    int sum = 0;
+    int total = 0;
+    for(int i = 0; i < 10; i++) {
+      int cur = user.spread[i];
+      sum += cur * (i + 1);
+      total += cur;
+    }
+    if (sum != 0) {  
+      double avg = (sum/total) / 2;
+      average = avg.toStringAsFixed(1);
+    }
 
     await Future.delayed(const Duration(seconds: 3));
     if (mounted) {
@@ -1264,29 +1281,27 @@ class _AccountWidgetState extends State<AccountWidget> {
                         ),
                         Container(
                           height: 50,
-                          width:
-                              (MediaQuery.of(context).size.width - 40) * 2 / 3,
-                          child: SfSparkBarChart(
-                            data: [
-                              0.025,
-                              0.025,
-                              0.1,
-                              0.05,
-                              0.05,
-                              1,
-                              2,
-                              3,
-                              1,
-                              1
-                            ],
-                            color: textColor,
-                            axisLineColor: textColor,
-                            axisLineWidth: .25,
+                          width: (MediaQuery.of(context).size.width - 40) * 2 / 3,
+                          child: average == 'N/A' ? 
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(
+                                  color: textColor,
+                                  width: .25
+                                )
+                              )
+                              ),
+                            ): 
+                            SfSparkBarChart(
+                              data: user.spread,
+                              color: textColor,
+                              axisLineColor: textColor,
+                              axisLineWidth: .25,
                           ),
                         ),
                         Column(children: [
                           Text(
-                            '3.9',
+                            average,
                             style: TextStyle(fontSize: 20, color: textColor),
                           ),
                           Row(

@@ -59,9 +59,11 @@ class _FollowerScreenState extends State<FollowerScreen> {
 
       final String id = friendId;
 
+      if (GlobalData.userId == id) {continue;}
+
       UserItem cur = await getUserAPI.getUser(id);
 
-      if (!mounted || GlobalData.userId == cur.id) {continue;}
+      if (!mounted) {continue;}
 
       InkWell friend = InkWell(
 

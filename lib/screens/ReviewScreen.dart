@@ -455,6 +455,8 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                     children: [
                       GestureDetector(
                         onTap: () async {
+                          oneReview.userId == GlobalData.userId! ? 
+                          print('sameUser') :
                           Navigator.pushNamed(context, '/user', arguments: oneReview.userId);
                         },
                         child: Text(
@@ -546,6 +548,8 @@ class _ReviewWidgetState extends State<ReviewWidget> {
               ],
             ),
           ),
+          widget.review.text == '' ? 
+          SizedBox(height: 0):
           Container(
             padding: EdgeInsets.only(
               left: 20,
@@ -556,8 +560,6 @@ class _ReviewWidgetState extends State<ReviewWidget> {
               style: TextStyle(color: fieldColor),
             ),
           ),
-          widget.review.userId == GlobalData.userId ? 
-          SizedBox(height: 0) :
           Container(
             padding: EdgeInsets.all(5),
             child: Row(
