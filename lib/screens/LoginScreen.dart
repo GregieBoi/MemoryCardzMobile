@@ -26,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: GFAppBar(
         backgroundColor: Colors.black54,
         centerTitle: true,
-        title: Text("MemoryCardZ", style: TextStyle(fontWeight: FontWeight.bold),)
+        title: Text("MEMORYCARDS", style: TextStyle(fontWeight: FontWeight.bold),)
       ),
 
         //body: MainPage(),

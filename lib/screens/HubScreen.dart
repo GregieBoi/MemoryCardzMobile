@@ -17,6 +17,9 @@ import 'package:intl/intl.dart';
 import 'package:mobile_project/screens/LoadingScreen.dart';
 import 'package:mobile_project/utils/getUserAPI.dart';
 import 'package:mobile_project/utils/getGlobalsAPI.dart';
+import 'dart:math';
+import 'package:mobile_project/utils/emailAPI.dart';
+import 'package:flutter/services.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
@@ -90,10 +93,22 @@ class _HubScreenState extends State<HubScreen> {
     return Scaffold(
       backgroundColor: backColor,
       appBar: GFAppBar(
+        leading: Transform.rotate(
+          angle: 180 * pi / 180,
+          child: IconButton(
+            icon: Icon(
+              Icons.logout,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )
+        ),
         backgroundColor: Colors.black87,
         centerTitle: true,
         title: Text(
-          'MemoryCardZ',
+          'MEMORYCARDS',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
@@ -206,7 +221,7 @@ class _GamesWidgetState extends State<GamesWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 25),
+            SizedBox(height:0),
             Padding(
               padding: EdgeInsets.only(left: 10),
               child: Text(
@@ -1345,17 +1360,26 @@ class _AccountWidgetState extends State<AccountWidget> {
                       arguments: {'reviews': user.reviews});
                 },
                 child: Container(
-                  height: 40,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: contColor, width: .25))),
-                  child: Text(
-                    'Games',
-                    style: TextStyle(fontSize: 16, color: textColor),
+                    width: MediaQuery.of(context).size.width,
+                    padding:
+                        EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            top: BorderSide(color: textColor, width: .25))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Games',
+                          style: TextStyle(color: textColor, fontSize: 16),
+                        ),
+                        Icon(
+                          Icons.arrow_right,
+                          color: textColor,
+                        )
+                      ],
+                    ),
                   ),
-                ),
               ),
               InkWell(
                 onTap: () async {
@@ -1365,34 +1389,52 @@ class _AccountWidgetState extends State<AccountWidget> {
                   if (deleted) {print('heyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy');didChangeDependencies();}
                 },
                 child: Container(
-                  height: 40,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: contColor, width: .25))),
-                  child: Text(
-                    'Diary',
-                    style: TextStyle(fontSize: 16, color: textColor),
+                    width: MediaQuery.of(context).size.width,
+                    padding:
+                        EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            top: BorderSide(color: textColor, width: .25))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Diary',
+                          style: TextStyle(color: textColor, fontSize: 16),
+                        ),
+                        Icon(
+                          Icons.arrow_right,
+                          color: textColor,
+                        )
+                      ],
+                    ),
                   ),
-                ),
               ),
               InkWell(
                 onTap: () async {
                   Navigator.pushNamed(context, '/lists', arguments: listsAndUser(lists: user.lists, userId: user.id));
                 },
                 child: Container(
-                  height: 40,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: contColor, width: .25))),
-                  child: Text(
-                    'Lists',
-                    style: TextStyle(fontSize: 16, color: textColor),
+                    width: MediaQuery.of(context).size.width,
+                    padding:
+                        EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            top: BorderSide(color: textColor, width: .25))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Lists',
+                          style: TextStyle(color: textColor, fontSize: 16),
+                        ),
+                        Icon(
+                          Icons.arrow_right,
+                          color: textColor,
+                        )
+                      ],
+                    ),
                   ),
-                ),
               ),
               InkWell(
                 onTap: () async {
@@ -1403,17 +1445,26 @@ class _AccountWidgetState extends State<AccountWidget> {
                   Navigator.pushNamed(context, '/shelf', arguments: listAndUser(listId: shelf, userId: user.id));
                 },
                 child: Container(
-                  height: 40,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: contColor, width: .25))),
-                  child: Text(
-                    'Shelf',
-                    style: TextStyle(fontSize: 16, color: textColor),
+                    width: MediaQuery.of(context).size.width,
+                    padding:
+                        EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            top: BorderSide(color: textColor, width: .25))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Shelf',
+                          style: TextStyle(color: textColor, fontSize: 16),
+                        ),
+                        Icon(
+                          Icons.arrow_right,
+                          color: textColor,
+                        )
+                      ],
+                    ),
                   ),
-                ),
               ),
               InkWell(
                 onTap: () async {
@@ -1421,17 +1472,26 @@ class _AccountWidgetState extends State<AccountWidget> {
                       arguments: user.following);
                 },
                 child: Container(
-                  height: 40,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: contColor, width: .25))),
-                  child: Text(
-                    'Following',
-                    style: TextStyle(fontSize: 16, color: textColor),
+                    width: MediaQuery.of(context).size.width,
+                    padding:
+                        EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            top: BorderSide(color: textColor, width: .25))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Following',
+                          style: TextStyle(color: textColor, fontSize: 16),
+                        ),
+                        Icon(
+                          Icons.arrow_right,
+                          color: textColor,
+                        )
+                      ],
+                    ),
                   ),
-                ),
               ),
               InkWell(
                 onTap: () async {
@@ -1439,17 +1499,26 @@ class _AccountWidgetState extends State<AccountWidget> {
                       arguments: user.followers);
                 },
                 child: Container(
-                  height: 40,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: contColor, width: .25))),
-                  child: Text(
-                    'Followers',
-                    style: TextStyle(fontSize: 16, color: textColor),
+                    width: MediaQuery.of(context).size.width,
+                    padding:
+                        EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            top: BorderSide(color: textColor, width: .25))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Followers',
+                          style: TextStyle(color: textColor, fontSize: 16),
+                        ),
+                        Icon(
+                          Icons.arrow_right,
+                          color: textColor,
+                        )
+                      ],
+                    ),
                   ),
-                ),
               ),
             ],
           ));
@@ -1528,28 +1597,18 @@ class SettingsWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  padding:
-                      EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: textColor, width: .25))),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Reset Password',
-                        style: TextStyle(color: textColor, fontSize: 16),
-                      )
-                    ],
-                  ),
-                ),
                 InkWell(
                   onTap: () async {
-                    Navigator.of(context)
-                      ..pop(somethingUpdated)
-                      ..pop();
+                    emailAPI.verifyReset(user.email);
+                    showModalBottomSheet<dynamic>(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    backgroundColor: backColor,
+                    isScrollControlled: true,
+                    context: context,
+                    builder: (BuildContext context) {
+                      return verifyWidget(email: user.email);
+                    }
+                  );
                   },
                   child: Container(
                     width: MediaQuery.of(context).size.width,
@@ -1559,11 +1618,46 @@ class SettingsWidget extends StatelessWidget {
                         border: Border(
                             top: BorderSide(color: textColor, width: .25))),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Reset Password',
+                          style: TextStyle(color: textColor, fontSize: 16),
+                        ),
+                        Icon(
+                          Icons.arrow_right,
+                          color: textColor,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () async {
+                    Navigator.of(context)
+                      ..pop(somethingUpdated)
+                      ..pop();
+                  },
+                  child:Container(
+                    width: MediaQuery.of(context).size.width,
+                    padding:
+                        EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            top: BorderSide(color: textColor, width: .25))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           'Sign Out',
-                          style: TextStyle(color: NESred, fontSize: 16),
+                          style: TextStyle(color: NESred, fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        Transform.rotate(
+                          angle: 180 * pi / 180,
+                          child: Icon(
+                            Icons.logout,
+                            color: NESred,
+                          )
                         )
                       ],
                     ),
@@ -1593,7 +1687,7 @@ class SettingsWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
+                /*Container(
                   width: MediaQuery.of(context).size.width,
                   padding:
                       EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
@@ -1613,7 +1707,7 @@ class SettingsWidget extends StatelessWidget {
                       )
                     ],
                   ),
-                ),
+                ),*/
                 InkWell(
                   onTap: () async {
                     String? newBio = user.bio;
@@ -2226,3 +2320,487 @@ class _deleteFavoriteState extends State<deleteFavoriteGame> {
     }
 
   }
+
+  class verifyWidget extends StatefulWidget {
+
+  final String email;
+
+  verifyWidget({
+    required this.email
+  });
+
+  _verifyState createState() => _verifyState(email: email);
+
+}
+
+class _verifyState extends State<verifyWidget> {
+
+  final String email;
+
+  _verifyState({
+    required this.email
+  });
+
+  String obscuredEmail = '';
+  
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    String obscured = '';
+    bool skip = false;
+    bool at = false;
+
+    for (int i = 0; i < email.length; i++) {
+
+      if (skip) {skip = false; continue;}
+
+      String cur = email[i];
+
+      if (i == 0) {
+        obscured = cur;
+      }
+      else if (cur == '@') {
+        obscured = obscured.substring(0,i-1) + email[i-1] + cur + email[i+1];
+        at = true;
+        skip = true;
+      }
+      else if (cur == '.' && at) {
+        obscured = obscured.substring(0,i-1) + email.substring(email.length-5, email.length);
+        break;
+      }
+      else {
+        obscured = obscured + '*';
+      }
+
+    }
+
+    if(mounted) {
+      setState(() {
+        obscuredEmail = obscured;
+      });
+    }
+
+  }
+
+  String pin1 = '';
+  String pin2 = '';
+  String pin3 = '';
+  String pin4 = '';
+  String pin5 = '';
+  String pin6 = '';
+  String message = '';
+
+  @override
+  Widget build(BuildContext context) {
+
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 2 / 3,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Padding(
+            padding:
+                const EdgeInsets.only(left: 5, right: 5, top: 10, bottom: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                    onPressed: () => Navigator.of(context)
+                      ..pop(),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: contColor, fontSize: 16),
+                    )),
+                const Text('Verify Email',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: fieldColor,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold)),
+                TextButton(
+                  onPressed: () {
+                    if (pin1+pin2+pin3+pin4+pin5+pin6 == verificationToken) {
+                      showModalBottomSheet(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                        backgroundColor: backColor,
+                        isScrollControlled: true,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return passwordWidget(email: email);
+                        }
+                      );
+                    }
+                    else {
+                      setState(() {
+                        message = 'Incorrect Code';
+                      });
+                    }
+                  },
+                  child: Text(
+                    'Submit',
+                    style: TextStyle(color: NESred, fontSize: 16, fontWeight: FontWeight.bold),
+                  )
+                )
+              ],
+            ),
+          ),
+          Container(
+            decoration: const BoxDecoration(color: Colors.black87),
+            padding: const EdgeInsets.all(20),
+            width: MediaQuery.of(context).size.width,
+            child: Wrap(
+              children: [
+                Text(
+                  'Verification code sent to ' + obscuredEmail,
+                  style: const TextStyle(
+                      color: textColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+          ),
+          SizedBox(height: 20),
+          Form(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  height: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  width: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  margin: EdgeInsets.only(left: 10, right: 5),
+                  child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        pin1 = value;
+                      });
+                      if (value.length == 1) {
+                        FocusScope.of(context).nextFocus();
+                      }
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: fieldColor,
+                      focusColor: backColor,
+                      hoverColor: backColor,
+                      hintText: '0'
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20
+                    ),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1),
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                  )
+                ),
+                Container(
+                  height: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  width: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  margin: EdgeInsets.only(right: 5),
+                  child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        pin2 = value;
+                      });
+                      if (value.length == 1) {
+                        FocusScope.of(context).nextFocus();
+                      }
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: fieldColor,
+                      focusColor: backColor,
+                      hoverColor: backColor,
+                      hintText: '0'
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20
+                    ),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1),
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                  )
+                ),
+                Container(
+                  height: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  width: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  margin: EdgeInsets.only(right: 5),
+                  child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        pin3 = value;
+                      });
+                      if (value.length == 1) {
+                        FocusScope.of(context).nextFocus();
+                      }
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: fieldColor,
+                      focusColor: backColor,
+                      hoverColor: backColor,
+                      hintText: '0'
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20
+                    ),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1),
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                  )
+                ),
+                Container(
+                  height: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  width: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  margin: EdgeInsets.only(right: 5),
+                  child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        pin4 = value;
+                      });
+                      if (value.length == 1) {
+                        FocusScope.of(context).nextFocus();
+                      }
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: fieldColor,
+                      focusColor: backColor,
+                      hoverColor: backColor,
+                      hintText: '0'
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20
+                    ),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1),
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                  )
+                ),
+                Container(
+                  height: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  width: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  margin: EdgeInsets.only(right: 5),
+                  child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        pin5 = value;
+                      });
+                      if (value.length == 1) {
+                        FocusScope.of(context).nextFocus();
+                      }
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: fieldColor,
+                      focusColor: backColor,
+                      hoverColor: backColor,
+                      hintText: '0'
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20
+                    ),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1),
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                  )
+                ),
+                Container(
+                  height: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  width: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  margin: EdgeInsets.only(right: 10),
+                  child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        pin6 = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: fieldColor,
+                      focusColor: backColor,
+                      hoverColor: backColor,
+                      hintText: '0'
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20
+                    ),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1),
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                  )
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.all(10),
+            child: Text(
+              message,
+              style: const TextStyle(
+                color: NESred,
+                fontSize: 16,
+                fontWeight: FontWeight.bold
+              ),
+              textAlign: TextAlign.center,
+            ),
+          )
+        ]
+      ),
+    );
+
+  }
+
+}
+
+class passwordWidget extends StatefulWidget {
+
+  final String email;
+
+  passwordWidget({
+    required this.email
+  });
+
+  _passwordState createState() => _passwordState(email: email);
+
+}
+
+class _passwordState extends State<passwordWidget> {
+
+  final String email;
+
+  _passwordState({
+    required this.email
+  });
+
+  String message = '';
+  RegExp passExp = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 2 / 3,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Padding(
+            padding:
+                const EdgeInsets.only(left: 5, right: 5, top: 10, bottom: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                    onPressed: () => Navigator.of(context)
+                      ..pop()
+                      ..pop(),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: contColor, fontSize: 16),
+                    )),
+                const Text('Enter New Password...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: fieldColor,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold)),
+                TextButton(
+                  onPressed: () {
+                    bool complex = passExp.hasMatch(passwordController.text);
+                    if (complex) {
+                      emailAPI.changePassword(email, passwordController.text);
+                      Navigator.of(context)
+                        ..pop()
+                        ..pop();
+                    }
+                    else {
+                      setState(() {
+                        message = 'Password must be at least 8 characters long, contain upper and lower case characters, a number, and special character';
+                      });
+                    }
+                  },
+                  child: Text(
+                    'Submit',
+                    style: TextStyle(color: NESred, fontSize: 16, fontWeight: FontWeight.bold),
+                  )
+                )
+              ],
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: textColor, width: .25)
+              )
+            ),
+            child: TextField(
+              controller: passwordController,
+              maxLines: 1,
+              obscureText: true,
+              style: const TextStyle(
+                color: textColor,
+                fontSize: 16
+              ),
+              decoration: const InputDecoration(
+                floatingLabelStyle: TextStyle(color: Colors.transparent),
+                labelText: 'New Password...',
+                labelStyle: TextStyle(color: textColor, fontSize: 16),
+                border: OutlineInputBorder(borderSide: BorderSide.none),
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.all(5),
+            child: Text(
+              message,
+              style: TextStyle(
+                color: NESred,
+                fontSize: 16,
+                fontWeight: FontWeight.bold
+              ),
+              textAlign: TextAlign.center,
+            ),
+          )
+        ]
+      )
+    );
+
+  }
+
+}

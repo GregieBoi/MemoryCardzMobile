@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/services.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:mobile_project/utils/ListsAPI.dart';
 import 'dart:convert';
 import 'package:mobile_project/utils/getAPI.dart';
+import 'package:mobile_project/utils/emailAPI.dart';
 
 const backColor = Color(0xFF343434);
 const textColor = Color(0xFF8C8C8C);
@@ -42,7 +44,7 @@ class _MyRegisterButtonState extends State<MyRegisterButton> {
           backgroundColor: Colors.black87,
           centerTitle: true,
           title: const Text(
-            "MemoryCardZ",
+            "MEMORYCARDS",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           )
         ),
@@ -196,61 +198,126 @@ class _MyRegisterButtonState extends State<MyRegisterButton> {
                       cursorColor: Colors.black87,
                     ),
                   ),
+                  Container(
+                    margin: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                    child: Text(
+                      newMessageText,
+                      style: TextStyle(
+                        color: Colors.white
+                      ),
+                      textAlign: TextAlign.center,
+                    )
+                  ),
                   ElevatedButton(
                       onPressed: () async {
 
-                        newMessageText = "";
-                        changeText();
-
-                        String payload = '{"firstName":"' +
-                            firstName.trim() +
-                            '", "lastName":"' +
-                            lastName.trim() +
-                            '", "username":"' +
-                            username.trim() +
-                            '", "password":"' +
-                            password.trim() +
-                            '", "email":"' +
-                            email.trim() +
-                            '"}';
-                        //String userId = '-1';
-                        var jsonObject;
-
-                        print("the payload is: " + payload);
-
-                        try {
-                          String url = 'https://cop4331-25-c433f0fd0594.herokuapp.com/api/register';
-                          String ret = await CardsData.getJson(url, payload);
-                          print("The ret is: " + ret); // ret is {"accessToken":"blahblahblahblah"}
-
-                          jsonObject = json.decode(ret);
-                          username = jsonObject["username"];
-
-                          //print("in here 1");
-                        } catch (e) {
-                          print("in here 2");
-                          newMessageText = e.toString();
-                          print(newMessageText); // prints the error message in console
-
-                          newMessageText = "Fatal error";
-                          changeText(); // changes the text on the application screen
-                          return;
-                        }
+                        String emailPattern = r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+                        RegExp emailExp = new RegExp(emailPattern);
+                        bool isEmail = emailExp.hasMatch(email);
+                        
+                        String  passPattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
+                        RegExp passExp = new RegExp(passPattern);
+                        bool complex =  passExp.hasMatch(password);
 
                         if (username == '') {
-                          newMessageText = "Error, userID is no good!";
-                          print("in hereeeeeeeeeeeeeeeeeeeee");
-                          changeText();
-                        } else {
-                          print("IN HERE 3 !!!!!!!!!!!!!!!!!!!!!!!");
-                          GlobalData.userId = jsonObject['id'];
-                          GlobalData.firstName = jsonObject["firstName"];
-                          GlobalData.lastName = jsonObject["lastName"];
-                          GlobalData.username = username;
-                          GlobalData.password = password;
-                          getListsAPI.createList(GlobalData.userId!, 'Shelf');
-                          Navigator.pushNamed(context, '/hub');
+                          newMessageText = 'Username is required';
                         }
+                        else if (firstName == '') {
+                          newMessageText = 'First Name is required';
+                        }
+                        else if (lastName == '') {
+                          newMessageText = 'Last Name is required';
+                        }
+                        else if (email == '') {
+                          newMessageText = 'Email is required';
+                        }
+
+                        else if (!isEmail) {
+                          newMessageText = 'Invalid Email';
+                        }
+
+                        else if (password == '') {
+                          newMessageText = 'Password is required';
+                        }
+                        else if (!complex) { 
+                          print(password);
+                          newMessageText = 'Password must be at least 8 characters long and contain uppercase characters, lowercase characters, a number, and special character';
+                        }
+                        else if (password != confirmPassword) {
+                          newMessageText = 'Passwords do not match';
+                        }
+
+                        else {
+
+                          emailAPI.verify(email);
+
+                          bool? verified = false;
+
+                          verified = await showModalBottomSheet<bool>(
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                            backgroundColor: backColor,
+                            isScrollControlled: true,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return verifyWidget(email: email);
+                            }
+                          );
+
+                          newMessageText = "";
+                          changeText();
+
+                          if (verified!) {
+
+                            String payload = '{"firstName":"' +
+                                firstName.trim() +
+                                '", "lastName":"' +
+                                lastName.trim() +
+                                '", "username":"' +
+                                username.trim() +
+                                '", "password":"' +
+                                password.trim() +
+                                '", "email":"' +
+                                email.trim() +
+                                '"}';
+                            //String userId = '-1';
+                            var jsonObject;
+
+                            print("the payload is: " + payload);
+
+                            try {
+                              String url = 'https://cop4331-25-c433f0fd0594.herokuapp.com/api/register';
+                              String ret = await CardsData.getJson(url, payload);
+                              print("The ret is: " + ret); // ret is {"accessToken":"blahblahblahblah"}
+
+                              jsonObject = json.decode(ret);
+                              username = jsonObject["username"];
+
+                              if (jsonObject['id'] != null) {
+                                print("IN HERE 3 !!!!!!!!!!!!!!!!!!!!!!!");
+                                GlobalData.userId = jsonObject['id'];
+                                GlobalData.firstName = jsonObject["firstName"];
+                                GlobalData.lastName = jsonObject["lastName"];
+                                GlobalData.username = username;
+                                GlobalData.password = password;
+                                getListsAPI.createList(GlobalData.userId!, 'Shelf');
+                                Navigator.pushNamed(context, '/hub');
+                              }
+
+                              //print("in here 1");
+                            } catch (e) {
+                              print("in here 2");
+                              newMessageText = e.toString();
+                              print(newMessageText); // prints the error message in console
+
+                              //newMessageText = "Fatal error";
+                              changeText(); // changes the text on the application screen
+                              return;
+                            }
+                          }
+                        }
+
+                        changeText();
+
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: NESred,
@@ -403,4 +470,303 @@ class _MyRegisterButtonState extends State<MyRegisterButton> {
     );
   }
   */
+}
+
+
+class verifyWidget extends StatefulWidget {
+
+  final String email;
+
+  verifyWidget({
+    required this.email
+  });
+
+  _verifyState createState() => _verifyState(email: email);
+
+}
+
+class _verifyState extends State<verifyWidget> {
+
+  final String email;
+
+  _verifyState({
+    required this.email
+  });
+
+  String pin1 = '';
+  String pin2 = '';
+  String pin3 = '';
+  String pin4 = '';
+  String pin5 = '';
+  String pin6 = '';
+
+  @override
+  Widget build(BuildContext context) {
+
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 2 / 3,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Padding(
+            padding:
+                const EdgeInsets.only(left: 5, right: 5, top: 10, bottom: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: contColor, fontSize: 16),
+                    )),
+                const Text('Verify Email',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: fieldColor,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold)),
+                TextButton(
+                  onPressed: () {
+                    if (pin1+pin2+pin3+pin4+pin5+pin6 == verificationToken) {
+                      Navigator.pop(context, true);
+                    }
+                    else {
+                      Navigator.pop(context, false);
+                    }
+                  },
+                  child: Text(
+                    'Submit',
+                    style: TextStyle(color: NESred, fontSize: 16, fontWeight: FontWeight.bold),
+                  )
+                )
+              ],
+            ),
+          ),
+          Container(
+            decoration: const BoxDecoration(color: Colors.black87),
+            padding: const EdgeInsets.all(20),
+            width: MediaQuery.of(context).size.width,
+            child: Wrap(
+              children: [
+                Text(
+                  'Verification code sent to ' + email,
+                  style: const TextStyle(
+                      color: textColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+          ),
+          SizedBox(height: 20),
+          Form(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  height: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  width: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  margin: EdgeInsets.only(left: 10, right: 5),
+                  child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        pin1 = value;
+                      });
+                      if (value.length == 1) {
+                        FocusScope.of(context).nextFocus();
+                      }
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: fieldColor,
+                      focusColor: backColor,
+                      hoverColor: backColor,
+                      hintText: '0'
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20
+                    ),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1),
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                  )
+                ),
+                Container(
+                  height: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  width: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  margin: EdgeInsets.only(right: 5),
+                  child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        pin2 = value;
+                      });
+                      if (value.length == 1) {
+                        FocusScope.of(context).nextFocus();
+                      }
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: fieldColor,
+                      focusColor: backColor,
+                      hoverColor: backColor,
+                      hintText: '0'
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20
+                    ),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1),
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                  )
+                ),
+                Container(
+                  height: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  width: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  margin: EdgeInsets.only(right: 5),
+                  child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        pin3 = value;
+                      });
+                      if (value.length == 1) {
+                        FocusScope.of(context).nextFocus();
+                      }
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: fieldColor,
+                      focusColor: backColor,
+                      hoverColor: backColor,
+                      hintText: '0'
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20
+                    ),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1),
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                  )
+                ),
+                Container(
+                  height: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  width: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  margin: EdgeInsets.only(right: 5),
+                  child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        pin4 = value;
+                      });
+                      if (value.length == 1) {
+                        FocusScope.of(context).nextFocus();
+                      }
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: fieldColor,
+                      focusColor: backColor,
+                      hoverColor: backColor,
+                      hintText: '0'
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20
+                    ),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1),
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                  )
+                ),
+                Container(
+                  height: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  width: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  margin: EdgeInsets.only(right: 5),
+                  child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        pin5 = value;
+                      });
+                      if (value.length == 1) {
+                        FocusScope.of(context).nextFocus();
+                      }
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: fieldColor,
+                      focusColor: backColor,
+                      hoverColor: backColor,
+                      hintText: '0'
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20
+                    ),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1),
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                  )
+                ),
+                Container(
+                  height: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  width: (MediaQuery.sizeOf(context).width - 45) / 6,
+                  margin: EdgeInsets.only(right: 10),
+                  child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        pin6 = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: fieldColor,
+                      focusColor: backColor,
+                      hoverColor: backColor,
+                      hintText: '0'
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20
+                    ),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(1),
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                  )
+                )
+              ],
+            ),
+          )
+        ]
+      ),
+    );
+
+  }
+
 }

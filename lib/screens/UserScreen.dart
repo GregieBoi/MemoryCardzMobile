@@ -545,17 +545,26 @@ class _UserScreenState extends State<UserScreen> {
                       arguments: {'reviews': user.reviews});
                 },
                 child: Container(
-                  height: 40,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: contColor, width: .25))),
-                  child: Text(
-                    'Games',
-                    style: TextStyle(fontSize: 16, color: textColor),
+                    width: MediaQuery.of(context).size.width,
+                    padding:
+                        EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            top: BorderSide(color: textColor, width: .25))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Games',
+                          style: TextStyle(color: textColor, fontSize: 16),
+                        ),
+                        Icon(
+                          Icons.arrow_right,
+                          color: textColor,
+                        )
+                      ],
+                    ),
                   ),
-                ),
               ),
               InkWell(
                 onTap: () async {
@@ -563,34 +572,52 @@ class _UserScreenState extends State<UserScreen> {
                       arguments: user.reviews);
                 },
                 child: Container(
-                  height: 40,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: contColor, width: .25))),
-                  child: Text(
-                    'Diary',
-                    style: TextStyle(fontSize: 16, color: textColor),
+                    width: MediaQuery.of(context).size.width,
+                    padding:
+                        EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            top: BorderSide(color: textColor, width: .25))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Diary',
+                          style: TextStyle(color: textColor, fontSize: 16),
+                        ),
+                        Icon(
+                          Icons.arrow_right,
+                          color: textColor,
+                        )
+                      ],
+                    ),
                   ),
-                ),
               ),
               InkWell(
                 onTap: () async {
                   Navigator.pushNamed(context, '/lists', arguments: listsAndUser(lists: user.lists, userId: user.id));
                 },
                 child: Container(
-                  height: 40,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: contColor, width: .25))),
-                  child: Text(
-                    'Lists',
-                    style: TextStyle(fontSize: 16, color: textColor),
+                    width: MediaQuery.of(context).size.width,
+                    padding:
+                        EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            top: BorderSide(color: textColor, width: .25))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Lists',
+                          style: TextStyle(color: textColor, fontSize: 16),
+                        ),
+                        Icon(
+                          Icons.arrow_right,
+                          color: textColor,
+                        )
+                      ],
+                    ),
                   ),
-                ),
               ),
               InkWell(
                 onTap: () async {
@@ -601,17 +628,26 @@ class _UserScreenState extends State<UserScreen> {
                   Navigator.pushNamed(context, '/shelf', arguments: listAndUser(listId: shelf, userId: user.id));
                 },
                 child: Container(
-                  height: 40,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: contColor, width: .25))),
-                  child: Text(
-                    'Shelf',
-                    style: TextStyle(fontSize: 16, color: textColor),
+                    width: MediaQuery.of(context).size.width,
+                    padding:
+                        EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            top: BorderSide(color: textColor, width: .25))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Shelf',
+                          style: TextStyle(color: textColor, fontSize: 16),
+                        ),
+                        Icon(
+                          Icons.arrow_right,
+                          color: textColor,
+                        )
+                      ],
+                    ),
                   ),
-                ),
               ),
               InkWell(
                 onTap: () async {
@@ -621,17 +657,26 @@ class _UserScreenState extends State<UserScreen> {
                   user = curUser;
                 },
                 child: Container(
-                  height: 40,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: contColor, width: .25))),
-                  child: Text(
-                    'Following',
-                    style: TextStyle(fontSize: 16, color: textColor),
+                    width: MediaQuery.of(context).size.width,
+                    padding:
+                        EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            top: BorderSide(color: textColor, width: .25))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Following',
+                          style: TextStyle(color: textColor, fontSize: 16),
+                        ),
+                        Icon(
+                          Icons.arrow_right,
+                          color: textColor,
+                        )
+                      ],
+                    ),
                   ),
-                ),
               ),
               InkWell(
                 onTap: () async {
@@ -641,17 +686,26 @@ class _UserScreenState extends State<UserScreen> {
                   user = curUser;
                 },
                 child: Container(
-                  height: 40,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          top: BorderSide(color: contColor, width: .25))),
-                  child: Text(
-                    'Followers',
-                    style: TextStyle(fontSize: 16, color: textColor),
+                    width: MediaQuery.of(context).size.width,
+                    padding:
+                        EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            top: BorderSide(color: textColor, width: .25))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Followers',
+                          style: TextStyle(color: textColor, fontSize: 16),
+                        ),
+                        Icon(
+                          Icons.arrow_right,
+                          color: textColor,
+                        )
+                      ],
+                    ),
                   ),
-                ),
               ),
             ],
           ))
