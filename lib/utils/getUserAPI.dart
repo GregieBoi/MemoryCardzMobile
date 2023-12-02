@@ -31,11 +31,6 @@ class getUserAPI {
         print(jsonObject['following']);
         following = jsonObject['following'];
       }
-      List<dynamic> logged = [];
-      if (jsonObject['logged'] != null) {
-        print(jsonObject['logged']);
-        logged = jsonObject['logged'];
-      }
 
       List<dynamic> reviews = [];
       if (jsonObject['reviewed'] != null) {
