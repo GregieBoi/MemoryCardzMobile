@@ -617,7 +617,7 @@ class gameWidget extends StatelessWidget {
                       platform,
                       style: TextStyle(
                         color: textColor,
-                        fontSize: 14,
+                        fontSize: 12,
                       ),
                     );
                   }).toList(),
