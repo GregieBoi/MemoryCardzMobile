@@ -55,9 +55,15 @@ class getReviewsAPI {
       print('id aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
       String userId = jsonObject['userId'];
       print('userid aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-      int rating = jsonObject['rating'];
+      int rating = 0;
+      if (jsonObject.containsKey('rating')) {
+        rating = jsonObject['rating'];
+      }
       print('rating aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-      String text = jsonObject['text'];
+      String text = '';
+      if (jsonObject['text'] != null) {
+        text = jsonObject['text'];
+      }
       print('text aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
       String gameId = jsonObject['gameId'];
       print('gameid aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
@@ -71,7 +77,10 @@ class getReviewsAPI {
         likedBy = [];
       }
       print('likedBy aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-      String editDate = jsonObject['editDate'];
+      String editDate = '';
+      if (jsonObject['editDate'] != null) {
+        editDate = jsonObject['editDate'];
+      }
       print('editDate aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
 
       String user = '';
